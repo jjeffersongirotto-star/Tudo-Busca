@@ -45,7 +45,7 @@ def cpu(texto):
         suf = _sufixo(m.group(3))
         return dict(cpuModelo=f'Core {m.group(1)} {m.group(2)}{suf or ""}', cpuFamilia='Core ' + m.group(1),
                     cpuSufixo=suf, cpuGeracao='recente')
-    m = re.search(r'Core\s*i([3579])[\s\-]*(\d{4,5})\s?([A-Z]{0,2})\b', t, re.I)
+    m = re.search(r'Core\s*i([3579])[\s\-]*(\d{4,5})\s?([A-Z]{0,2})\d?\b', t, re.I)
     if m:
         num, suf = m.group(2), _sufixo(m.group(3))
         if len(num) == 5 or (num[0] == '1' and num[1] in '01234'):
@@ -68,7 +68,7 @@ def cpu(texto):
     m = re.search(r'Core\s*([357])\b(?![\.,]\d)', t, re.I)
     if m:
         return dict(cpuModelo=None, cpuFamilia='Core ' + m.group(1), cpuSufixo=None, cpuGeracao='recente')
-    m = re.search(r'Ryzen\s*(AI\s*)?([3579])\s*(PRO\s*)?(\d{3,4})?\s?([A-Z]{0,2})\b', t, re.I)
+    m = re.search(r'Ryzen\s*(AI\s*)?([3579])[\s\-]*(PRO\s*)?(\d{3,4})?\s?([A-Z]{0,2})\b', t, re.I)
     if m:
         ai, n, pro, numero = m.group(1), m.group(2), m.group(3), m.group(4)
         suf = _sufixo(m.group(5)) if numero else None
@@ -129,8 +129,9 @@ def peso(texto):
 
 def ram(texto):
     t = _limpo(texto)
+    # armazenamento é sempre ≥128 GB, então o primeiro "N GB" com N de memória é a RAM
     for pad in [r'(\d{1,2})\s*GB\s*(?:de\s*)?(?:RAM|DDR|LPDDR|mem)', r'(?:RAM|Mem[oó]ria)\s*(?:de\s*)?(\d{1,2})\s*GB',
-                r'\b(4|8|12|16|24|32|64)\s*gb\b(?!\s*(?:ssd|hd|emmc|de\s*ssd))']:
+                r'\b(4|8|12|16|24|32|64)\s*gb\b']:
         m = re.search(pad, t, re.I)
         if m and int(m.group(1)) in (4, 8, 12, 16, 18, 24, 32, 36, 48, 64):
             return int(m.group(1))
@@ -147,7 +148,7 @@ def armaz(texto):
 
 
 def linha(nome):
-    for pad, l in [(r'Alienware', 'Alienware'), (r'\bXPS\b', 'XPS'), (r'Latitude', 'Latitude'), (r'Inspiron', 'Inspiron'),
+    for pad, l in [(r'Alienware', 'Alienware'), (r'\bXPS\b', 'XPS'), (r'Latitude|\bLAT\b', 'Latitude'), (r'Inspiron', 'Inspiron'),
                    (r'Vostro', 'Vostro'), (r'Precision', 'Precision'), (r'Pro\s*Max', 'Dell Pro Max'),
                    (r'Pro\s*Premium', 'Dell Pro Premium'), (r'Pro\s*Essential', 'Dell Pro Essential'),
                    (r'Dell\s*Pro\b', 'Dell Pro'), (r'\bG1[56]\b', 'Dell G')]:

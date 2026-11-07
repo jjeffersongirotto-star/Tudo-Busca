@@ -32,7 +32,7 @@ LIMITE_FONTE = 210  # segundos
 
 def _velho(n):
     t = n.get('nome', '') + ' ' + ' '.join(str(v) for v in (n.get('specs') or {}).values())
-    return n.get('cpuGeracao') == 'antiga' or bool(re.search(r'DDR3\b|Windows\s*10\b|Ryzen\s*[3579]\s*[1-5]\d{3}', t, re.I))
+    return n.get('cpuGeracao') == 'antiga' or bool(re.search(r'DDR3\b|Windows\s*10\b|Ryzen\s*[3579][\s\-]*[1-5]\d{3}', t, re.I))
 
 
 def _cupons(cupons, hoje):
@@ -144,11 +144,13 @@ if __name__ == '__main__':  # teste: python -m coleta.orquestrador ../dados/dado
     import json
     import sys
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
+    logging.getLogger('httpx').setLevel(logging.WARNING)
     d = json.load(open(sys.argv[1], encoding='utf-8'))
     novo, r = asyncio.run(executar(d))
     print(json.dumps(r, ensure_ascii=False, indent=1))
     antes = {n['id']: n for n in d['notebooks']}
     mud = [(n['id'], antes[n['id']].get('preco'), n.get('preco')) for n in novo['notebooks'] if n['id'] in antes and antes[n['id']].get('precoNum') != n.get('precoNum')]
+    print('removidos:', [i for i in antes if i not in {n['id'] for n in novo['notebooks']}])
     print('preços que mudaram:', len(mud))
     for m in mud[:15]:
         print('  ', m)

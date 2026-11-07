@@ -1,4 +1,5 @@
 """Zoom / Buscapé (mesmo backend): __NEXT_DATA__ da busca; aceita só se vierem ≥5 resultados."""
+import html
 import logging
 import re
 from urllib.parse import quote
@@ -34,7 +35,7 @@ def _hits(nd):
 
 
 def _converter(h, site):
-    nome = (h.get('name') or h.get('title') or '').strip()
+    nome = html.unescape(h.get('name') or h.get('title') or '').strip()
     if not re.search(r'notebook|laptop', nome, re.I) or not re.search(r'dell|alienware', nome, re.I) or RUIM.search(nome):
         return None
     oid = h.get('objectId') or h.get('objectID')
@@ -69,7 +70,9 @@ async def coletar(http, anteriores):
             hits = _hits(nd)
             if hits and not _amostra[0]:
                 _amostra[0] = True
-                log.info('Zoom amostra de chaves: %s', sorted(hits[0].keys())[:40])
+                import json as _j
+                for h0 in hits[:3]:
+                    log.info('Zoom amostra: %s', _j.dumps(h0, ensure_ascii=False)[:2500])
             for h in hits:
                 n = _converter(h, site)
                 if n:

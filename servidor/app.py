@@ -19,6 +19,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from coleta import orquestrador
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(name)s: %(message)s')
+logging.getLogger('httpx').setLevel(logging.WARNING)
 log = logging.getLogger('servidor')
 
 RAIZ = Path(__file__).resolve().parent.parent

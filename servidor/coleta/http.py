@@ -15,7 +15,7 @@ CABECALHOS = {
 
 
 class Http:
-    def __init__(self, por_site=4, timeout=25):
+    def __init__(self, por_site=3, timeout=25):
         self.cli = httpx.AsyncClient(headers=CABECALHOS, follow_redirects=True, timeout=timeout, http2=False)
         self.por_site = por_site
         self.sem = {}
@@ -24,7 +24,7 @@ class Http:
     def _sem(self, url):
         h = urlparse(url).netloc
         if h not in self.sem:
-            self.sem[h] = asyncio.Semaphore(self.por_site)
+            self.sem[h] = asyncio.Semaphore(2 if 'dell.com' in h else self.por_site)
         return self.sem[h]
 
     async def get(self, url, tentativas=2, json=False, **kw):
@@ -34,11 +34,13 @@ class Http:
             try:
                 async with self._sem(url):
                     r = await self.cli.get(url, **kw)
-                if r.status_code == 200:
+                if r.status_code in (200, 206):  # VTEX responde 206 em buscas paginadas
                     return r.json() if json else r.text
                 ultimo = f'HTTP {r.status_code}'
-                if r.status_code in (403, 404, 410):
+                if r.status_code in (404, 410) or (r.status_code == 403 and t >= 1):
                     break
+                if r.status_code in (403, 429):
+                    await asyncio.sleep(4 * (t + 1))  # bloqueio por excesso de pedidos: espera mais
             except Exception as e:  # rede, timeout, JSON inválido
                 ultimo = type(e).__name__ + ': ' + str(e)[:120]
             await asyncio.sleep(1.5 * (t + 1))
