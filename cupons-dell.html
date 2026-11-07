@@ -4,133 +4,250 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Buscador de Cupons e Notebooks Dell</title>
+<meta name="theme-color" content="#09090f">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
 <style>
-:root{--dell:#0672cb;--dell-esc:#04528f;--bg:#f2f5f9;--card:#fff;--txt:#1d2733;--sub:#5b6b7c;--borda:#dde4ec;--ok:#1a8f4c;--novo:#e8590c}
+:root{
+  color-scheme:dark;
+  --bg:#09090f;--bg-alt:#11111b;
+  --card:rgba(255,255,255,.045);--card-forte:rgba(255,255,255,.075);
+  --borda:rgba(255,255,255,.09);--borda-forte:rgba(255,255,255,.18);
+  --txt:#f4f4f8;--sub:#a1a1b5;--fraco:#6e6e85;
+  --roxo:#8b5cf6;--ciano:#22d3ee;--rosa:#f472b6;--laranja:#fb923c;
+  --dell:#a78bfa;--dell-esc:#c4b5fd;
+  --grad:linear-gradient(135deg,#8b5cf6 0%,#6366f1 45%,#22d3ee 100%);
+  --grad-quente:linear-gradient(135deg,#f97316,#ec4899);
+  --ok:#22c55e;--novo:#f97316;--amarelo:#facc15;
+  --raio:18px;--raio-p:12px;
+  --sombra:0 10px 30px -12px rgba(0,0,0,.6);
+}
 *{box-sizing:border-box}
-body{margin:0;font-family:"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--txt)}
-header{background:var(--dell);color:#fff;padding:14px 22px;display:flex;flex-wrap:wrap;align-items:center;gap:12px;justify-content:space-between}
-header h1{margin:0;font-size:1.35rem}
-header .info{font-size:.85rem;opacity:.9}
-.btn{border:0;border-radius:8px;padding:8px 14px;font-weight:600;cursor:pointer;font-size:.9rem;transition:.15s}
-.btn-branco{background:#fff;color:var(--dell)}
-.btn-branco:hover{background:#e6f1fb}
-.btn-azul{background:var(--dell);color:#fff}
-.btn-azul:hover{background:var(--dell-esc)}
-.btn-contorno{background:#fff;color:var(--dell);border:1px solid var(--dell)}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;font-family:"Plus Jakarta Sans",Inter,"Segoe UI",Roboto,system-ui,sans-serif;color:var(--txt);
+  background:
+    radial-gradient(900px 500px at 0% -10%,rgba(139,92,246,.22),transparent 60%),
+    radial-gradient(700px 500px at 100% 0%,rgba(34,211,238,.14),transparent 60%),
+    radial-gradient(800px 600px at 50% 110%,rgba(236,72,153,.10),transparent 60%),
+    var(--bg);
+  background-attachment:fixed;-webkit-font-smoothing:antialiased}
+a{color:var(--ciano)}
+::selection{background:rgba(139,92,246,.45)}
+*{scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.18) transparent}
+*::-webkit-scrollbar{width:8px;height:8px}*::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16);border-radius:8px}
+
+/* ---------- Topo ---------- */
+header{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:14px 22px;background:rgba(9,9,15,.72);backdrop-filter:blur(16px) saturate(160%);-webkit-backdrop-filter:blur(16px) saturate(160%);
+  border-bottom:1px solid var(--borda)}
+.marca{display:flex;align-items:center;gap:12px;min-width:0}
+.logo{flex:0 0 auto;width:42px;height:42px;border-radius:13px;background:var(--grad);display:grid;place-items:center;box-shadow:0 6px 20px -6px rgba(139,92,246,.7)}
+.logo svg{display:block}
+.titulos{min-width:0}
+header h1{margin:0;font-size:1.25rem;font-weight:800;letter-spacing:-.02em;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header h1 .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+header .info{font-size:.78rem;color:var(--sub);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header .info strong{color:var(--txt);font-weight:600}
+
+/* Botão circular de atualizar: ícone geometricamente centrado, gira no próprio eixo */
+.btn-refresh{flex:0 0 auto;position:relative;width:46px;height:46px;padding:0;margin:0;border-radius:50%;border:1px solid var(--borda-forte);
+  background:var(--card-forte);color:var(--txt);cursor:pointer;display:grid;place-items:center;line-height:0;
+  transition:transform .2s,background .2s,border-color .2s,box-shadow .2s}
+.btn-refresh svg{display:block;width:22px;height:22px;transform-origin:50% 50%}
+.btn-refresh:hover{background:rgba(139,92,246,.18);border-color:rgba(167,139,250,.6);box-shadow:0 0 0 4px rgba(139,92,246,.15),0 8px 24px -8px rgba(139,92,246,.8)}
+.btn-refresh:active{transform:scale(.92)}
+.btn-refresh:focus-visible{outline:2px solid var(--ciano);outline-offset:3px}
+.btn-refresh.girando{background:var(--grad);border-color:transparent;cursor:progress}
+.btn-refresh.girando svg{animation:girar .8s linear infinite}
+@keyframes girar{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.btn-refresh.girando svg{animation-duration:2.4s}}
+
+/* ---------- Botões ---------- */
+.btn{border:0;border-radius:999px;padding:9px 16px;font:inherit;font-weight:700;cursor:pointer;font-size:.86rem;transition:.18s;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn-azul{background:var(--grad);color:#fff;box-shadow:0 6px 18px -8px rgba(139,92,246,.9)}
+.btn-azul:hover{filter:brightness(1.12);transform:translateY(-1px)}
+.btn-contorno{background:transparent;color:var(--txt);border:1px solid var(--borda-forte)}
+.btn-contorno:hover{background:var(--card-forte);border-color:var(--dell)}
 .btn:disabled{opacity:.5;cursor:not-allowed}
-#aviso{display:none;margin:12px 22px 0;padding:10px 14px;border-radius:8px;font-size:.9rem}
-#aviso.ok{display:block;background:#e3f6ea;color:#14663a}
-#aviso.erro{display:block;background:#fff4e5;color:#8a4b00}
-#aviso.info{display:block;background:#eef5fc;color:#04528f;font-size:.82rem;padding:7px 12px}
-main{display:grid;grid-template-columns:1fr 1.7fr 1.05fr;gap:16px;padding:16px 20px;align-items:start;transition:grid-template-columns .2s}
-main.cupons-fechado{grid-template-columns:230px 2fr 1.05fr}
+
+/* ---------- Aviso ---------- */
+#aviso{display:none;margin:14px 22px 0;padding:11px 16px;border-radius:var(--raio-p);font-size:.88rem;border:1px solid var(--borda)}
+#aviso.ok{display:block;background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.35);color:#bbf7d0}
+#aviso.erro{display:block;background:rgba(251,146,60,.12);border-color:rgba(251,146,60,.35);color:#fed7aa}
+#aviso.info{display:block;background:rgba(139,92,246,.12);border-color:rgba(139,92,246,.35);color:#ddd6fe;font-size:.84rem}
+
+/* ---------- Layout em 3 colunas ---------- */
+main{display:grid;grid-template-columns:1fr 1.7fr 1.05fr;gap:18px;padding:18px 22px;align-items:start;transition:grid-template-columns .25s}
+main.cupons-fechado{grid-template-columns:240px 2fr 1.05fr}
 main.cupons-fechado #colCupons .cupom-filtro,main.cupons-fechado #listaCupons{display:none}
 main.cupons-fechado #colCupons{min-height:0}
 @media(max-width:1100px){main,main.cupons-fechado{grid-template-columns:1fr}}
-.toggle{background:#eef5fc;color:var(--dell);border:1px solid var(--dell);border-radius:6px;font-size:.75rem;font-weight:700;padding:3px 8px;cursor:pointer}
-.lista.grade{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:start}
+.coluna{background:var(--card);border:1px solid var(--borda);border-radius:var(--raio);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  box-shadow:var(--sombra);display:flex;flex-direction:column;max-height:calc(100vh - 110px);min-height:300px;overflow:hidden}
+@media(max-width:1100px){.coluna{max-height:none}}
+.coluna>h2{margin:0;padding:15px 18px;font-size:1rem;font-weight:800;letter-spacing:-.01em;display:flex;justify-content:space-between;align-items:center;gap:8px;
+  border-bottom:1px solid var(--borda);position:relative}
+.coluna>h2::after{content:"";position:absolute;left:18px;bottom:-1px;width:48px;height:2px;border-radius:2px;background:var(--grad)}
+.contador{font-size:.75rem;font-weight:600;color:var(--sub);margin-left:4px}
+.toggle{background:rgba(139,92,246,.14);color:var(--dell-esc);border:1px solid rgba(139,92,246,.4);border-radius:999px;font:inherit;font-size:.74rem;font-weight:700;padding:5px 11px;cursor:pointer;white-space:nowrap;transition:.18s}
+.toggle:hover{background:rgba(139,92,246,.26)}
+.lista{overflow-y:auto;padding:12px}
+.lista.grade{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start}
 @media(max-width:700px){.lista.grade{grid-template-columns:1fr}}
 .lista.grade .note{margin-bottom:0}
-.note{position:relative}
-.note.promo{border-color:#f5b971;background:#fffaf2}
-.note.promo20{border-color:#e8590c;background:#fff1e6;box-shadow:0 0 0 2px rgba(232,89,12,.18)}
-.note.sel{border-color:var(--dell)!important;background:#eef5fc!important}
-.badge-desc{display:inline-block;font-size:.72rem;font-weight:800;padding:2px 8px;border-radius:20px;background:#fde3c3;color:#8a4b00;margin-left:4px}
-.badge-desc.forte{background:#e8590c;color:#fff}
-.tags{display:flex;flex-wrap:wrap;gap:4px;margin:5px 0}
-.tag{font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:20px;background:#eef2f6;color:#334}
-.tag.perf-U{background:#e3f6ea;color:#14663a}.tag.perf-P{background:#fff4d6;color:#7a5a00}.tag.perf-H{background:#ffe3e0;color:#9b1c1c}.tag.perf-HX{background:#9b1c1c;color:#fff}.tag.perf-ARM{background:#e0ecff;color:#1d4ed8}.tag.perf-NI{background:#eee;color:#666}
-.tag.velho{background:#fff4e5;color:#8a4b00}
-.cb{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:.75rem;color:var(--sub)}
-.cb .barra{flex:1;height:7px;background:#e6ecf2;border-radius:6px;overflow:hidden}
-.cb .barra i{display:block;height:100%;background:var(--dell)}
-.cb b{color:var(--txt);font-size:.82rem}
-.filtros .check{flex-direction:row;align-items:center;gap:6px;align-self:end;padding-bottom:6px}
-details.regras{margin:0 14px 6px;font-size:.8rem;border:1px solid var(--borda);border-radius:8px;padding:6px 10px;background:#fff}
-details.regras summary{cursor:pointer;font-weight:700;color:var(--dell)}
-details.regras table{border-collapse:collapse;margin:6px 0 10px;width:100%}
-details.regras td,details.regras th{border:1px solid var(--borda);padding:3px 6px;text-align:left}
-details.regras th{background:#f4f8fc}
-.nota-box{border:1px solid var(--borda);border-radius:10px;padding:8px 10px;margin:10px 0;background:#fafcfe}
-.nota-box h4{margin:0 0 6px;font-size:.92rem}
-.info-completa table.pontos th{width:auto}
-.falta{color:#b45309;font-weight:600}
-.note{padding-right:42px}
-.note .fav,.note .expandir{position:absolute;right:6px;width:30px;height:30px;border-radius:50%;border:1px solid var(--borda);background:#fff;cursor:pointer;font-size:1.05rem;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;color:var(--dell)}
-.note .fav{top:6px;color:#b8860b;font-size:1.2rem}
-.note.favorito .fav{background:#fff6d1;border-color:#e0b100}
-.note .expandir{top:42px;font-weight:800;font-size:1.2rem}
-.note .fav:hover,.note .expandir:hover{background:#eef5fc}
-.note.favorito{border-color:#e0b100}
-.lista.grade .note.aberto{grid-column:1/-1;cursor:default}
-.expandido{margin-top:10px;border-top:1px dashed var(--borda);padding-top:10px}
-.info-completa table.pontos td{word-break:normal;overflow-wrap:anywhere}
-.info-completa table{word-break:break-word}
-@media(max-width:500px){main{padding:10px 8px;gap:10px}header{padding:10px 12px}header h1{font-size:1.1rem}.filtros{grid-template-columns:1fr 1fr}.info-completa th{width:40%}}
-.tag.estimado{background:#fff3a3;color:#6b5600;border:1px solid #f0d64a}
-.info-completa tr.linha-est td{background:#fff7cc}
-.nota-est{color:#7a5a00!important}
-.cupom.inativo{opacity:.62}
-.coluna{background:var(--card);border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);display:flex;flex-direction:column;max-height:calc(100vh - 120px);min-height:300px}
-@media(max-width:1000px){.coluna{max-height:none}}
-.coluna>h2{margin:0;padding:14px 16px;font-size:1.05rem;border-bottom:3px solid var(--dell);display:flex;justify-content:space-between;align-items:center}
-.contador{font-size:.8rem;font-weight:500;color:var(--sub)}
-.lista{overflow-y:auto;padding:10px}
-.cupom{border:1px solid var(--borda);border-radius:10px;padding:10px 12px;margin-bottom:10px;position:relative}
+.vazio{color:var(--sub);text-align:center;padding:34px 16px;font-size:.9rem}
+
+/* ---------- Cupons ---------- */
+.cupom-filtro{padding:12px 14px 2px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;font-size:.8rem;color:var(--sub);font-weight:600}
+.cupom{border:1px dashed var(--borda-forte);border-radius:var(--raio-p);padding:12px 14px;margin-bottom:12px;position:relative;background:rgba(255,255,255,.025);transition:.18s}
+.cupom:hover{border-color:rgba(167,139,250,.55);background:rgba(139,92,246,.06)}
+.cupom.inativo{opacity:.55}
 .cupom .topo{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.codigo{font-family:Consolas,monospace;font-weight:700;font-size:1rem;background:#eef5fc;color:var(--dell-esc);padding:4px 8px;border-radius:6px;border:1px dashed var(--dell);word-break:break-all}
-.loja-tag{background:#1d2733;color:#fff;font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:20px;margin-right:6px}
-.cupom-filtro{padding:10px 12px 0;display:flex;gap:8px;align-items:center;font-size:.8rem;color:var(--sub);font-weight:600}
-.cupom-filtro select{padding:5px 8px;border:1px solid var(--borda);border-radius:6px}
-.desc-tag{background:var(--dell);color:#fff;font-size:.75rem;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap}
-.cat{font-size:.72rem;color:var(--sub);text-transform:uppercase;letter-spacing:.04em;margin-top:6px}
-.cupom p{margin:6px 0;font-size:.88rem}
-.meta{font-size:.78rem;color:var(--sub)}
-.meta a{color:var(--dell)}
-.btn-copiar{margin-top:6px}
-.btn-copiar.copiado{background:var(--ok)}
-.badge-novo{background:var(--novo);color:#fff;font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:20px;margin-left:6px;vertical-align:middle}
-.filtros{padding:12px 14px;border-bottom:1px solid var(--borda);display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px 10px;background:#fafcfe}
-.filtros label{font-size:.75rem;font-weight:600;color:var(--sub);display:flex;flex-direction:column;gap:3px}
-.filtros select,.filtros input{padding:6px 8px;border:1px solid var(--borda);border-radius:6px;font-size:.85rem;background:#fff}
+.codigo{font-family:"JetBrains Mono",Consolas,ui-monospace,monospace;font-weight:700;font-size:.98rem;letter-spacing:.04em;background:rgba(34,211,238,.10);color:#a5f3fc;
+  padding:5px 10px;border-radius:9px;border:1px dashed rgba(34,211,238,.5);word-break:break-all}
+.desc-tag{background:var(--grad);color:#fff;font-size:.74rem;font-weight:800;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.loja-tag{background:rgba(255,255,255,.1);color:var(--txt);font-size:.68rem;font-weight:700;padding:2px 9px;border-radius:999px;margin-right:6px;letter-spacing:0;text-transform:none}
+.cat{font-size:.7rem;color:var(--sub);text-transform:uppercase;letter-spacing:.05em;margin-top:8px}
+.cupom p{margin:7px 0;font-size:.87rem;line-height:1.45}
+.meta{font-size:.77rem;color:var(--sub);line-height:1.5}
+.meta a{color:var(--ciano)}
+.btn-copiar{margin-top:9px}
+.btn-copiar.copiado{background:var(--ok);box-shadow:none}
+.badge-novo{background:var(--grad-quente);color:#fff;font-size:.64rem;font-weight:800;padding:2px 8px;border-radius:999px;margin-left:6px;vertical-align:middle;text-transform:uppercase;letter-spacing:.04em}
+
+/* ---------- Filtros ---------- */
+.filtros{padding:14px 16px;border-bottom:1px solid var(--borda);display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px 12px;min-width:0;background:rgba(0,0,0,.18)}
+.filtros label{min-width:0;font-size:.72rem;font-weight:700;color:var(--sub);display:flex;flex-direction:column;gap:5px;text-transform:uppercase;letter-spacing:.04em}
+.filtros select,.cupom-filtro select{width:100%;font:inherit;font-size:.85rem;text-transform:none;letter-spacing:0;padding:8px 30px 8px 11px;border:1px solid var(--borda-forte);border-radius:10px;
+  background:var(--bg-alt) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a1a1b5' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;
+  color:var(--txt);appearance:none;-webkit-appearance:none;transition:border-color .18s,box-shadow .18s;min-width:0}
+.cupom-filtro select{width:auto;padding-top:6px;padding-bottom:6px}
+.filtros select:focus,.cupom-filtro select:focus{outline:none;border-color:var(--roxo);box-shadow:0 0 0 3px rgba(139,92,246,.25)}
+.filtros .check,.cupom-filtro .check{flex-direction:row;align-items:center;gap:8px;align-self:end;padding-bottom:9px;text-transform:none;letter-spacing:0;font-size:.82rem;color:var(--txt);cursor:pointer}
+.cupom-filtro .check{display:flex;padding:0;font-weight:500;color:var(--sub)}
+input[type=checkbox]{accent-color:var(--roxo);width:16px;height:16px;margin:0}
 .filtros .acoes{display:flex;align-items:flex-end}
-.note{border:2px solid var(--borda);border-radius:10px;padding:10px 12px;margin-bottom:10px;cursor:pointer;transition:.15s;background:#fff}
-.note:hover{border-color:#9cc6ea}
-.note.sel{border-color:var(--dell);background:#eef5fc;box-shadow:0 0 0 2px rgba(6,114,203,.15)}
-.note h3{margin:0 0 4px;font-size:.95rem}
-.note .linha-tag{font-size:.7rem;color:var(--dell);font-weight:700;text-transform:uppercase}
-.note .resumo{font-size:.8rem;color:var(--sub);line-height:1.4}
-.note .preco{font-weight:700;color:var(--txt);margin-top:4px}
-.note .preco s{color:var(--sub);font-weight:400;font-size:.78rem;margin-left:6px}
-.vazio{color:var(--sub);text-align:center;padding:30px 14px;font-size:.92rem}
-#detalhes{padding:14px 16px;overflow-y:auto}
-.info-completa h3{margin:0 0 4px;font-size:1.1rem}
-.info-completa .preco-grande{font-size:1.5rem;font-weight:800;color:var(--dell);margin:8px 0 2px}
-.info-completa table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.84rem}
-.info-completa th{text-align:left;vertical-align:top;width:34%;padding:7px 8px;background:#f4f8fc;color:var(--dell-esc);border-bottom:1px solid var(--borda)}
-.info-completa td{padding:7px 8px;border-bottom:1px solid var(--borda)}
-.link-produto{display:block;text-align:center;text-decoration:none;margin-top:10px;padding:12px}
-footer{text-align:center;font-size:.8rem;color:var(--sub);padding:6px 22px 22px}
+.filtros .acoes .btn{width:100%}
+
+/* ---------- Regras da nota ---------- */
+details.regras{margin:12px 14px 2px;font-size:.8rem;border:1px solid var(--borda);border-radius:var(--raio-p);padding:9px 13px;background:rgba(255,255,255,.025);line-height:1.5}
+details.regras summary{cursor:pointer;font-weight:700;color:var(--dell-esc)}
+details.regras table{border-collapse:collapse;margin:6px 0 10px;width:100%}
+details.regras td,details.regras th{border:1px solid var(--borda);padding:4px 7px;text-align:left}
+details.regras th{background:rgba(255,255,255,.05)}
+.caixa-est{background:rgba(250,204,21,.10);border:1px solid rgba(250,204,21,.35);border-radius:10px;padding:7px 10px;color:#fef3c7}
+.marca-est{background:rgba(250,204,21,.22);color:#fde68a;padding:0 5px;border-radius:5px}
+
+/* ---------- Cards de notebook ---------- */
+.note{position:relative;border:1px solid var(--borda);border-radius:var(--raio);padding:14px 52px 14px 15px;margin-bottom:12px;cursor:pointer;
+  background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.02));transition:transform .18s,border-color .18s,box-shadow .18s,background .18s}
+.note:hover{transform:translateY(-2px);border-color:rgba(167,139,250,.45);box-shadow:0 14px 30px -16px rgba(139,92,246,.6)}
+.note:focus-visible{outline:2px solid var(--ciano);outline-offset:2px}
+.note.promo{border-color:rgba(251,146,60,.35)}
+.note.promo20{border-color:transparent;background:
+  linear-gradient(180deg,rgba(40,20,30,.96),rgba(26,16,26,.96)) padding-box,
+  var(--grad-quente) border-box;box-shadow:0 0 0 1px rgba(236,72,153,.15),0 12px 32px -14px rgba(236,72,153,.55)}
+.note.favorito{border-color:rgba(250,204,21,.55)}
+.note.sel,.note.promo20.sel{border-color:transparent!important;background:
+  linear-gradient(180deg,rgba(28,24,48,.97),rgba(18,20,36,.97)) padding-box,
+  var(--grad) border-box!important;box-shadow:0 0 0 1px rgba(139,92,246,.2),0 16px 36px -14px rgba(139,92,246,.7)}
+.lista.grade .note.aberto{grid-column:1/-1;cursor:default;transform:none}
+.note h3{margin:4px 0 6px;font-size:.95rem;font-weight:700;line-height:1.35;letter-spacing:-.01em}
+.note .linha-tag{font-size:.68rem;color:var(--dell-esc);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.note .resumo{font-size:.79rem;color:var(--sub);line-height:1.45}
+.note .preco{font-weight:800;font-size:1.12rem;color:var(--txt);margin-top:8px;letter-spacing:-.01em;display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+.note .preco s{color:var(--fraco);font-weight:500;font-size:.78rem}
+
+/* Botões redondos do card (estrela e +/−): ícones SVG centralizados por grid */
+.note .fav,.note .expandir{position:absolute;right:10px;width:34px;height:34px;padding:0;margin:0;border-radius:50%;border:1px solid var(--borda-forte);
+  background:rgba(255,255,255,.06);color:var(--txt);cursor:pointer;display:grid;place-items:center;line-height:0;transition:.18s}
+.note .fav svg,.note .expandir svg{display:block;width:17px;height:17px}
+.note .fav{top:10px;color:#fcd34d}
+.note .expandir{top:52px}
+.note .fav:hover,.note .expandir:hover{background:rgba(139,92,246,.22);border-color:rgba(167,139,250,.6);transform:scale(1.08)}
+.note.favorito .fav{background:rgba(250,204,21,.18);border-color:rgba(250,204,21,.6)}
+
+.badge-desc{display:inline-flex;align-items:center;font-size:.7rem;font-weight:800;padding:3px 9px;border-radius:999px;background:rgba(251,146,60,.16);color:#fdba74}
+.badge-desc.forte{background:var(--grad-quente);color:#fff;box-shadow:0 4px 14px -6px rgba(236,72,153,.8)}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin:7px 0}
+.tag{font-size:.67rem;font-weight:700;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.07);color:#d4d4e0;border:1px solid transparent}
+.tag.perf-U{background:rgba(34,197,94,.14);color:#86efac}
+.tag.perf-P{background:rgba(250,204,21,.14);color:#fde68a}
+.tag.perf-H{background:rgba(248,113,113,.15);color:#fca5a5}
+.tag.perf-HX{background:linear-gradient(135deg,#dc2626,#db2777);color:#fff}
+.tag.perf-ARM{background:rgba(56,189,248,.15);color:#7dd3fc}
+.tag.perf-NI{background:rgba(255,255,255,.06);color:var(--sub)}
+.tag.velho{background:rgba(251,146,60,.14);color:#fdba74}
+.tag.estimado{background:rgba(250,204,21,.12);color:#fde68a;border-color:rgba(250,204,21,.35)}
+
+.cb{display:flex;align-items:center;gap:8px;margin-top:9px;font-size:.73rem;color:var(--sub)}
+.cb .barra{flex:1;height:7px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden}
+.cb .barra i{display:block;height:100%;background:var(--grad);border-radius:999px;box-shadow:0 0 12px rgba(34,211,238,.5)}
+.cb b{color:var(--txt);font-size:.85rem}
+.expandido{margin-top:12px;border-top:1px dashed var(--borda-forte);padding-top:12px}
+
+/* ---------- Detalhes ---------- */
+#detalhes{padding:16px 18px;overflow-y:auto}
+.info-completa h3{margin:2px 0 6px;font-size:1.12rem;font-weight:800;letter-spacing:-.01em;line-height:1.3}
+.info-completa .linha-tag{color:var(--dell-esc);font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em}
+.info-completa .preco-grande{font-size:1.65rem;font-weight:800;margin:10px 0 4px;letter-spacing:-.02em;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.info-completa .preco-grande .valor{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.info-completa table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.83rem;word-break:break-word}
+.info-completa th{text-align:left;vertical-align:top;width:34%;padding:8px 9px;background:rgba(255,255,255,.035);color:var(--dell-esc);font-weight:600;border-bottom:1px solid var(--borda)}
+.info-completa td{padding:8px 9px;border-bottom:1px solid var(--borda)}
+.info-completa table.pontos th{width:auto;white-space:nowrap}
+.info-completa table.pontos td{word-break:normal;overflow-wrap:anywhere}
+.info-completa table.pontos td:first-child{white-space:nowrap;overflow-wrap:normal}
+.info-completa tr.linha-est td{background:rgba(250,204,21,.08)}
+.nota-box{border:1px solid var(--borda);border-radius:var(--raio-p);padding:11px 13px;margin:12px 0;background:rgba(0,0,0,.2)}
+.nota-box h4{margin:0 0 6px;font-size:.92rem;font-weight:800}
+.nota-est{color:#fde68a!important}
+.falta{color:#fdba74;font-weight:600}
+.link-produto{display:flex;text-decoration:none;margin-top:12px;padding:13px;font-size:.95rem}
+
+footer{text-align:center;font-size:.76rem;line-height:1.6;color:var(--fraco);padding:8px 22px 28px;max-width:1100px;margin:0 auto}
+footer strong{color:var(--sub)}
+
+@media(max-width:500px){
+  main{padding:12px 10px;gap:12px}
+  header{padding:10px 12px;gap:10px}
+  header h1{font-size:1.02rem}
+  .logo{width:36px;height:36px;border-radius:11px}
+  .logo svg{width:18px;height:18px}
+  .btn-refresh{width:44px;height:44px}
+  .filtros{grid-template-columns:repeat(2,minmax(0,1fr));padding:12px}
+  .filtros .check{grid-column:1/-1;align-self:auto;padding-bottom:0}
+  .filtros .acoes{grid-column:1/-1}
+  header h1{white-space:normal;line-height:1.2}
+  header .info{font-size:.72rem}
+  .info-completa th{width:40%}
+  #aviso{margin:12px 10px 0}
+}
 </style>
 </head>
 <body>
 <header>
-  <div>
-    <h1>🔎 Buscador de Cupons e Notebooks Dell</h1>
-    <div class="info">Última atualização dos dados: <strong id="ultimaAtualizacao">—</strong></div>
+  <div class="marca">
+    <div class="logo" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div>
+    <div class="titulos">
+      <h1>Buscador de <span class="grad">Cupons &amp; Notebooks</span></h1>
+      <div class="info">Atualizado em <strong id="ultimaAtualizacao">—</strong></div>
+    </div>
   </div>
-  <button id="btnAtualizar" class="btn btn-branco">⟳ Atualizar</button>
+  <button id="btnAtualizar" class="btn-refresh" type="button" aria-label="Atualizar dados" title="Atualizar dados">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+  </button>
 </header>
 <div id="aviso"></div>
 <main id="main" class="cupons-fechado">
   <section class="coluna" id="colCupons">
     <h2><span>🏷️ Cupons <span class="contador" id="contCupons"></span></span> <button class="toggle" id="btnCupons" aria-expanded="false">Expandir ▸</button></h2>
     <div class="cupom-filtro">Loja: <select id="fLojaCupom"></select>
-      <label style="display:flex;align-items:center;gap:4px;font-weight:500"><input type="checkbox" id="fCupomVelhos"> mostrar expirados/duvidosos</label></div>
+      <label class="check"><input type="checkbox" id="fCupomVelhos"> mostrar expirados/duvidosos</label></div>
     <div class="lista" id="listaCupons"></div>
   </section>
   <section class="coluna">
-    <h2>💻 Notebooks Dell <span class="contador" id="contNotes"></span></h2>
+    <h2><span>💻 Notebooks Dell <span class="contador" id="contNotes"></span></span></h2>
     <div class="filtros" id="filtros">
       <label>Loja<select id="fLoja"></select></label>
       <label>Linha / série<select id="fLinha"></select></label>
@@ -224,7 +341,7 @@ function renderCupons(){
       ${(c.fontesExtras || []).length ? `<div class="meta">📎 Termos vistos em: ${c.fontesExtras.map(f => `<a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.nome)}</a>`).join(' · ')}</div>` : ''}
       ${c.codigo
         ? `<button class="btn btn-azul btn-copiar" data-i="${i}">📋 Copiar</button>`
-        : `<a class="btn btn-contorno btn-copiar" style="display:inline-block;text-decoration:none" href="${esc(c.fonteUrl)}" target="_blank" rel="noopener">Resgatar no site da Dell</a>`}
+        : `<a class="btn btn-contorno btn-copiar" style="text-decoration:none" href="${esc(c.fonteUrl)}" target="_blank" rel="noopener">Resgatar no site da Dell</a>`}
     </div>`).join('') || '<div class="vazio">Nenhum cupom cadastrado.</div>';
 }
 
@@ -336,7 +453,7 @@ function htmlMedias(){
 function htmlRegras(){
   const tab = (cab, linhas) => `<table><tr>${cab.map(c => `<th>${c}</th>`).join('')}</tr>${linhas.map(l => `<tr>${l.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</table>`;
   return `<p>Cada notebook soma os pontos dos 5 itens abaixo (máx. ${NOTA.maxBruto}) e a soma é convertida para <b>0–100</b> (pontos ÷ ${NOTA.maxBruto} × 100) = <b>pontuação de hardware</b>. O desconto <b>não</b> entra na nota (o preço já entra na divisão abaixo); o selo de desconto e os filtros de promoção são só informativos. Depois: <b>pontos por R$ 1.000 = pontuação ÷ (preço ÷ 1000)</b>. O notebook com mais pontos por R$ 1.000 da lista inteira vale <b>100%</b> e os outros são proporcionais. Notebooks sem preço ficam sem %.</p>
-  <p style="background:#fff7cc;border:1px solid #f0d64a;border-radius:6px;padding:6px 8px"><b>Dado que a loja não informou</b> (ex.: modelo da GPU, taxa de atualização, sufixo da CPU): em vez de 0, a parte recebe a <b>média de pontos dessa parte entre todos os notebooks que têm o dado</b> (recalculada a cada atualização, arredondada a 1 casa). Essas partes aparecem em <span style="background:#fff3a3;padding:0 4px;border-radius:4px">amarelo</span> ("estimado").</p>
+  <p class="caixa-est"><b>Dado que a loja não informou</b> (ex.: modelo da GPU, taxa de atualização, sufixo da CPU): em vez de 0, a parte recebe a <b>média de pontos dessa parte entre todos os notebooks que têm o dado</b> (recalculada a cada atualização, arredondada a 1 casa). Essas partes aparecem em <span class="marca-est">amarelo</span> ("estimado").</p>
   <div id="tabMedias">${htmlMedias()}</div>
   <b>1. Processador (máx. ${NOTA.max.proc})</b> = base da família + geração + sufixo (perfil). O perfil pesa bastante: HX soma 10 e H/HS 8, contra 0 do U. Como a geração vale no máximo 3, um chip U nunca passa um H/HX da mesma família.
   ${tab(['Família','Base'], Object.entries(NOTA.procBase).map(([k, v]) => [k, v]))}
@@ -408,6 +525,11 @@ function badgeDesc(n){
   if (n.descontoPct == null || n.descontoPct <= 0) return '';
   return `<span class="badge-desc ${n.descontoPct >= 20 ? 'forte' : ''}">${n.descontoPct >= 20 ? '🔥 ' : ''}-${fmtPct(n.descontoPct)}</span>`;
 }
+const ICONE = {
+  estrela: on => `<svg viewBox="0 0 24 24" fill="${on ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path transform="translate(0 .42)" d="M12 2.8l2.85 5.78 6.38.93-4.62 4.5 1.09 6.35L12 17.36l-5.7 3 1.09-6.35-4.62-4.5 6.38-.93z"/></svg>`,
+  mais: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>`,
+  menos: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg>`,
+};
 const CHAVE_FAVS = 'buscadorDell_favoritos';
 let FAVS = new Set((() => { try { return JSON.parse(localStorage.getItem(CHAVE_FAVS)) || []; } catch(e){ return []; } })());
 const salvarFavs = () => { try { localStorage.setItem(CHAVE_FAVS, JSON.stringify([...FAVS])); } catch(e){} };
@@ -426,8 +548,8 @@ function renderNotes(){
     const d = n.descontoPct || 0;
     return `
     <div class="note ${d >= 20 ? 'promo20' : d > 0 ? 'promo' : ''} ${n.id === selecionadoId ? 'sel' : ''} ${fav ? 'favorito' : ''} ${exp ? 'aberto' : ''}" data-id="${esc(n.id)}" tabindex="0">
-      <button type="button" class="fav" aria-pressed="${fav}" aria-label="${fav ? 'Remover dos favoritos' : 'Favoritar'}" title="${fav ? 'Remover dos favoritos' : 'Favoritar'}">${fav ? '★' : '☆'}</button>
-      <button type="button" class="expandir" aria-expanded="${exp}" aria-label="${exp ? 'Recolher informações' : 'Ver todas as informações'}" title="${exp ? 'Recolher' : 'Ver tudo aqui'}">${exp ? '−' : '+'}</button>
+      <button type="button" class="fav" aria-pressed="${fav}" aria-label="${fav ? 'Remover dos favoritos' : 'Favoritar'}" title="${fav ? 'Remover dos favoritos' : 'Favoritar'}">${ICONE.estrela(fav)}</button>
+      <button type="button" class="expandir" aria-expanded="${exp}" aria-label="${exp ? 'Recolher informações' : 'Ver todas as informações'}" title="${exp ? 'Recolher' : 'Ver tudo aqui'}">${exp ? ICONE.menos : ICONE.mais}</button>
       ${fav && !noFiltro.has(n.id) ? '<div class="tags"><span class="tag">★ favorito fora dos filtros atuais</span></div>' : ''}
       <div class="linha-tag"><span class="loja-tag">${esc(n.loja || 'Dell.com')}</span>${esc(n.linha)}${novos.has('n:' + n.id) ? '<span class="badge-novo">novo</span>' : ''}</div>
       <h3>${esc(n.nome)}</h3>
@@ -479,10 +601,10 @@ function htmlInfo(n){
   const r = NOTAS.get(n.id) || pontuar(n);
   const linhas = Object.entries(n.specs || {}).map(([k, v]) => `<tr><th>${esc(k)}</th><td>${esc(ni(v))}</td></tr>`).join('');
   return `<div class="info-completa">
-    <div class="linha-tag" style="color:var(--dell);font-weight:700;font-size:.75rem;text-transform:uppercase">${esc(n.linha)}</div>
+    <div class="linha-tag">${esc(n.linha)}</div>
     <h3>${esc(n.nome)}</h3>
     <div class="meta">Loja: <b>${esc(n.loja || 'Dell.com')}</b>${n.vendedor ? ' · Vendedor: ' + esc(n.vendedor) : ''} · Modelo: ${esc(ni(n.modelo))} · Código: ${esc(n.id)}</div>
-    <div class="preco-grande">${esc(n.preco || 'Preço não informado')} ${badgeDesc(n)}</div>
+    <div class="preco-grande"><span class="valor">${esc(n.preco || 'Preço não informado')}</span> ${badgeDesc(n)}</div>
     ${n.precoDe ? `<div class="meta">De <s>${esc(n.precoDe)}</s> → desconto de ${n.descontoPct != null ? fmtPct(n.descontoPct) : '?'} (De − Por) ÷ De · só informativo, não entra na nota</div>` : '<div class="meta">A loja não mostra preço "De" → desconto não calculado.</div>'}
     ${n.precoPrazo ? `<div class="meta">A prazo: ${esc(n.precoPrazo)}</div>` : ''}
     ${n.precoAntigo ? `<div class="meta falta">⚠ ${esc((n.specs || {})['Fonte do preço'] || 'Preço de coleta anterior; pode ter mudado.')}</div>` : ''}
@@ -526,7 +648,10 @@ function valido(d){ return d && Array.isArray(d.cupons) && Array.isArray(d.noteb
 
 $('btnAtualizar').addEventListener('click', async () => {
   // Nunca abre abas: tenta ler dados-dell.json em silêncio; se não der, só mostra um aviso curto.
-  const b = $('btnAtualizar'); b.disabled = true; b.textContent = '⟳ Atualizando...';
+  const b = $('btnAtualizar');
+  if (b.classList.contains('girando')) return;
+  b.classList.add('girando'); b.setAttribute('aria-busy', 'true'); b.setAttribute('aria-label', 'Atualizando…');
+  const inicio = Date.now();
   try {
     const r = await fetch(ARQUIVO_JSON + '?ts=' + Date.now(), {cache: 'no-store'});
     if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -538,7 +663,17 @@ $('btnAtualizar').addEventListener('click', async () => {
     aviso(`✔ Dados recarregados (de ${esc(dados.ultimaAtualizacaoTexto || dados.ultimaAtualizacao || '?')}). ${qtd ? qtd + ' item(ns) novo(s) marcado(s) com "novo".' : 'Nenhum item novo.'}`, 'ok');
   } catch (err) {
     aviso(`Para buscar cupons e notebooks novos, peça "atualiza" para a Duvida no chat — ela gera o arquivo novo. Dados de: ${esc(dados.ultimaAtualizacaoTexto || dados.ultimaAtualizacao || 'não informado')}.`, 'info');
-  } finally { b.disabled = false; b.textContent = '⟳ Atualizar'; }
+  } finally {
+    // gira pelo menos ~1 volta e para no fim de uma volta completa (sem "pulo" no ícone)
+    const parar = () => { b.classList.remove('girando'); b.removeAttribute('aria-busy'); b.setAttribute('aria-label', 'Atualizar dados'); };
+    const icone = b.querySelector('svg');
+    setTimeout(() => {
+      const anim = icone.getAnimations ? icone.getAnimations()[0] : null;
+      if (!anim) return parar();
+      const dur = 800, t = (anim.currentTime || 0) % dur;
+      setTimeout(parar, dur - t);
+    }, Math.max(0, 800 - (Date.now() - inicio)));
+  }
 });
 
 /* ---------- Início ---------- */
