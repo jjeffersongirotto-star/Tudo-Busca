@@ -159,6 +159,8 @@ if __name__ == '__main__':  # teste: python -m coleta.orquestrador ../dados/dado
             print('NOVO', {k: n.get(k) for k in ('id', 'loja', 'nome', 'preco', 'precoDe', 'cpuModelo', 'cpuPerfil', 'gpuModelo', 'ramGB', 'armazGB', 'telaRes', 'telaHz', 'linha', 'url')})
     imgs = {n['id']: n['imagem'] for n in novo['notebooks'] if n.get('imagem')}
     print('IMAGENS', len(imgs), 'de', len(novo['notebooks']))
-    print('IMAGENS_JSON ' + json.dumps(imgs, ensure_ascii=False))
+    import os
+    if os.environ.get('SAIDA_IMAGENS'):
+        json.dump(imgs, open(os.environ['SAIDA_IMAGENS'], 'w', encoding='utf-8'), ensure_ascii=False, indent=0)
     if len(sys.argv) > 2:
         json.dump(novo, open(sys.argv[2], 'w', encoding='utf-8'), ensure_ascii=False)

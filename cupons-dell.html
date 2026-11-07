@@ -153,6 +153,17 @@ details.regras th{background:rgba(255,255,255,.05)}
   linear-gradient(180deg,rgba(28,24,48,.97),rgba(18,20,36,.97)) padding-box,
   var(--grad) border-box!important;box-shadow:0 0 0 1px rgba(139,92,246,.2),0 16px 36px -14px rgba(139,92,246,.7)}
 .lista.grade .note.aberto{grid-column:1/-1;cursor:default;transform:none}
+.note-topo{display:grid;grid-template-columns:76px minmax(0,1fr);gap:12px;align-items:start}
+.note-titulo{min-width:0}
+.foto{position:relative;flex:0 0 auto;border-radius:14px;background:#fff;display:grid;place-items:center;overflow:hidden;border:1px solid var(--borda)}
+.foto.mini{width:76px;height:76px}
+.foto.grande{width:100%;height:230px;margin:0 0 14px;border-radius:var(--raio-p)}
+.foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:6px;background:#fff}
+.foto.grande img{padding:14px}
+.foto .ph{width:42%;height:42%;color:#b8b8c8}
+.foto.sem{background:rgba(255,255,255,.05)}
+.foto.sem .ph{color:var(--fraco)}
+.expandido .foto.grande{display:none}
 .note h3{margin:4px 0 6px;font-size:.95rem;font-weight:700;line-height:1.35;letter-spacing:-.01em}
 .note .linha-tag{font-size:.68rem;color:var(--dell-esc);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
 .note .resumo{font-size:.79rem;color:var(--sub);line-height:1.45}
@@ -217,6 +228,9 @@ footer strong{color:var(--sub)}
   .logo svg{width:18px;height:18px}
   .btn-refresh{width:44px;height:44px}
   .filtros{grid-template-columns:repeat(2,minmax(0,1fr));padding:12px}
+  .note-topo{grid-template-columns:64px minmax(0,1fr);gap:10px}
+  .foto.mini{width:64px;height:64px}
+  .foto.grande{height:190px}
   .filtros .check{grid-column:1/-1;align-self:auto;padding-bottom:0}
   .filtros .acoes{grid-column:1/-1}
   header h1{white-space:normal;line-height:1.2}
@@ -551,8 +565,13 @@ function renderNotes(){
       <button type="button" class="fav" aria-pressed="${fav}" aria-label="${fav ? 'Remover dos favoritos' : 'Favoritar'}" title="${fav ? 'Remover dos favoritos' : 'Favoritar'}">${ICONE.estrela(fav)}</button>
       <button type="button" class="expandir" aria-expanded="${exp}" aria-label="${exp ? 'Recolher informações' : 'Ver todas as informações'}" title="${exp ? 'Recolher' : 'Ver tudo aqui'}">${exp ? ICONE.menos : ICONE.mais}</button>
       ${fav && !noFiltro.has(n.id) ? '<div class="tags"><span class="tag">★ favorito fora dos filtros atuais</span></div>' : ''}
-      <div class="linha-tag"><span class="loja-tag">${esc(n.loja || 'Dell.com')}</span>${esc(n.linha)}${novos.has('n:' + n.id) ? '<span class="badge-novo">novo</span>' : ''}</div>
-      <h3>${esc(n.nome)}</h3>
+      <div class="note-topo">
+        ${htmlFoto(n, 'mini')}
+        <div class="note-titulo">
+          <div class="linha-tag"><span class="loja-tag">${esc(n.loja || 'Dell.com')}</span>${esc(n.linha)}${novos.has('n:' + n.id) ? '<span class="badge-novo">novo</span>' : ''}</div>
+          <h3>${esc(n.nome)}</h3>
+        </div>
+      </div>
       <div class="tags">
         <span class="tag perf-${CLASSE_PERFIL[n.cpuPerfil] || 'NI'}" title="Perfil derivado do sufixo do processador">⚙️ ${esc(n.cpuPerfil || 'Não informado')}</span>
         ${n.gpuDedicada ? `<span class="tag">🎮 ${esc(n.gpuModelo || 'GPU dedicada')}</span>` : ''}
@@ -597,10 +616,18 @@ $('listaNotes').addEventListener('click', e => {
 });
 $('listaNotes').addEventListener('keydown', e => { if (e.target.closest('button, a')) return; const el = e.target.closest('.note'); if (el && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); selecionar(el.dataset.id); } });
 
+/* Foto do produto (vinda da loja). Sem foto, ou se a loja não deixar carregar, aparece um ícone de notebook. */
+const ICONE_NOTE = '<svg class="ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="11" rx="1.5"/><path d="M2 19h20"/></svg>';
+function fotoFalhou(img){ const f = img.parentNode; f.classList.add('sem'); img.remove(); }
+function htmlFoto(n, tam){
+  const u = /^https:\/\//.test(n.imagem || '') ? n.imagem : '';
+  return `<div class="foto ${tam} ${u ? '' : 'sem'}">${ICONE_NOTE}${u ? `<img src="${esc(u)}" alt="${esc(n.nome)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="fotoFalhou(this)">` : ''}</div>`;
+}
 function htmlInfo(n){
   const r = NOTAS.get(n.id) || pontuar(n);
   const linhas = Object.entries(n.specs || {}).map(([k, v]) => `<tr><th>${esc(k)}</th><td>${esc(ni(v))}</td></tr>`).join('');
   return `<div class="info-completa">
+    ${htmlFoto(n, 'grande')}
     <div class="linha-tag">${esc(n.linha)}</div>
     <h3>${esc(n.nome)}</h3>
     <div class="meta">Loja: <b>${esc(n.loja || 'Dell.com')}</b>${n.vendedor ? ' · Vendedor: ' + esc(n.vendedor) : ''} · Modelo: ${esc(ni(n.modelo))} · Código: ${esc(n.id)}</div>
