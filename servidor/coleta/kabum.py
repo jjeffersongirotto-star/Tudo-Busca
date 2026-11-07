@@ -63,8 +63,7 @@ async def coletar(http, anteriores):
             n = _converter(p)
             if n and not n.get('removido'):
                 achados[n['id']] = n
-    if falhas == len(BUSCAS):
-        return None, 'busca bloqueada ou mudou'
+    busca_ok = falhas < len(BUSCAS)  # se a busca for bloqueada, ainda conferimos os produtos já conhecidos
     # Preço da página do produto (campanha) para tudo que vamos mostrar
     ids = set(achados) | {a['id'] for a in anteriores if a.get('loja') == 'KaBuM!'}
     out = []
@@ -84,4 +83,8 @@ async def coletar(http, anteriores):
 
     res = await asyncio.gather(*(um(i) for i in ids))
     out = [r for r in res if r]
+    if not out:
+        return None, 'loja recusou os pedidos (busca e páginas de produto)'
+    if not busca_ok:
+        return out, f'busca recusada; {len(out)} produtos conferidos pela página'
     return out, f'{len(achados)} na busca' + (f', {falhas} busca(s) falharam' if falhas else '')
