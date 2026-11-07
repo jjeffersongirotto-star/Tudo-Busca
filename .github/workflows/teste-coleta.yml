@@ -1,0 +1,19 @@
+name: Testar coleta de preços
+on:
+  workflow_dispatch:
+  push:
+    branches: ['ccr-*']
+    paths: ['servidor/**', '.github/workflows/teste-coleta.yml']
+jobs:
+  coleta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r servidor/requirements.txt
+      - name: Rodar coleta
+        working-directory: servidor
+        run: python -m coleta.orquestrador ../dados/dados.json /tmp/coleta.json
