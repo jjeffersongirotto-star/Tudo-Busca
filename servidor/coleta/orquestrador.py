@@ -103,7 +103,7 @@ async def executar(dados, status=None):
                         n[k] = ''
                     elif k in ('precoDeNum', 'descontoPct'):
                         n[k] = None
-                for k in ('url', 'vendedor', 'loja'):
+                for k in ('url', 'vendedor', 'loja', 'imagem'):
                     if it.get(k):
                         n[k] = it[k]
                 n.pop('precoAntigo', None)
@@ -157,5 +157,8 @@ if __name__ == '__main__':  # teste: python -m coleta.orquestrador ../dados/dado
     for n in novo['notebooks']:
         if n['id'] in r['idsNovos'][:12]:
             print('NOVO', {k: n.get(k) for k in ('id', 'loja', 'nome', 'preco', 'precoDe', 'cpuModelo', 'cpuPerfil', 'gpuModelo', 'ramGB', 'armazGB', 'telaRes', 'telaHz', 'linha', 'url')})
+    imgs = {n['id']: n['imagem'] for n in novo['notebooks'] if n.get('imagem')}
+    print('IMAGENS', len(imgs), 'de', len(novo['notebooks']))
+    print('IMAGENS_JSON ' + json.dumps(imgs, ensure_ascii=False))
     if len(sys.argv) > 2:
         json.dump(novo, open(sys.argv[2], 'w', encoding='utf-8'), ensure_ascii=False)

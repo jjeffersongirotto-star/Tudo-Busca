@@ -4,7 +4,7 @@ import logging
 import re
 from urllib.parse import quote
 
-from .util import aplicar_preco, next_data, num, percorrer
+from .util import aplicar_preco, imagem_ok, next_data, num, percorrer
 
 log = logging.getLogger('coleta')
 
@@ -61,6 +61,7 @@ def _converter(h, site):
          'modelo': '', 'url': url, 'specs': {'Anúncio (título)': nome, **({'Loja vendedora': loja_v} if loja_v else {}),
                                             'Comparadores': 'Zoom e Buscapé (mesma oferta nos dois sites)'}}
     aplicar_preco(n, _preco(h))  # comparador não mostra preço "De"
+    n['imagem'] = imagem_ok(h.get('image') or h.get('thumbnail'))
     return n
 
 

@@ -4,7 +4,7 @@ import logging
 import re
 import time
 
-from .util import aplicar_preco, json_ld, num
+from .util import aplicar_preco, json_ld, num, og_image
 
 log = logging.getLogger('coleta')
 RS = r'R\$\s*([\d\.]+,\d{2})'
@@ -51,7 +51,7 @@ async def coletar(http, anteriores):
                 log.warning('Dell %s: preço não encontrado; trecho: %r', a['id'], re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', ' ', html[max(0, i - 300):i + 300]))[:400])
             return None
         ok[0] += 1
-        n = {'id': a['id']}
+        n = {'id': a['id'], 'imagem': og_image(html)}
         aplicar_preco(n, por, de)
         return n
 

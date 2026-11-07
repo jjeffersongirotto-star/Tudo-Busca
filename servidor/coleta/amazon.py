@@ -3,7 +3,7 @@ import asyncio
 import logging
 import re
 
-from .util import aplicar_preco, num
+from .util import aplicar_preco, imagem_ok, num, og_image
 
 log = logging.getLogger('coleta')
 
@@ -34,7 +34,8 @@ async def coletar(http, anteriores):
         if not por:  # oferta principal sem preço: mantém o anterior (outros vendedores podem ter)
             return None
         de = _valor(html, 'basisPrice')
-        n = {'id': a['id']}
+        m = re.search(r'"hiRes":"(https://[^"]+)"', html) or re.search(r'id="landingImage"[^>]+src="(https://[^"]+)"', html)
+        n = {'id': a['id'], 'imagem': imagem_ok(m.group(1)) if m else og_image(html)}
         aplicar_preco(n, por, de)
         return n
 

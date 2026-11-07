@@ -52,6 +52,23 @@ def next_data(html):
         return None
 
 
+def og_image(html):
+    """URL da imagem principal da página (meta og:image), ou ''."""
+    m = re.search(r'<meta[^>]+property=["\']og:image["\'][^>]*content=["\']([^"\']+)', html or '') or \
+        re.search(r'<meta[^>]+content=["\']([^"\']+)["\'][^>]*property=["\']og:image', html or '')
+    return imagem_ok(m.group(1)) if m else ''
+
+
+def imagem_ok(u):
+    """Aceita só URL https de imagem; '' caso contrário."""
+    if not isinstance(u, str):
+        return ''
+    u = u.strip().replace('&amp;', '&')
+    if u.startswith('//'):
+        u = 'https:' + u
+    return u if u.startswith('https://') and len(u) < 600 else ''
+
+
 def json_ld(html):
     """Lista de objetos JSON-LD da página."""
     out = []
