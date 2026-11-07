@@ -38,8 +38,8 @@ def _foto(html):
                 r'https://i\.dell\.com/is/image/DellContent/[^"\'\s\\<>]+'):
         m = re.search(pad, html)
         if m:
-            u = m.group(0).replace('&amp;', '&')
-            return u if '?' in u else u + '?fmt=png-alpha&wid=600'
+            u = m.group(0).replace('&amp;', '&').split('?')[0]
+            return u + '?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90'  # versão leve (600 px), boa para celular
     return ''
 
 
@@ -62,7 +62,7 @@ async def coletar(http, anteriores):
                 log.warning('Dell %s: preço não encontrado; trecho: %r', a['id'], re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', ' ', html[max(0, i - 300):i + 300]))[:400])
             return None
         ok[0] += 1
-        n = {'id': a['id'], 'imagem': og_image(html) or _foto(html)}
+        n = {'id': a['id'], 'imagem': _foto(html) or og_image(html)}
         aplicar_preco(n, por, de)
         return n
 
