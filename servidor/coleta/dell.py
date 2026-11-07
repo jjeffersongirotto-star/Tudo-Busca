@@ -2,6 +2,7 @@
 import asyncio
 import logging
 import re
+import time
 
 from .util import aplicar_preco, json_ld, num
 
@@ -56,8 +57,9 @@ async def coletar(http, anteriores):
 
     res = list(await asyncio.gather(*(um(a) for a in skus)))
     # segunda tentativa, uma página por vez, para as que a Dell recusou por excesso de pedidos
+    limite = time.time() + 35  # no máximo 35 s a mais, para a página não ficar esperando
     for i, a in enumerate(skus):
-        if res[i] is None:
+        if res[i] is None and time.time() < limite:
             await asyncio.sleep(2)
             res[i] = await um(a)
     out = [r for r in res if r]

@@ -1,0 +1,14 @@
+# Configuração do servidor no Render (plano gratuito).
+services:
+  - type: web
+    name: tudo-busca
+    runtime: python
+    plan: free
+    region: oregon
+    branch: main
+    buildCommand: pip install -r servidor/requirements.txt
+    startCommand: cd servidor && uvicorn app:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /healthz
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
