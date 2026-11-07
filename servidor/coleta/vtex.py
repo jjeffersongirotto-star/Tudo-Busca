@@ -3,7 +3,7 @@ import logging
 import re
 from urllib.parse import quote
 
-from .util import aplicar_preco, num
+from .util import aplicar_preco, imagem_ok, num
 
 log = logging.getLogger('coleta')
 
@@ -41,7 +41,8 @@ def _converter(p, loja, host):
     if link.startswith('/'):
         link = 'https://' + host + link
     n = {'id': f"vtex-{loja.lower()}-{p.get('productId')}", 'loja': loja, 'vendedor': s.get('sellerName', ''), 'nome': nome,
-         'modelo': p.get('productReference', ''), 'url': link, 'specs': specs}
+         'modelo': p.get('productReference', ''), 'url': link, 'specs': specs,
+         'imagem': imagem_ok(((item.get('images') or [{}])[0]).get('imageUrl'))}
     aplicar_preco(n, num(o.get('Price')), num(o.get('ListPrice')))
     return n
 

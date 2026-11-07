@@ -4,6 +4,8 @@ on:
   push:
     branches: ['ccr-*']
     paths: ['servidor/**', '.github/workflows/teste-coleta.yml']
+permissions:
+  contents: read
 jobs:
   coleta:
     runs-on: ubuntu-latest

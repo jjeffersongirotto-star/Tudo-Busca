@@ -20,6 +20,9 @@ Página com cupons de desconto e notebooks Dell de várias lojas (Dell.com, KaBu
 - Coletas seguidas têm intervalo mínimo de 5 minutos (para não incomodar as lojas).
 - Cupons com validade vencida deixam de aparecer. Os cupons em si ainda **não** são recoletados automaticamente.
 
+## Pendente
+- KaBuM! e Amazon pelo GitHub Actions: falta a autorização (token). Passo a passo em [`docs/autorizacao-github.md`](docs/autorizacao-github.md).
+
 ## Limitações
 - Plano gratuito do Render: o servidor "dorme" após 15 min sem uso; o primeiro toque na seta pode levar ~1 minuto para acordá-lo.
 - Ao reiniciar, o servidor volta aos dados iniciais; a página guarda no aparelho a última coleta vista.

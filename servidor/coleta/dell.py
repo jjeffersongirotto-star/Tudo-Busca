@@ -4,7 +4,7 @@ import logging
 import re
 import time
 
-from .util import aplicar_preco, json_ld, num
+from .util import aplicar_preco, json_ld, num, og_image
 
 log = logging.getLogger('coleta')
 RS = r'R\$\s*([\d\.]+,\d{2})'
@@ -32,6 +32,17 @@ def _preco(html, sku):
     return None, None
 
 
+def _foto(html):
+    """Primeira foto de produto hospedada em i.dell.com."""
+    for pad in (r'https://i\.dell\.com/is/image/DellContent/content/dam/ss2/product-images/[^"\'\s\\<>]+',
+                r'https://i\.dell\.com/is/image/DellContent/[^"\'\s\\<>]+'):
+        m = re.search(pad, html)
+        if m:
+            u = m.group(0).replace('&amp;', '&').split('?')[0]
+            return u + '?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90'  # versão leve (600 px), boa para celular
+    return ''
+
+
 async def coletar(http, anteriores):
     skus = [a for a in anteriores if a.get('loja', 'Dell.com') == 'Dell.com' and a.get('url')]
     if not skus:
@@ -51,7 +62,7 @@ async def coletar(http, anteriores):
                 log.warning('Dell %s: preço não encontrado; trecho: %r', a['id'], re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', ' ', html[max(0, i - 300):i + 300]))[:400])
             return None
         ok[0] += 1
-        n = {'id': a['id']}
+        n = {'id': a['id'], 'imagem': _foto(html) or og_image(html)}
         aplicar_preco(n, por, de)
         return n
 

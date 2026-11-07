@@ -3,7 +3,7 @@ import asyncio
 import logging
 import re
 
-from .util import aplicar_preco, next_data, num, percorrer
+from .util import aplicar_preco, imagem_ok, next_data, num, og_image, percorrer
 
 log = logging.getLogger('coleta')
 
@@ -44,6 +44,13 @@ def _converter(p):
     n = {'id': 'kabum-' + code, 'loja': 'KaBuM!', 'nome': nome, 'url': f'https://www.kabum.com.br/produto/{code}',
          'vendedor': vend, 'modelo': '', 'specs': {'Anúncio (título)': nome, **({'Vendedor': vend} if vend else {})}}
     aplicar_preco(n, por, de, prazo, sufixo=' à vista')
+    for k in ('image', 'thumbnail', 'imageUrl', 'images', 'photos'):
+        v = p.get(k)
+        v = v[0] if isinstance(v, list) and v else v
+        v = (v.get('url') or v.get('src') or v.get('g') or v.get('m')) if isinstance(v, dict) else v
+        if imagem_ok(v):
+            n['imagem'] = imagem_ok(v)
+            break
     return n
 
 
@@ -76,6 +83,7 @@ async def coletar(http, anteriores):
         if prods:
             n = _converter(prods[0])
             if n:
+                n['imagem'] = og_image(html) or n.get('imagem', '')
                 return n
         if html and re.search(r'produto\s+indispon[ií]vel|esgotado', html, re.I) and not prods:
             return {'id': i, 'removido': True}
