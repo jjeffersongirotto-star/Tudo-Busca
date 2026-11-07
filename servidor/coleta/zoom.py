@@ -36,17 +36,22 @@ def _hits(nd):
 
 def _converter(h, site):
     nome = html.unescape(h.get('name') or h.get('title') or '').strip()
-    if not re.search(r'notebook|laptop', nome, re.I) or not re.search(r'dell|alienware', nome, re.I) or RUIM.search(nome):
+    if not re.match(r'\s*(dell\s+)?(notebook|laptop)', nome, re.I) or not re.search(r'dell|alienware', nome, re.I) or RUIM.search(nome):
         return None
-    oid = h.get('objectId') or h.get('objectID')
-    loja_v = ''
-    for k in ('merchantName', 'storeName', 'sellerName', 'merchant', 'store', 'seller'):
-        v = h.get(k)
-        if isinstance(v, dict):
-            v = v.get('name')
-        if isinstance(v, str) and v:
-            loja_v = v
-            break
+    # id estável = id da oferta (produto agrupado usa a melhor oferta), igual às coletas anteriores
+    best = h.get('bestOffer') if isinstance(h.get('bestOffer'), dict) else {}
+    oid = str(best.get('id') or re.sub(r'\D', '', str(h.get('objectId') or h.get('objectID') or '')))
+    if not oid:
+        return None
+    loja_v = best.get('merchantName') or ''
+    if not loja_v:
+        for k in ('merchantName', 'storeName', 'merchants', 'merchant', 'store'):
+            v = h.get(k)
+            v = v[0] if isinstance(v, list) and v else v
+            v = v.get('name') if isinstance(v, dict) else v
+            if isinstance(v, str) and v:
+                loja_v = v
+                break
     url = h.get('url') or h.get('link') or h.get('productUrl') or ''
     if url.startswith('/'):
         url = 'https://' + site + url
@@ -70,13 +75,11 @@ async def coletar(http, anteriores):
             hits = _hits(nd)
             if hits and not _amostra[0]:
                 _amostra[0] = True
-                import json as _j
-                for h0 in hits[:3]:
-                    log.info('Zoom amostra: %s', _j.dumps(h0, ensure_ascii=False)[:2500])
+                log.info('Zoom: formato da busca reconhecido (%d resultados na primeira página)', len(hits))
             for h in hits:
                 n = _converter(h, site)
-                if n:
-                    achados.setdefault(n['id'], n)
+                if n and (n['id'] not in achados or len(n['nome']) > len(achados[n['id']]['nome'])):
+                    achados[n['id']] = n  # mesma oferta como produto e como oferta: fica o nome mais completo
     log.info('Zoom/Buscapé: %d ofertas Dell', len(achados))
     if len(achados) < 5:
         return None, f'só {len(achados)} resultados (mínimo 5)'

@@ -45,7 +45,7 @@ def cpu(texto):
         suf = _sufixo(m.group(3))
         return dict(cpuModelo=f'Core {m.group(1)} {m.group(2)}{suf or ""}', cpuFamilia='Core ' + m.group(1),
                     cpuSufixo=suf, cpuGeracao='recente')
-    m = re.search(r'Core\s*i([3579])[\s\-]*(\d{4,5})\s?([A-Z]{0,2})\d?\b', t, re.I)
+    m = re.search(r'(?:Core\s*)?\bi([3579])[\s\-]*(\d{4,5})\s?([A-Z]{0,2})\d?\b', t, re.I)
     if m:
         num, suf = m.group(2), _sufixo(m.group(3))
         if len(num) == 5 or (num[0] == '1' and num[1] in '01234'):

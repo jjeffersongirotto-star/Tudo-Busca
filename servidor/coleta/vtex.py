@@ -25,7 +25,7 @@ def _oferta(item):
 def _converter(p, loja, host):
     nome = (p.get('productName') or '').strip()
     marca = p.get('brand') or ''
-    if not re.search(r'notebook|laptop', nome, re.I) or not re.search(r'dell|alienware', nome + ' ' + marca, re.I) or RUIM.search(nome):
+    if not re.match(r'\s*(notebook|laptop)', nome, re.I) or not re.search(r'dell|alienware', nome + ' ' + marca, re.I) or RUIM.search(nome):
         return None
     item = (p.get('items') or [{}])[0]
     s, o = _oferta(item)

@@ -54,7 +54,12 @@ async def coletar(http, anteriores):
         aplicar_preco(n, por, de)
         return n
 
-    res = await asyncio.gather(*(um(a) for a in skus))
+    res = list(await asyncio.gather(*(um(a) for a in skus)))
+    # segunda tentativa, uma página por vez, para as que a Dell recusou por excesso de pedidos
+    for i, a in enumerate(skus):
+        if res[i] is None:
+            await asyncio.sleep(2)
+            res[i] = await um(a)
     out = [r for r in res if r]
     log.info('Dell.com: %d de %d SKUs com preço novo', ok[0], len(skus))
     if not out:
