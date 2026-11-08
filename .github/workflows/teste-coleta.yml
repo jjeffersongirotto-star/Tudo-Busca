@@ -5,7 +5,7 @@ on:
     branches: ['ccr-*']
     paths: ['servidor/**', '.github/workflows/teste-coleta.yml']
 permissions:
-  contents: read
+  contents: write
 jobs:
   coleta:
     runs-on: ubuntu-latest
@@ -19,3 +19,11 @@ jobs:
       - name: Rodar coleta
         working-directory: servidor
         run: python -m coleta.orquestrador ../dados/dados.json /tmp/coleta.json
+      - name: Atualizar dados iniciais no branch de trabalho
+        if: github.event_name == 'push'
+        run: |
+          python -c "import json; d=json.load(open('/tmp/coleta.json')); json.dump(d, open('dados/dados.json','w'), ensure_ascii=False, indent=1)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dados/dados.json
+          git diff --cached --quiet || (git commit -m "Dados iniciais: coleta completa de teste" && git push)

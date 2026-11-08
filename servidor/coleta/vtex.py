@@ -9,12 +9,11 @@ from .util import aplicar_preco, imagem_ok, num
 log = logging.getLogger('coleta')
 
 # Lojas com catálogo público VTEX. As que não responderem são ignoradas (e mantêm a coleta anterior).
+# Testadas em 08/11/2026 e fora da lista: Fast Shop (503), Gazin (403), Novo Mundo/eFácil/Colombo/Lebes (sem API), Girafa (fechou).
 LOJAS = {'iByte': 'www.ibyte.com.br', 'WAZ': 'www.waz.com.br', 'Webcontinental': 'www.webcontinental.com.br',
-         'Fast Shop': 'www.fastshop.com.br', 'Gazin': 'www.gazin.com.br', 'Novo Mundo': 'www.novomundo.com.br',
-         'eFácil': 'www.efacil.com.br', 'Colombo': 'www.colombo.com.br', 'Lebes': 'www.lebes.com.br',
-         'Girafa': 'www.girafa.com.br', 'Lojas MM': 'www.lojasmm.com', 'Zema': 'www.zema.com',
-         'Positivo': 'loja.positivotecnologia.com.br', 'Multilaser': 'www.multilaser.com.br', 'Avell': 'avell.com.br',
-         'Carrefour': 'www.carrefour.com.br', 'Havan': 'www.havan.com.br', 'Eletrozema': 'www.eletrozema.com.br'}
+         'Lojas MM': 'www.lojasmm.com', 'Zema': 'www.zema.com', 'Positivo': 'loja.positivotecnologia.com.br',
+         'Multilaser': 'www.multilaser.com.br', 'Avell': 'avell.com.br', 'Carrefour': 'www.carrefour.com.br',
+         'Havan': 'www.havan.com.br', 'Eletrozema': 'www.eletrozema.com.br', 'Lenovo': 'www.lenovo.com.br'}
 TERMOS = ['notebook', 'notebook gamer', 'computador', 'pc gamer', 'macbook', 'all in one', 'mini pc']
 PAGINAS = 2  # 50 por página
 
@@ -55,44 +54,45 @@ def _converter(p, loja, host):
     return n
 
 
-async def coletar(http, anteriores):
-    """Busca por termo em cada loja; itens antigos que não voltaram são consultados pelo productId."""
-    itens, problemas, ok_lojas = {}, [], 0
-    for loja, host in LOJAS.items():
-        achou, falhou = 0, False
-        for termo in TERMOS:
-            for ini in range(0, 50 * PAGINAS, 50):
-                url = f'https://{host}/api/catalog_system/pub/products/search?ft={quote(termo)}&_from={ini}&_to={ini + 49}'
-                lista = await http.get(url, json=True)
-                if lista is None:
-                    falhou = True
-                    break
-                for p in lista:
-                    n = _converter(p, loja, host)
-                    if isinstance(n, dict):
-                        itens[n['id']] = n
-                        achou += 1
-                if len(lista) < 50:
-                    break
-        # itens que já estavam na lista e não apareceram na busca
-        for a in anteriores:
-            if a.get('loja') != loja or a['id'] in itens:
-                continue
-            pid = a['id'].rsplit('-', 1)[-1]
-            lista = await http.get(f'https://{host}/api/catalog_system/pub/products/search?fq=productId:{pid}', json=True)
-            if lista is None:
-                continue  # fica com o preço anterior (orquestrador marca como antigo)
-            n = _converter(lista[0], loja, host) if lista else 'indisponivel'
-            if isinstance(n, dict):
-                itens[n['id']] = n
-            else:
-                itens[a['id']] = {'id': a['id'], 'removido': True}
-        if falhou and not achou:
-            problemas.append(loja)
+async def _loja(http, loja, host, anteriores):
+    """Coleta uma loja. A primeira busca serve de teste: se falhar, a loja é pulada na hora."""
+    itens, achou = {}, 0
+    for nt, termo in enumerate(TERMOS):
+        for ini in range(0, 50 * PAGINAS, 50):
+            url = f'https://{host}/api/catalog_system/pub/products/search?ft={quote(termo)}&_from={ini}&_to={ini + 49}'
+            lista = await http.get(url, json=True, tentativas=1 if nt == 0 and ini == 0 else 2)
+            if not isinstance(lista, list):
+                if nt == 0 and ini == 0:
+                    return None  # loja não respondeu ao teste
+                break
+            for p in lista:
+                n = _converter(p, loja, host)
+                if isinstance(n, dict):
+                    itens[n['id']] = n
+                    achou += 1
+            if len(lista) < 50:
+                break
+    # itens que já estavam na lista e não apareceram na busca
+    for a in anteriores:
+        if a.get('loja') != loja or a['id'] in itens:
             continue
-        else:
-            ok_lojas += 1
-        log.info('VTEX %s: %d anúncios na busca%s', loja, achou, ' (com falhas)' if falhou else '')
-    if not ok_lojas:
+        pid = a['id'].rsplit('-', 1)[-1]
+        lista = await http.get(f'https://{host}/api/catalog_system/pub/products/search?fq=productId:{pid}', json=True)
+        if lista is None:
+            continue  # fica com o preço anterior (orquestrador marca como antigo)
+        n = _converter(lista[0], loja, host) if lista else 'indisponivel'
+        itens[a['id']] = n if isinstance(n, dict) else {'id': a['id'], 'removido': True}
+    log.info('VTEX %s: %d anúncios de computador', loja, achou)
+    return list(itens.values())
+
+
+async def coletar(http, anteriores):
+    """Todas as lojas ao mesmo tempo."""
+    import asyncio
+    nomes = list(LOJAS)
+    res = await asyncio.gather(*(_loja(http, n, LOJAS[n], anteriores) for n in nomes))
+    ok = [n for n, r in zip(nomes, res) if r is not None]
+    if not ok:
         return None, 'nenhuma loja VTEX respondeu'
-    return list(itens.values()), ('sem resposta: ' + ', '.join(problemas)) if problemas else ''
+    itens = [i for r in res if r for i in r]
+    return itens, 'responderam: ' + ', '.join(ok)

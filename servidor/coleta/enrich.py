@@ -37,6 +37,10 @@ def cpu(texto):
             return dict(cpuModelo=f'Apple M{g}{" " + v if v else ""}', cpuFamilia=f'Apple M{g}',
                         cpuSufixo={'Pro': 'APLP', 'Max': 'APLM', 'Ultra': 'APLM'}.get(v, 'APL'),
                         cpuGeracao='recente' if g >= 4 else 'anterior' if g >= 2 else 'antiga')
+    m = re.search(r'\bA(1[6-9])\s*(Pro)?\b', t) if re.search(r'apple|mac\s?book', t, re.I) else None
+    if m:  # chips A (ex.: MacBook Neo com A18 Pro)
+        return dict(cpuModelo=f'Apple A{m.group(1)}{" Pro" if m.group(2) else ""}', cpuFamilia='Apple A', cpuSufixo='APL',
+                    cpuGeracao='recente' if int(m.group(1)) >= 18 else 'anterior')
     m = re.search(r'Ryzen\s*AI\s*(?:MAX\+?\s*)?([3579])\s*(?:PRO\s*)?(HX|HS)?\s*(\d{3})\b', t, re.I)
     if m:
         suf = (m.group(2) or 'U').upper()
@@ -76,6 +80,11 @@ def cpu(texto):
             ger = int(num[0])
         return dict(cpuModelo=f'Core i{m.group(1)}-{num}{letras}', cpuFamilia='Core i' + m.group(1), cpuSufixo=suf,
                     cpuGeracao='13ª ger. Intel' if ger >= 13 else 'antiga', _letras=letras, _ger=ger, _intel=True)
+    m = re.search(r'(?:Core\s*)?\bi([3579])\s*(1[0-4]|[2-9])\s*[ªº]', t, re.I)
+    if m:  # "i3 9ª", "i5 12º"
+        ger = int(m.group(2))
+        return dict(cpuModelo=f'Core i{m.group(1)} ({ger}ª geração)', cpuFamilia='Core i' + m.group(1), cpuSufixo=None,
+                    cpuGeracao='13ª ger. Intel' if ger >= 13 else 'antiga', _letras='', _ger=ger, _intel=True)
     m = re.search(r'Core\s*i([3579])\b', t, re.I)
     if m:
         g = re.search(r'\b(1[0-4]|[4-9])\s*(?:ª|a|º|th)?\s*(?:gera[cç][aã]o|gen)', t, re.I)
