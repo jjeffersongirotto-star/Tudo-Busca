@@ -1,0 +1,24 @@
+{
+  "name": "tudo-busca",
+  "productName": "Tudo-Busca",
+  "version": "1.0.0",
+  "description": "Cupons e computadores: compare preços, desempenho e custo-benefício",
+  "author": "Tudo-Busca",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win --publish never"
+  },
+  "devDependencies": {
+    "electron": "33.2.1",
+    "electron-builder": "25.1.8"
+  },
+  "build": {
+    "appId": "br.tudobusca.app",
+    "productName": "Tudo-Busca",
+    "directories": { "output": "dist" },
+    "files": ["main.js", "build/icon.png"],
+    "win": { "target": [{ "target": "nsis", "arch": ["x64"] }], "icon": "build/icon.png", "artifactName": "Tudo-Busca-Instalador-Windows.${ext}" },
+    "nsis": { "oneClick": false, "allowToChangeInstallationDirectory": true, "createDesktopShortcut": true, "shortcutName": "Tudo-Busca" }
+  }
+}

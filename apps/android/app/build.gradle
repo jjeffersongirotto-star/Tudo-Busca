@@ -1,0 +1,23 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'br.tudobusca.app'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'br.tudobusca.app'
+        minSdk 24
+        targetSdk 34
+        versionCode (System.getenv('VERSAO_CODIGO') ?: '1') as int
+        versionName System.getenv('VERSAO_NOME') ?: '1.0'
+    }
+    buildTypes {
+        debug { minifyEnabled false }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}

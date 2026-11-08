@@ -81,6 +81,27 @@ def pagina():
     return FileResponse(PAGINA, media_type='text/html; charset=utf-8', headers={'Cache-Control': 'no-cache'})
 
 
+WEB = RAIZ / 'web'
+
+
+@app.get('/manifest.webmanifest')
+def manifesto():
+    return FileResponse(WEB / 'manifest.webmanifest', media_type='application/manifest+json')
+
+
+@app.get('/sw.js')
+def service_worker():
+    return FileResponse(WEB / 'sw.js', media_type='application/javascript', headers={'Cache-Control': 'no-cache', 'Service-Worker-Allowed': '/'})
+
+
+@app.get('/icones/{nome}')
+def icone(nome: str):
+    arq = (WEB / 'icones' / nome).resolve()
+    if arq.parent != (WEB / 'icones').resolve() or not arq.exists() or arq.suffix != '.png':
+        return JSONResponse({'erro': 'não encontrado'}, status_code=404)
+    return FileResponse(arq, media_type='image/png', headers={'Cache-Control': 'public, max-age=604800'})
+
+
 @app.get('/api/dados')
 def dados():
     return JSONResponse(carregar(), headers={'Cache-Control': 'no-store'})

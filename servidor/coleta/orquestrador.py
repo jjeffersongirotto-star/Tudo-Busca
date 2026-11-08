@@ -12,7 +12,7 @@ import logging
 import re
 import time
 
-from . import amazon, dell, kabum, vtex, zoom
+from . import amazon, cupons as cupons_mod, dell, kabum, vtex, zoom
 from .enrich import enriquecer
 from .http import Http
 from .util import agora, texto_data
@@ -97,12 +97,23 @@ async def executar(dados, status=None, banco=None):
         log.info('fonte %-26s %s (%s) em %ds', nome, status['fontes'][nome]['estado'], msg, time.time() - t0)
         return itens
 
+    async def rodar_cupons():
+        status['fontes']['Cupons'] = {'estado': 'buscando'}
+        try:
+            r, info = await asyncio.wait_for(cupons_mod.coletar(http), LIMITE_FONTE)
+        except Exception as e:
+            log.exception('cupons')
+            r, info = None, f'erro: {type(e).__name__}'
+        status['fontes']['Cupons'] = {'estado': 'ok' if r is not None else 'falhou', 'itens': len(r or []),
+                                      'msg': info if isinstance(info, str) else ', '.join(f"{k}: {v['cupons']}" for k, v in info.items())}
+        return r
+
     try:
-        resultados = await asyncio.gather(*(rodar(n, m, f) for n, m, f in FONTES))
+        *resultados, cupons_novos = await asyncio.gather(*(rodar(n, m, f) for n, m, f in FONTES), rodar_cupons())
     finally:
         await http.fechar()
 
-    if all(r is None for r in resultados):
+    if all(r is None for r in resultados) and cupons_novos is None:
         raise RuntimeError('nenhuma loja respondeu; os dados anteriores foram mantidos')
     hoje = agora()
     novos, removidos, atualizados, antigos, final = [], [], 0, 0, {}
@@ -168,7 +179,10 @@ async def executar(dados, status=None, banco=None):
     out = dict(dados)
     out.pop('notebooks', None)
     out['produtos'] = produtos
-    out['cupons'] = _cupons(dados.get('cupons', []), hoje)
+    lista_cupons = dados.get('cupons', [])
+    if cupons_novos is not None:
+        lista_cupons = cupons_mod.juntar(lista_cupons, cupons_novos, hoje.strftime('%d/%m/%Y'))
+    out['cupons'] = _cupons(lista_cupons, hoje)
     out['ultimaAtualizacao'] = hoje.isoformat(timespec='seconds')
     out['ultimaAtualizacaoTexto'] = texto_data(hoje)
     por_tipo = {}
@@ -196,6 +210,11 @@ if __name__ == '__main__':  # teste: python -m coleta.orquestrador ../dados/dado
     print(json.dumps(r, ensure_ascii=False, indent=1))
     antes = {n['id']: n for n in (d.get('produtos') or d.get('notebooks'))}
     mud = [(n['id'], antes[n['id']].get('preco'), n.get('preco')) for n in novo['produtos'] if n['id'] in antes and antes[n['id']].get('precoNum') != n.get('precoNum')]
+    import collections as _c
+    ativos = [c for c in novo['cupons'] if c.get('ativo') is not False]
+    print('CUPONS ativos por loja:', dict(_c.Counter(c.get('loja') for c in ativos)))
+    for c in [c for c in ativos if c.get('coletado')][:25]:
+        print('  CUPOM', c['loja'], '|', c['codigo'], '|', c.get('desconto'), '|', c.get('validade'), '|', (c.get('descricao') or '')[:90], '|', c.get('fonte'))
     print('removidos:', [i for i in antes if i not in {n['id'] for n in novo['produtos']}])
     print('preços que mudaram:', len(mud))
     for m in mud[:15]:

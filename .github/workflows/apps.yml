@@ -1,0 +1,58 @@
+name: Gerar apps (Android e Windows)
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['apps/**', '.github/workflows/apps.yml']
+permissions:
+  contents: write
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: '8.7' }
+      - name: Montar APK
+        env:
+          VERSAO_CODIGO: ${{ github.run_number }}
+          VERSAO_NOME: 1.0.${{ github.run_number }}
+        run: gradle -p apps/android assembleDebug --no-daemon
+      - run: cp apps/android/app/build/outputs/apk/debug/app-debug.apk Tudo-Busca-Android.apk
+      - uses: actions/upload-artifact@v4
+        with: { name: android, path: Tudo-Busca-Android.apk }
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - name: Montar instalador
+        working-directory: apps/computador
+        run: |
+          npm install --no-audit --no-fund
+          npm run dist
+      - uses: actions/upload-artifact@v4
+        with: { name: windows, path: apps/computador/dist/Tudo-Busca-Instalador-Windows.exe }
+  publicar:
+    needs: [android, windows]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { path: arquivos, merge-multiple: true }
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apps-v1.0.${{ github.run_number }}
+          name: Tudo-Busca 1.0.${{ github.run_number }} — apps para celular e computador
+          make_latest: true
+          body: |
+            **Android:** baixe `Tudo-Busca-Android.apk` no celular e abra. Se o Android pedir, permita "instalar apps de fontes desconhecidas" para o navegador.
+            **Windows:** baixe `Tudo-Busca-Instalador-Windows.exe` e execute. Se o Windows mostrar "O Windows protegeu o computador", clique em **Mais informações → Executar assim mesmo** (o app não tem assinatura paga da Microsoft).
+            **iPhone, Mac e outros:** abra https://tudo-busca.onrender.com e use **Instalar app** (no iPhone: Compartilhar → Adicionar à Tela de Início).
+          files: arquivos/*

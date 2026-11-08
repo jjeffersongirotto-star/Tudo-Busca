@@ -18,6 +18,8 @@ jobs:
       - run: pip install -r servidor/requirements.txt
       - name: Rodar coleta
         working-directory: servidor
+        env:
+          DIAG_CUPONS: "1"
         run: python -m coleta.orquestrador ../dados/dados.json /tmp/coleta.json
       - name: Atualizar dados iniciais no branch de trabalho
         if: github.event_name == 'workflow_dispatch' && startsWith(github.ref_name, 'ccr-')
