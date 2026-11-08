@@ -16,9 +16,6 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install -r servidor/requirements.txt
-      - name: Diagnóstico de cupons
-        working-directory: servidor
-        run: python diag_cupons.py || true
       - name: Rodar coleta
         working-directory: servidor
         env:

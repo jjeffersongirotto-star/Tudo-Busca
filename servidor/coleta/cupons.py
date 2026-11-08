@@ -1,4 +1,7 @@
-"""Cupons de desconto de todas as lojas, lidos de sites de cupons.
+"""Cupons de desconto de todas as lojas, lidos do Méliuz (o código aparece completo na página).
+
+Cuponomia e CupoNation foram testados (08/11/2026) e ficaram de fora: só mostram o código depois de um clique
+que leva para a loja, e a regra do projeto é só aceitar código que aparece completo na fonte.
 
 Só entra cupom cujo código aparece COMPLETO na página (nada de código cortado ou "clique para ver").
 Fonte que falha não apaga nada: os cupons já conhecidos continuam, e os que somem da fonte
@@ -22,12 +25,11 @@ LOJAS = {
     'Mercado Livre': 'mercado-livre', 'Fast Shop': 'fast-shop', 'Lenovo': 'lenovo', 'Samsung': 'samsung', 'Acer': 'acer',
     'Asus': 'asus', 'Positivo': 'positivo', 'Pichau': 'pichau', 'Terabyte': 'terabyte', 'iByte': 'ibyte', 'Carrefour': 'carrefour',
     'Ponto': 'ponto', 'Extra': 'extra', 'Americanas': 'americanas', 'Avell': 'avell', 'Webcontinental': 'webcontinental',
-    'HP': 'hp', 'Apple': 'apple', 'Shopee': 'shopee', 'AliExpress': 'aliexpress', 'Girafa': 'girafa', 'Multilaser': 'multilaser',
+    'HP': 'hp', 'Shopee': 'shopee', 'AliExpress': 'aliexpress', 'Multilaser': 'multilaser', 'Vaio': 'vaio', 'Microsoft': 'microsoft',
+    'Motorola': 'motorola', 'Submarino': 'submarino', 'Shoptime': 'shoptime', 'Kalunga': 'kalunga', 'Leroy Merlin': 'leroy-merlin',
 }
 SITES = {
-    'Cuponomia': 'https://www.cuponomia.com.br/desconto/{s}',
     'Méliuz': 'https://www.meliuz.com.br/desconto/cupom-{s}',
-    'CupoNation': 'https://www.cuponation.com.br/cupom-desconto-{s}',
 }
 _CODIGO = re.compile(r'^[A-Z0-9][A-Z0-9_\-]{3,24}$')
 _NAO = re.compile(r'^(NULL|NONE|TRUE|FALSE|UNDEFINED|CUPOM|CODIGO|COPIAR|ATIVAR|OFERTA|DESCONTO|PROMO|VER|HTTPS?|WWW|NAN|\d+)$')
@@ -84,6 +86,21 @@ def _do_html(html):
     return out
 
 
+def _do_meliuz(html):
+    """Méliuz: cada cupom é um <div ... data-offer-code="CODIGO" data-offer-title="...">; o bloco seguinte traz as regras."""
+    out = []
+    partes = re.split(r'(?=<div class="cpn-layout )', html)
+    for bloco in partes[1:]:
+        m = re.search(r'data-offer-code="([^"]*)"', bloco[:1500])
+        cod = _cod_ok(H.unescape(m.group(1))) if m else ''
+        if not cod:
+            continue  # oferta sem código
+        tit = re.search(r'data-offer-title="([^"]*)"', bloco[:1500])
+        texto = _texto(bloco[:6000])
+        out.append({'codigo': cod, 'descricao': H.unescape(tit.group(1)).strip() if tit else '', 'janela': texto})
+    return out
+
+
 def _validade_iso(v):
     m = re.match(r'(\d{4})-(\d{2})-(\d{2})', v or '')
     return f'Até {m.group(3)}/{m.group(2)}/{m.group(1)}' if m else ''
@@ -103,6 +120,8 @@ async def _pagina(http, site, url, loja):
         except ValueError:
             pass
     achados += _do_html(html)
+    if site == 'Méliuz':
+        achados += _do_meliuz(html)
     if DIAG:
         amostra = re.search(r'data-(code|coupon|clipboard-text|voucher)[^>]{0,200}', html, re.I)
         log.info('CUPOM-DIAG %s %s: %d bytes, next_data=%s, %d achados, ex=%s | attr=%r', site, loja, len(html), bool(nd), len(achados),
@@ -111,8 +130,8 @@ async def _pagina(http, site, url, loja):
     for a in achados:
         c = cupons.setdefault(a['codigo'], {'codigo': a['codigo'], 'descricao': '', 'validade': ''})
         texto = a.get('descricao') or ''
-        if len(texto) > len(c['descricao']):
-            c['descricao'] = texto
+        if texto and (not c['descricao'] or a.get('janela') and len(texto) < len(c['descricao'])):
+            c['descricao'] = texto[:200]
         c['validade'] = c['validade'] or _validade_iso(a.get('validadeBruta')) or _validade(a.get('janela') or texto)
         c['desconto'] = c.get('desconto') or _desconto(texto) or _desconto(a.get('janela') or '')
     return site, loja, list(cupons.values())
