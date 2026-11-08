@@ -4,12 +4,14 @@ import logging
 import re
 from urllib.parse import quote
 
+from .classifica import tipo
 from .util import aplicar_preco, imagem_ok, next_data, num, percorrer
 
 log = logging.getLogger('coleta')
 
-TERMOS = ['notebook dell', 'notebook dell inspiron', 'notebook dell latitude', 'notebook dell vostro', 'notebook dell xps',
-          'notebook alienware', 'notebook dell g15', 'notebook dell pro', 'notebook dell 15', 'notebook dell 14']
+TERMOS = ['notebook', 'notebook gamer', 'notebook dell', 'notebook lenovo', 'notebook hp', 'notebook acer', 'notebook asus',
+          'notebook samsung', 'notebook positivo', 'macbook', 'computador', 'pc gamer', 'computador all in one', 'mini pc',
+          'imac', 'mac mini']
 SITES = ['www.zoom.com.br', 'www.buscape.com.br']
 RUIM = re.compile(r'usad|recondicion|seminov|vitrine|open\s*box', re.I)
 _amostra = [False]
@@ -36,7 +38,7 @@ def _hits(nd):
 
 def _converter(h, site):
     nome = html.unescape(h.get('name') or h.get('title') or '').strip()
-    if not re.match(r'\s*(dell\s+)?(notebook|laptop)', nome, re.I) or not re.search(r'dell|alienware', nome, re.I) or RUIM.search(nome):
+    if not tipo(nome):
         return None
     # id estável = id da oferta (produto agrupado usa a melhor oferta), igual às coletas anteriores
     best = h.get('bestOffer') if isinstance(h.get('bestOffer'), dict) else {}
@@ -81,7 +83,7 @@ async def coletar(http, anteriores):
                 n = _converter(h, site)
                 if n and (n['id'] not in achados or len(n['nome']) > len(achados[n['id']]['nome'])):
                     achados[n['id']] = n  # mesma oferta como produto e como oferta: fica o nome mais completo
-    log.info('Zoom/Buscapé: %d ofertas Dell', len(achados))
+    log.info('Zoom/Buscapé: %d ofertas de computadores', len(achados))
     if len(achados) < 5:
         return None, f'só {len(achados)} resultados (mínimo 5)'
     # ofertas antigas que sumiram da busca saem da lista (oferta de comparador é passageira)

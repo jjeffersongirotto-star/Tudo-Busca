@@ -3,12 +3,13 @@ import asyncio
 import logging
 import re
 
+from .classifica import tipo
 from .util import aplicar_preco, imagem_ok, next_data, num, og_image, percorrer
 
 log = logging.getLogger('coleta')
 
-BUSCAS = ['notebook-dell', 'notebook-alienware', 'notebook-gamer-dell']
-RUIM = re.compile(r'usad|recondicion|seminov|vitrine|open\s*box|outlet', re.I)
+BUSCAS = ['notebook', 'notebook-gamer', 'computador', 'pc-gamer', 'macbook', 'all-in-one', 'mini-pc']
+MAX_PAGINAS_PRODUTO = 60  # páginas de produto conferidas por coleta (as demais usam o preço da busca)
 
 
 def _produtos(dados):
@@ -31,7 +32,7 @@ def _precos(p):
 
 def _converter(p):
     nome = (p.get('name') or '').strip()
-    if not re.match(r'\s*notebook', nome, re.I) or not re.search(r'dell|alienware', nome, re.I) or RUIM.search(nome):
+    if not tipo(nome):
         return None
     code = str(p['code'])
     if p.get('available') is False:
@@ -72,7 +73,10 @@ async def coletar(http, anteriores):
                 achados[n['id']] = n
     busca_ok = falhas < len(BUSCAS)  # se a busca for bloqueada, ainda conferimos os produtos já conhecidos
     # Preço da página do produto (campanha) para tudo que vamos mostrar
-    ids = set(achados) | {a['id'] for a in anteriores if a.get('loja') == 'KaBuM!'}
+    conhecidos = [a['id'] for a in anteriores if a.get('loja') == 'KaBuM!']
+    # páginas de produto: primeiro os já conhecidos que sumiram da busca (para saber se saíram de linha), depois os demais
+    fila = [i for i in conhecidos if i not in achados] + [i for i in conhecidos if i in achados]
+    ids = fila[:MAX_PAGINAS_PRODUTO]
     out = []
 
     async def um(i):
@@ -90,7 +94,8 @@ async def coletar(http, anteriores):
         return achados.get(i)  # sem página: fica o preço da busca (ou o anterior)
 
     res = await asyncio.gather(*(um(i) for i in ids))
-    out = [r for r in res if r]
+    vistos = {r['id'] for r in res if r}
+    out = [r for r in res if r] + [n for i, n in achados.items() if i not in vistos]
     if not out:
         return None, 'loja recusou os pedidos (busca e páginas de produto)'
     if not busca_ok:

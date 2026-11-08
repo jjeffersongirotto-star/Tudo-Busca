@@ -1847,7 +1847,7 @@
    "ativo": false
   }
  ],
- "notebooks": [
+ "produtos": [
   {
    "id": "dc15250_ltd_06",
    "nome": "Notebook Dell 15",
@@ -1901,7 +1901,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell/dell-15-intel-3530/media-gallery/laptop-dell-dc15250nt-bk-plastic-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell/dell-15-intel-3530/media-gallery/laptop-dell-dc15250nt-bk-plastic-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "dc15250_ltd_07",
@@ -1956,7 +1959,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell/dell-15-intel-3530/media-gallery/laptop-dell-dc15250nt-bk-plastic-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell/dell-15-intel-3530/media-gallery/laptop-dell-dc15250nt-bk-plastic-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "da15260_reg_01",
@@ -2007,7 +2013,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/da15260/media-gallery/notebook-alienware-15-da15260-mb3-intel-black-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/da15260/media-gallery/notebook-alienware-15-da15260-mb3-intel-black-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "da15260_ltd_01",
@@ -2058,7 +2067,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/da15260/media-gallery/notebook-alienware-15-da15260-mb3-intel-black-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/da15260/media-gallery/notebook-alienware-15-da15260-mb3-intel-black-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "pc14250_reg_01",
@@ -2115,7 +2127,10 @@
    "armazGB": 512,
    "precoDeNum": 9438.45,
    "descontoPct": 1.9,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell-pro/pc14250/media-gallery/notebook-dell-pro-pc14250-hd-fhd-gy-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell-pro/pc14250/media-gallery/notebook-dell-pro-pc14250-hd-fhd-gy-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "pc16250_reg_01",
@@ -2170,7 +2185,10 @@
    "pesoKg": 1.92,
    "armazGB": 512,
    "precoDeNum": 9695.19,
-   "descontoPct": 1.8
+   "descontoPct": 1.8,
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "pc16250_ltd_01",
@@ -2226,7 +2244,10 @@
    "armazGB": 512,
    "precoDeNum": 9695.19,
    "descontoPct": 1.8,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell-pro/pc16250/media-gallery/black/hd-fhd/laptop-dell-pro-pc16250-bk-hd-fhd-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell-pro/pc16250/media-gallery/black/hd-fhd/laptop-dell-pro-pc16250-bk-hd-fhd-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "dc16250_reg_01",
@@ -2279,7 +2300,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell/16250/media-gallery/carbon-plastic/non-fpr/notebook-dc16250-nt-black-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell/16250/media-gallery/carbon-plastic/non-fpr/notebook-dc16250-nt-black-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "dc14250_ltd_12",
@@ -2334,7 +2358,10 @@
    "armazGB": 1000,
    "precoDeNum": 9198.93,
    "descontoPct": 3.0,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell/dc14250/mg/plastic/sl/fpr/laptop-dc14250nt-fpr-plastic-intel-sl-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell/dc14250/mg/plastic/sl/fpr/laptop-dc14250nt-fpr-plastic-intel-sl-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "dc14250_ltd_15",
@@ -2389,7 +2416,10 @@
    "armazGB": 512,
    "precoDeNum": 8198.94,
    "descontoPct": 3.0,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell/dc14250/mg/plastic/sl/fpr/laptop-dc14250nt-fpr-plastic-intel-sl-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell/dc14250/mg/plastic/sl/fpr/laptop-dc14250nt-fpr-plastic-intel-sl-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "74402in1_reg_01",
@@ -2441,7 +2471,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/inspiron-notebooks/14-2-in-1-7440-intel/media-gallery/notebook-inspiron-14-7440-t-ice-blue-gallery-4.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/inspiron-notebooks/14-2-in-1-7440-intel/media-gallery/notebook-inspiron-14-7440-t-ice-blue-gallery-4.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "74402in1_ltd_03",
@@ -2493,7 +2526,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/inspiron-notebooks/14-2-in-1-7440-intel/media-gallery/notebook-inspiron-14-7440-t-ice-blue-gallery-4.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/inspiron-notebooks/14-2-in-1-7440-intel/media-gallery/notebook-inspiron-14-7440-t-ice-blue-gallery-4.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "pv15250_reg_01",
@@ -2549,7 +2585,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell-pro/pv15250/media-gallery/notebook-pv15250-nt-laptop-bk-plastic-gallery-1.png?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell-pro/pv15250/media-gallery/notebook-pv15250-nt-laptop-bk-plastic-gallery-1.png?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "pv15250_ltd_09",
@@ -2605,7 +2644,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell-pro/pv15250/media-gallery/notebook-pv15250-nt-laptop-bk-plastic-gallery-1.png?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell-pro/pv15250/media-gallery/notebook-pv15250-nt-laptop-bk-plastic-gallery-1.png?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "dx13260_reg_03",
@@ -2661,7 +2703,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/xps-notebooks/xps-13-dx13260/media-gallery/sky/laptop-xps-13-sky-dx13260-silver-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/xps-notebooks/xps-13-dx13260/media-gallery/sky/laptop-xps-13-sky-dx13260-silver-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "dx13260_ltd_14",
@@ -2717,7 +2762,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/xps-notebooks/xps-13-dx13260/media-gallery/sky/laptop-xps-13-sky-dx13260-silver-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/xps-notebooks/xps-13-dx13260/media-gallery/sky/laptop-xps-13-sky-dx13260-silver-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "ac16250_ltd_24",
@@ -2768,7 +2816,10 @@
    "armazGB": 1000,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/ac16250/media-gallery/laptop-alienware-ac16250-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/ac16250/media-gallery/laptop-alienware-ac16250-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "ac16250_ltd_21",
@@ -2819,7 +2870,10 @@
    "armazGB": 1000,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/ac16250/media-gallery/laptop-alienware-ac16250-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/ac16250/media-gallery/laptop-alienware-ac16250-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "pa14250_reg_01",
@@ -2874,7 +2928,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell-pro-premium/pa14250/media-gallery/notebook-14-pa14250-nt-gy-entry-panel-plastic-bezel-wlan-gallery-2.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell-pro-premium/pa14250/media-gallery/notebook-14-pa14250-nt-gy-entry-panel-plastic-bezel-wlan-gallery-2.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "5455_reg_02",
@@ -2929,7 +2986,10 @@
    "armazGB": 256,
    "precoDeNum": 9018.12,
    "descontoPct": 1.9,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/latitude-notebooks/5455/media-gallery/notebook-latitude-14-5455-gray-gallery-4.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/latitude-notebooks/5455/media-gallery/notebook-latitude-14-5455-gray-gallery-4.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "aa16250_reg_01",
@@ -2982,7 +3042,10 @@
    "pesoKg": 3.4,
    "armazGB": 1000,
    "precoDeNum": null,
-   "descontoPct": null
+   "descontoPct": null,
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "pc16255_reg_01",
@@ -3037,7 +3100,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell-pro/pc16255/media-gallery/black/hd-fhd/laptop-dell-pro-pc16255-bk-hd-fhd-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell-pro/pc16255/media-gallery/black/hd-fhd/laptop-dell-pro-pc16255-bk-hd-fhd-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "dc16255_reg_01",
@@ -3089,7 +3155,10 @@
    "pesoKg": 2.14,
    "armazGB": 512,
    "precoDeNum": null,
-   "descontoPct": null
+   "descontoPct": null,
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "mc16250_reg_01",
@@ -3150,7 +3219,10 @@
    "armazGB": 256,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell-pro-max/mc16250/media-gallery/fpr/notebook-16-mc16250-pro-max-t-black-fpr-gallery-11.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell-pro-max/mc16250/media-gallery/fpr/notebook-16-mc16250-pro-max-t-black-fpr-gallery-11.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "da15260_ltd_02",
@@ -3201,7 +3273,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/da15260/media-gallery/notebook-alienware-15-da15260-mb3-intel-black-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/da15260/media-gallery/notebook-alienware-15-da15260-mb3-intel-black-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "da15260_ltd_05",
@@ -3252,7 +3327,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/da15260/media-gallery/notebook-alienware-15-da15260-mb3-intel-black-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/da15260/media-gallery/notebook-alienware-15-da15260-mb3-intel-black-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "ac16250_ltd_26",
@@ -3303,7 +3381,10 @@
    "armazGB": 1000,
    "precoDeNum": 12149.03,
    "descontoPct": 8.6,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/ac16250/media-gallery/laptop-alienware-ac16250-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/ac16250/media-gallery/laptop-alienware-ac16250-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "dc14250_ltd_13",
@@ -3358,7 +3439,10 @@
    "armazGB": 512,
    "precoDeNum": 7698.94,
    "descontoPct": 3.0,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell/dc14250/mg/plastic/sl/fpr/laptop-dc14250nt-fpr-plastic-intel-sl-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell/dc14250/mg/plastic/sl/fpr/laptop-dc14250nt-fpr-plastic-intel-sl-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "dc15250_ltd_08",
@@ -3413,7 +3497,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell/dell-15-intel-3530/media-gallery/laptop-dell-dc15250nt-bk-plastic-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell/dell-15-intel-3530/media-gallery/laptop-dell-dc15250nt-bk-plastic-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "dc15250_ltd_09",
@@ -3467,7 +3554,10 @@
    "pesoKg": 1.9,
    "armazGB": 512,
    "precoDeNum": null,
-   "descontoPct": null
+   "descontoPct": null,
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "pc16250_ltd_02",
@@ -3523,7 +3613,10 @@
    "armazGB": 512,
    "precoDeNum": 11583.1,
    "descontoPct": 1.8,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell-pro/pc16250/media-gallery/black/hd-fhd/laptop-dell-pro-pc16250-bk-hd-fhd-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell-pro/pc16250/media-gallery/black/hd-fhd/laptop-dell-pro-pc16250-bk-hd-fhd-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "pc16250_ltd_03",
@@ -3579,7 +3672,10 @@
    "armazGB": 256,
    "precoDeNum": 7707.31,
    "descontoPct": 1.9,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell-pro/pc16250/media-gallery/black/hd-fhd/laptop-dell-pro-pc16250-bk-hd-fhd-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell-pro/pc16250/media-gallery/black/hd-fhd/laptop-dell-pro-pc16250-bk-hd-fhd-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "dx13260_ltd_13",
@@ -3635,7 +3731,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/xps-notebooks/xps-13-dx13260/media-gallery/sky/laptop-xps-13-sky-dx13260-silver-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/xps-notebooks/xps-13-dx13260/media-gallery/sky/laptop-xps-13-sky-dx13260-silver-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "ac16250_ltd_20",
@@ -3686,7 +3785,10 @@
    "armazGB": 512,
    "precoDeNum": 10049.0,
    "descontoPct": 10.4,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/ac16250/media-gallery/laptop-alienware-ac16250-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/ac16250/media-gallery/laptop-alienware-ac16250-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "ac16250_ltd_23",
@@ -3736,7 +3838,10 @@
    "pesoKg": 2.49,
    "armazGB": 512,
    "precoDeNum": null,
-   "descontoPct": null
+   "descontoPct": null,
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "ac16250_ltd_41",
@@ -3786,7 +3891,10 @@
    "pesoKg": 2.49,
    "armazGB": 512,
    "precoDeNum": null,
-   "descontoPct": null
+   "descontoPct": null,
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "ac16250_ltd_42",
@@ -3837,7 +3945,10 @@
    "armazGB": 1000,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/ac16250/media-gallery/laptop-alienware-ac16250-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/ac16250/media-gallery/laptop-alienware-ac16250-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "ac16250_reg_01",
@@ -3888,7 +3999,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/ac16250/media-gallery/laptop-alienware-ac16250-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/ac16250/media-gallery/laptop-alienware-ac16250-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "da15260_ltd_03",
@@ -3939,7 +4053,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/da15260/media-gallery/notebook-alienware-15-da15260-mb3-intel-black-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/da15260/media-gallery/notebook-alienware-15-da15260-mb3-intel-black-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "da15260_ltd_06",
@@ -3989,7 +4106,10 @@
    "pesoKg": 2.2,
    "armazGB": 512,
    "precoDeNum": null,
-   "descontoPct": null
+   "descontoPct": null,
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "da15260_ltd_17",
@@ -4040,7 +4160,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/da15260/media-gallery/notebook-alienware-15-da15260-mb3-intel-black-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/da15260/media-gallery/notebook-alienware-15-da15260-mb3-intel-black-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "da15260_ltd_18",
@@ -4091,7 +4214,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/da15260/media-gallery/notebook-alienware-15-da15260-mb3-intel-black-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/da15260/media-gallery/notebook-alienware-15-da15260-mb3-intel-black-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "pc14250_ltd_09",
@@ -4148,7 +4274,10 @@
    "armazGB": 512,
    "precoDeNum": 16306.18,
    "descontoPct": 1.9,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell-pro/pc14250/media-gallery/notebook-dell-pro-pc14250-hd-fhd-gy-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell-pro/pc14250/media-gallery/notebook-dell-pro-pc14250-hd-fhd-gy-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "pw516261_reg_01",
@@ -4210,7 +4339,10 @@
    "armazGB": 512,
    "precoDeNum": 30467.35,
    "descontoPct": 2.3,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell-pro-precision/pw516261/media-gallery/laptop-precision-pro-16-pw516261-gray-gallery-2.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell-pro-precision/pw516261/media-gallery/laptop-precision-pro-16-pw516261-gray-gallery-2.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "dc15250_ltd_13",
@@ -4265,7 +4397,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell/dell-15-intel-3530/media-gallery/laptop-dell-dc15250nt-bk-plastic-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell/dell-15-intel-3530/media-gallery/laptop-dell-dc15250nt-bk-plastic-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "pc14250_ltd_10",
@@ -4322,7 +4457,10 @@
    "armazGB": 512,
    "precoDeNum": 11269.59,
    "descontoPct": 1.8,
-   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell-pro/pc14250/media-gallery/notebook-dell-pro-pc14250-hd-fhd-gy-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90"
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/dell-pro/pc14250/media-gallery/notebook-dell-pro-pc14250-hd-fhd-gy-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-1072054",
@@ -4371,7 +4509,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1072054/xlarge/Notebook-Gamer-Dell-Alienware-15-Da15260-Da15-c5210h-u40-15-3-Wuxga-Intel-Core5-16gb-512gbssd-Nvidia-RTX4050-Ubuntu_1789410238.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1072054/xlarge/Notebook-Gamer-Dell-Alienware-15-Da15260-Da15-c5210h-u40-15-3-Wuxga-Intel-Core5-16gb-512gbssd-Nvidia-RTX4050-Ubuntu_1789410238.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-1043070",
@@ -4420,7 +4561,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1043070/xlarge/Notebook-Dell-15-I-Dc15-i71355u-m90-15-6-Full-Hd-13-Gen-Intel-Core-i7-16gb-512gb-SSD-Win-11-Preto-Carbono_1779975826.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1043070/xlarge/Notebook-Dell-15-I-Dc15-i71355u-m90-15-6-Full-Hd-13-Gen-Intel-Core-i7-16gb-512gb-SSD-Win-11-Preto-Carbono_1779975826.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-950549",
@@ -4459,7 +4603,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/950549/xlarge/Notebook-Dell-Inspiron-15-I15-i1300-a30p-Intel-Core-i5-1334u-Ram-8GB-Ddr4-512gb-Nvme-15-6-Fhd-120hz-Win11-Preto_1775930019.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/950549/xlarge/Notebook-Dell-Inspiron-15-I15-i1300-a30p-Intel-Core-i5-1334u-Ram-8GB-Ddr4-512gb-Nvme-15-6-Fhd-120hz-Win11-Preto_1775930019.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-1028021",
@@ -4508,7 +4655,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1028021/xlarge/Notebook-Dell-15-Dc15-i51334u-m70-15-6-Full-Hd-13-Gen-Intel-Core-i5-16gb-512gb-SSD-Win-11-Preto-Carbono_1782849514.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1028021/xlarge/Notebook-Dell-15-Dc15-i51334u-m70-15-6-Full-Hd-13-Gen-Intel-Core-i5-16gb-512gb-SSD-Win-11-Preto-Carbono_1782849514.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-1028019",
@@ -4557,7 +4707,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1028019/xlarge/Notebook-Dell-15-Dc15-i51334u-u50-15-6-Full-Hd-13-Gen-Intel-Core-i5-8GB-512gb-SSD-Linux-Preto-Carbono_1785504515.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1028019/xlarge/Notebook-Dell-15-Dc15-i51334u-u50-15-6-Full-Hd-13-Gen-Intel-Core-i5-8GB-512gb-SSD-Linux-Preto-Carbono_1785504515.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-1043071",
@@ -4606,7 +4759,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1043071/xlarge/Notebook-Dell-15-I-Dc15-i71355u-u90-15-6-Full-Hd-13-Gen-Intel-Core-i7-16gb-512gb-SSD-Ubuntu-Linux-Preto-Carbono_1785506318.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1043071/xlarge/Notebook-Dell-15-I-Dc15-i71355u-u90-15-6-Full-Hd-13-Gen-Intel-Core-i7-16gb-512gb-SSD-Ubuntu-Linux-Preto-Carbono_1785506318.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-1028018",
@@ -4655,7 +4811,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1028018/xlarge/Notebook-Dell-15-Dc15-i51334u-m50-15-6-Full-Hd-13-Gen-Intel-Core-i5-8GB-512gb-SSD-Win-11-Preto-Carbono_1782850423.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1028018/xlarge/Notebook-Dell-15-Dc15-i51334u-m50-15-6-Full-Hd-13-Gen-Intel-Core-i5-8GB-512gb-SSD-Win-11-Preto-Carbono_1782850423.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-1072050",
@@ -4704,7 +4863,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1072050/xlarge/Notebook-Gamer-Dell-Alienware-15-Da15260-Da15-c5210h-m20-15-3-Wuxga-Intel-Core5-16gb-512gbssd-Nvidia-RTX3050-Win11_1789411422.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1072050/xlarge/Notebook-Gamer-Dell-Alienware-15-Da15260-Da15-c5210h-m20-15-3-Wuxga-Intel-Core5-16gb-512gbssd-Nvidia-RTX3050-Win11_1789411422.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-996852",
@@ -4754,7 +4916,10 @@
    "armazGB": 1000,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/996852/xlarge/Notebook-Dell-14-Fhd-Intel-Core-7-150u-16gb-1TB-SSD-WINDOWS-11-Prata-Dc14-c5120u-m50_1770929894.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/996852/xlarge/Notebook-Dell-14-Fhd-Intel-Core-7-150u-16gb-1TB-SSD-WINDOWS-11-Prata-Dc14-c5120u-m50_1770929894.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-1028020",
@@ -4803,7 +4968,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1028020/xlarge/Notebook-Dell-15-Dc15-i51334u-u70-15-6-Full-Hd-13-Gen-Intel-Core-i5-16gb-512gb-SSD-Linux-Preto-Carbono_1785506316.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1028020/xlarge/Notebook-Dell-15-Dc15-i51334u-u70-15-6-Full-Hd-13-Gen-Intel-Core-i5-16gb-512gb-SSD-Linux-Preto-Carbono_1785506316.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-1028015",
@@ -4852,7 +5020,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1028015/xlarge/Notebook-Dell-15-Dc15-c3100-m20-15-6-Full-Hd-Intel-Core-3-100u-8GB-512gb-SSD-Win-Home-Preto-Carbono_1775669021.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1028015/xlarge/Notebook-Dell-15-Dc15-c3100-m20-15-6-Full-Hd-Intel-Core-3-100u-8GB-512gb-SSD-Win-Home-Preto-Carbono_1775669021.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-1063759",
@@ -4919,7 +5090,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1063759/xlarge/Notebook-Dell-Pro-Essential-i5-1334u-8GB-512gb-15-6-Fhd_1786453725.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1063759/xlarge/Notebook-Dell-Pro-Essential-i5-1334u-8GB-512gb-15-6-Fhd_1786453725.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-996855",
@@ -4969,7 +5143,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/996855/xlarge/Notebook-Dell-14-Fhd-Intel-Core-5-120u-16gb-512gb-SSD-WINDOWS-11-Prata-Dc14-c5120u-m20_1782851915.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/996855/xlarge/Notebook-Dell-14-Fhd-Intel-Core-5-120u-16gb-512gb-SSD-WINDOWS-11-Prata-Dc14-c5120u-m20_1782851915.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-1064804",
@@ -5035,7 +5212,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1064804/xlarge/Notebook-Dell-Pro-14-Core-Ultra-5-235u-8GB-512gb-W11p_1786640921.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1064804/xlarge/Notebook-Dell-Pro-14-Core-Ultra-5-235u-8GB-512gb-W11p_1786640921.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-996853",
@@ -5085,7 +5265,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/996853/xlarge/Notebook-Dell-14-Fhd-Intel-Core-7-150u-16gb-512gb-SSD-WINDOWS-11-Prata-Dc14-c5120u-m40_1770929895.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/996853/xlarge/Notebook-Dell-14-Fhd-Intel-Core-7-150u-16gb-512gb-SSD-WINDOWS-11-Prata-Dc14-c5120u-m40_1770929895.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-990402",
@@ -5134,7 +5317,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/990402/xlarge/Notebook-Dell-16-16-Fhd-Intel-Core-5-120u-16gb-512gb-SSD-WINDOWS-11-Preto-Dc16-c5120u-m20_1783094319.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/990402/xlarge/Notebook-Dell-16-16-Fhd-Intel-Core-5-120u-16gb-512gb-SSD-WINDOWS-11-Preto-Dc16-c5120u-m20_1783094319.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-1060561",
@@ -5197,7 +5383,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1060561/xlarge/Notebook-Dell-Pro-16-Intel-Core-i7-150u-16gb-Ddr5-SSD-512gb-WINDOWS-11-Pro_1785178419.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1060561/xlarge/Notebook-Dell-Pro-16-Intel-Core-i7-150u-16gb-Ddr5-SSD-512gb-WINDOWS-11-Pro_1785178419.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-1060584",
@@ -5261,7 +5450,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1060584/xlarge/Notebook-Dell-Pro-16-i5-120u-16gb-Ddr5-SSD-512gb-WINDOWS-11-Pro_1785181715.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1060584/xlarge/Notebook-Dell-Pro-16-i5-120u-16gb-Ddr5-SSD-512gb-WINDOWS-11-Pro_1785181715.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-1070637",
@@ -5332,7 +5524,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1070637/xlarge/Notebook-Dell-15-6-i5-1334u-16gb-SSD-512gb-Ddr5-WINDOWS-11-Pro_1788358120.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1070637/xlarge/Notebook-Dell-15-6-i5-1334u-16gb-SSD-512gb-Ddr5-WINDOWS-11-Pro_1788358120.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-1064803",
@@ -5388,7 +5583,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1064803/xlarge/Notebook-Dell-Pro-16-Core-5-120u-8GB-512gb-SSD-W11p_1786640922.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1064803/xlarge/Notebook-Dell-Pro-16-Core-5-120u-8GB-512gb-SSD-W11p_1786640922.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-996856",
@@ -5438,7 +5636,10 @@
    "armazGB": 1000,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/996856/xlarge/Notebook-Dell-14-Fhd-Intel-Core-5-120u-16gb-1TB-SSD-WINDOWS-11-Prata-Dc14-c5120u-m30_1770929897.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/996856/xlarge/Notebook-Dell-14-Fhd-Intel-Core-5-120u-16gb-1TB-SSD-WINDOWS-11-Prata-Dc14-c5120u-m30_1770929897.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-1066088",
@@ -5540,7 +5741,10 @@
    "armazGB": 512,
    "precoDeNum": 10766.85,
    "descontoPct": 42.7,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/1066088/notebook-gamer-dell-alienware-15-intel-core-i5-8gb-ram-ssd-512gb-15-3-wuxga-nvidia-geforce-rtx-4050-windows-11-preto-da15-c5210h-a30_1788981801_original.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/1066088/notebook-gamer-dell-alienware-15-intel-core-i5-8gb-ram-ssd-512gb-15-3-wuxga-nvidia-geforce-rtx-4050-windows-11-preto-da15-c5210h-a30_1788981801_original.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-927885",
@@ -5589,7 +5793,10 @@
    "armazGB": 1000,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/927885/xlarge/Notebook-Gamer-Dell-Alienware-16-Aurora-Ac16250-Ac16-c7240h-m50-16-Wqxga-Intel-Core7-16gb-1TBssd-Nvidia-RTX5050-Win11_1783355621.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/927885/xlarge/Notebook-Gamer-Dell-Alienware-16-Aurora-Ac16250-Ac16-c7240h-m50-16-Wqxga-Intel-Core7-16gb-1TBssd-Nvidia-RTX5050-Win11_1783355621.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-999010",
@@ -5638,7 +5845,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/999010/xlarge/Notebook-Gamer-Dell-Alienware-16-Aurora-Ac16250-Ac16-c7240h-m35-16-Wqxga-Intel-Core7-16gb-512gbssd-Nvidia-RTX4050-Win11_1770929929.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/999010/xlarge/Notebook-Gamer-Dell-Alienware-16-Aurora-Ac16250-Ac16-c7240h-m35-16-Wqxga-Intel-Core7-16gb-512gbssd-Nvidia-RTX4050-Win11_1770929929.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-927881",
@@ -5687,7 +5897,10 @@
    "armazGB": 1000,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/927881/xlarge/Notebook-Gamer-Dell-Alienware-16-Aurora-Ac16250-Ac16-c7240h-m40-16-Wqxga-Intel-Core7-16gb-1TBssd-Nvidia-RTX4050-Win11_1771853187.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/927881/xlarge/Notebook-Gamer-Dell-Alienware-16-Aurora-Ac16250-Ac16-c7240h-m40-16-Wqxga-Intel-Core7-16gb-1TBssd-Nvidia-RTX4050-Win11_1771853187.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-663035",
@@ -5737,7 +5950,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/663035/xlarge/Notebook-2-Em-1-Dell-Inspiron-2in1-i1300-m10-14-Fhd-Touch-Intel-Core-I5-8GB-512gb-SSD-WINDOWS-11-Prata-Gelo_1768324713.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/663035/xlarge/Notebook-2-Em-1-Dell-Inspiron-2in1-i1300-m10-14-Fhd-Touch-Intel-Core-I5-8GB-512gb-SSD-WINDOWS-11-Prata-Gelo_1768324713.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-1081912",
@@ -5791,7 +6007,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1081912/xlarge/Notebook-Dell-Pro-15-i7-16gb-512gb-Fhd-WINDOWS-11-Pro_1792445314.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1081912/xlarge/Notebook-Dell-Pro-15-i7-16gb-512gb-Fhd-WINDOWS-11-Pro_1792445314.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-1021789",
@@ -5840,7 +6059,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1021789/xlarge/Notebook-2-Em-1-Dell-Inspiron-2in1-i1300-m35-14-Fhd-Touch-Intel-Core-7-150u-16gb-512gb-SSD-WINDOWS-11-Prata-Gelo_1774375719.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1021789/xlarge/Notebook-2-Em-1-Dell-Inspiron-2in1-i1300-m35-14-Fhd-Touch-Intel-Core-7-150u-16gb-512gb-SSD-WINDOWS-11-Prata-Gelo_1774375719.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-1028016",
@@ -5889,7 +6111,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1028016/xlarge/Notebook-Dell-15-Dc15-c3100-u20-15-6-Full-Hd-Intel-Core-3-100u-8GB-512gb-SSD-Linux-Preto-Carbono_1785504224.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1028016/xlarge/Notebook-Dell-15-Dc15-c3100-u20-15-6-Full-Hd-Intel-Core-3-100u-8GB-512gb-SSD-Linux-Preto-Carbono_1785504224.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-1081924",
@@ -5933,7 +6158,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1081924/xlarge/Notebook-Dell-Pro-15-Essential-15-6-Intel-Core-i5-1334u-16gb-Ddr5-512gb-SSD-Win-11-Home_1792445920.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1081924/xlarge/Notebook-Dell-Pro-15-Essential-15-6-Intel-Core-i5-1334u-16gb-Ddr5-512gb-SSD-Win-11-Home_1792445920.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-1032054",
@@ -5972,7 +6200,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1032054/xlarge/Notebook-Dell-Latitude-3550-i7-1355-8GB-512gb-WINDOWS-11-Pro_1776953318.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1032054/xlarge/Notebook-Dell-Latitude-3550-i7-1355-8GB-512gb-WINDOWS-11-Pro_1776953318.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-1081889",
@@ -6016,7 +6247,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1081889/xlarge/Notebook-Dell-Pro-15-Essential-15-6-Intel-Core-i3-100u-8GB-Ddr5-Expans-vel-512gb-SSD-Win-11-Home_1792443820.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1081889/xlarge/Notebook-Dell-Pro-15-Essential-15-6-Intel-Core-i3-100u-8GB-Ddr5-Expans-vel-512gb-SSD-Win-11-Home_1792443820.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-997435",
@@ -6057,7 +6291,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/997435/xlarge/Notebook-Dell-15-6-i7-16gb-ssd512gb-w11p-Latitude-3550-210-bllw-vrph-_1768415311.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/997435/xlarge/Notebook-Dell-15-6-i7-16gb-ssd512gb-w11p-Latitude-3550-210-bllw-vrph-_1768415311.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-1081913",
@@ -6119,7 +6356,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1081913/xlarge/Notebook-Dell-Pro-16-i5-120u-8GB-Ram-512gb-SSD-Ddr5-W11-Pro_1792445314.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1081913/xlarge/Notebook-Dell-Pro-16-i5-120u-8GB-Ram-512gb-SSD-Ddr5-W11-Pro_1792445314.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "kabum-1086015",
@@ -6158,7 +6398,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1086015/xlarge/Notebook-Alienware-Aurora-Ac16250-Core-7-240h-Ram-32gb-SSD-512gb-RTX-3050-6gb-Tela-16-Qhd-WINDOWS-11-Home_1793193226.jpg"
+   "imagem": "https://images.kabum.com.br/produtos/fotos/sync_mirakl/1086015/xlarge/Notebook-Alienware-Aurora-Ac16250-Core-7-240h-Ram-32gb-SSD-512gb-RTX-3050-6gb-Tela-16-Qhd-WINDOWS-11-Home_1793193226.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "amazon-B0FHCY7WLF",
@@ -6207,7 +6450,10 @@
    "armazGB": 1000,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://m.media-amazon.com/images/I/51LAU1+ACrL._AC_SL1000_.jpg"
+   "imagem": "https://m.media-amazon.com/images/I/51LAU1+ACrL._AC_SL1000_.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "amazon-B0HF9VH4GV",
@@ -6258,7 +6504,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://m.media-amazon.com/images/I/61RQFZolUpL._AC_SL1500_.jpg"
+   "imagem": "https://m.media-amazon.com/images/I/61RQFZolUpL._AC_SL1500_.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "amazon-B0FHCHBRGF",
@@ -6308,7 +6557,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://m.media-amazon.com/images/I/51LAU1+ACrL._AC_SL1000_.jpg"
+   "imagem": "https://m.media-amazon.com/images/I/51LAU1+ACrL._AC_SL1000_.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "amazon-B0GYFRGPZY",
@@ -6357,7 +6609,10 @@
    "armazGB": 512,
    "precoDeNum": 5299.0,
    "descontoPct": 22.9,
-   "imagem": "https://m.media-amazon.com/images/I/5152rTpvy5L._AC_SL1000_.jpg"
+   "imagem": "https://m.media-amazon.com/images/I/5152rTpvy5L._AC_SL1000_.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "amazon-B0GRJNQWHW",
@@ -6394,7 +6649,10 @@
    "pesoKg": null,
    "armazGB": 512,
    "precoDeNum": null,
-   "descontoPct": null
+   "descontoPct": null,
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "amazon-B0GRJV247C",
@@ -6436,7 +6694,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://m.media-amazon.com/images/I/514EAjs4c9L._AC_SL1000_.jpg"
+   "imagem": "https://m.media-amazon.com/images/I/514EAjs4c9L._AC_SL1000_.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "vtex-ibyte-59806",
@@ -6489,7 +6750,10 @@
    "armazGB": 1000,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://lojaibyte.vteximg.com.br/arquivos/ids/456990/notebook-dell-210-bwbb-intel-core-i7-16gb-1tb-ssd-tela-full-hd-windows-11-preto-carbono-dc15i71355ua100-001.jpg?v=639240412424200000"
+   "imagem": "https://lojaibyte.vteximg.com.br/arquivos/ids/456990/notebook-dell-210-bwbb-intel-core-i7-16gb-1tb-ssd-tela-full-hd-windows-11-preto-carbono-dc15i71355ua100-001.jpg?v=639240412424200000",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "vtex-ibyte-59803",
@@ -6544,7 +6808,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://lojaibyte.vteximg.com.br/arquivos/ids/457061/notebook-dell-210-bwbf-2-em-1-intel-core-i5-1334u-16gb-512gb-de-ssd-14-full-hd-touch-windows11-prata-gelo-2in1i51334ua31--1.jpg?v=639241422070630000"
+   "imagem": "https://lojaibyte.vteximg.com.br/arquivos/ids/457061/notebook-dell-210-bwbf-2-em-1-intel-core-i5-1334u-16gb-512gb-de-ssd-14-full-hd-touch-windows11-prata-gelo-2in1i51334ua31--1.jpg?v=639241422070630000",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "vtex-ibyte-59804",
@@ -6598,7 +6865,10 @@
    "armazGB": 256,
    "precoDeNum": 5269.0,
    "descontoPct": 7.0,
-   "imagem": "https://lojaibyte.vteximg.com.br/arquivos/ids/457018/notebook-dell-210-bwbb-intel-core-i7-16gb-1tb-ssd-tela-full-hd-windows-11-preto-carbono-dc15i71355ua100-001.jpg?v=639240649971930000"
+   "imagem": "https://lojaibyte.vteximg.com.br/arquivos/ids/457018/notebook-dell-210-bwbb-intel-core-i7-16gb-1tb-ssd-tela-full-hd-windows-11-preto-carbono-dc15i71355ua100-001.jpg?v=639240649971930000",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "vtex-ibyte-59800",
@@ -6652,7 +6922,10 @@
    "armazGB": 512,
    "precoDeNum": 4999.0,
    "descontoPct": 28.0,
-   "imagem": "https://lojaibyte.vteximg.com.br/arquivos/ids/457159/notebook-dell-210-bwbb-intel-core-i7-16gb-1tb-ssd-tela-full-hd-windows-11-preto-carbono-dc15i71355ua100-001.jpg?v=639246427201500000"
+   "imagem": "https://lojaibyte.vteximg.com.br/arquivos/ids/457159/notebook-dell-210-bwbb-intel-core-i7-16gb-1tb-ssd-tela-full-hd-windows-11-preto-carbono-dc15i71355ua100-001.jpg?v=639246427201500000",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "vtex-ibyte-59805",
@@ -6706,7 +6979,10 @@
    "armazGB": 512,
    "precoDeNum": 5699.0,
    "descontoPct": 18.4,
-   "imagem": "https://lojaibyte.vteximg.com.br/arquivos/ids/457033/notebook-dell-210-bwbb-intel-core-i7-16gb-1tb-ssd-tela-full-hd-windows-11-preto-carbono-dc15i71355ua100-001.jpg?v=639241300533070000"
+   "imagem": "https://lojaibyte.vteximg.com.br/arquivos/ids/457033/notebook-dell-210-bwbb-intel-core-i7-16gb-1tb-ssd-tela-full-hd-windows-11-preto-carbono-dc15i71355ua100-001.jpg?v=639241300533070000",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "vtex-ibyte-59801",
@@ -6760,7 +7036,10 @@
    "armazGB": 1000,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://lojaibyte.vteximg.com.br/arquivos/ids/457189/notebook-dell-210-bwbb-intel-core-i7-16gb-1tb-ssd-tela-full-hd-windows-11-preto-carbono-dc15i71355ua100-001.jpg?v=639246644674100000"
+   "imagem": "https://lojaibyte.vteximg.com.br/arquivos/ids/457189/notebook-dell-210-bwbb-intel-core-i7-16gb-1tb-ssd-tela-full-hd-windows-11-preto-carbono-dc15i71355ua100-001.jpg?v=639246644674100000",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "vtex-webcontinental-5703846",
@@ -6801,7 +7080,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://lojawebcontinental.vteximg.com.br/arquivos/ids/75732762/MKP000321054532-1.jpg?v=639244754045270000"
+   "imagem": "https://lojawebcontinental.vteximg.com.br/arquivos/ids/75732762/MKP000321054532-1.jpg?v=639244754045270000",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "vtex-webcontinental-5362005",
@@ -6842,7 +7124,10 @@
    "armazGB": 512,
    "precoDeNum": 11372.16,
    "descontoPct": 12.0,
-   "imagem": "https://lojawebcontinental.vteximg.com.br/arquivos/ids/73024359/MKP001778054725-1.jpg?v=639144750275330000"
+   "imagem": "https://lojawebcontinental.vteximg.com.br/arquivos/ids/73024359/MKP001778054725-1.jpg?v=639144750275330000",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "vtex-webcontinental-5361992",
@@ -6884,7 +7169,10 @@
    "armazGB": 512,
    "precoDeNum": 10004.26,
    "descontoPct": 12.0,
-   "imagem": "https://lojawebcontinental.vteximg.com.br/arquivos/ids/73024475/MKP001778054648-1.jpg?v=639144750285800000"
+   "imagem": "https://lojawebcontinental.vteximg.com.br/arquivos/ids/73024475/MKP001778054648-1.jpg?v=639144750285800000",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "vtex-webcontinental-5361993",
@@ -6925,7 +7213,10 @@
    "armazGB": 512,
    "precoDeNum": 9840.97,
    "descontoPct": 12.0,
-   "imagem": "https://lojawebcontinental.vteximg.com.br/arquivos/ids/73024245/MKP001778054629-1.jpg?v=639144750263930000"
+   "imagem": "https://lojawebcontinental.vteximg.com.br/arquivos/ids/73024245/MKP001778054629-1.jpg?v=639144750263930000",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "vtex-webcontinental-5361977",
@@ -6966,7 +7257,10 @@
    "armazGB": 512,
    "precoDeNum": 11241.03,
    "descontoPct": 12.0,
-   "imagem": "https://lojawebcontinental.vteximg.com.br/arquivos/ids/73024421/MKP001778054625-1.jpg?v=639144750279870000"
+   "imagem": "https://lojawebcontinental.vteximg.com.br/arquivos/ids/73024421/MKP001778054625-1.jpg?v=639144750279870000",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "zb-1370426181",
@@ -7007,7 +7301,10 @@
    "armazGB": null,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.zst.com.br/thumbs/45/13/36/-1448973534.jpg"
+   "imagem": "https://i.zst.com.br/thumbs/45/13/36/-1448973534.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "zb-1433313015",
@@ -7047,7 +7344,10 @@
    "armazGB": null,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.zst.com.br/thumbs/45/12/38/-1448443382.jpg"
+   "imagem": "https://i.zst.com.br/thumbs/45/12/38/-1448443382.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "zb-1493322747",
@@ -7112,7 +7412,10 @@
    "armazGB": 1000,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.zst.com.br/thumbs/45/a/17/-1626677780.jpg"
+   "imagem": "https://i.zst.com.br/thumbs/45/a/17/-1626677780.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "zb-1457386158",
@@ -7177,7 +7480,10 @@
    "armazGB": 1000,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.zst.com.br/thumbs/45/33/f/-1566921281.jpg"
+   "imagem": "https://i.zst.com.br/thumbs/45/33/f/-1566921281.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "zb-1368624918",
@@ -7218,7 +7524,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.zst.com.br/thumbs/45/35/3b/-1349139486.jpg"
+   "imagem": "https://i.zst.com.br/thumbs/45/35/3b/-1349139486.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "zb-1370458100",
@@ -7259,7 +7568,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://i.zst.com.br/thumbs/45/34/2e/-1346910396.jpg"
+   "imagem": "https://i.zst.com.br/thumbs/45/34/2e/-1346910396.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "zb-1520495630",
@@ -7299,7 +7611,10 @@
    "armazGB": null,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://image.zst.com.br/205DD70B2E8A2A2BBAC64B0462D90042_375_375.jpg"
+   "imagem": "https://image.zst.com.br/205DD70B2E8A2A2BBAC64B0462D90042_375_375.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "zb-1561903593",
@@ -7339,7 +7654,10 @@
    "armazGB": null,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://image.zst.com.br/FD4BD8F5FE17E110079BF5B477D739D2_375_375.jpg"
+   "imagem": "https://image.zst.com.br/FD4BD8F5FE17E110079BF5B477D739D2_375_375.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "zb-1520140281",
@@ -7379,7 +7697,10 @@
    "armazGB": null,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://image.zst.com.br/6334A3661695AC9C8D1406EDBF1415E0_375_375.jpg"
+   "imagem": "https://image.zst.com.br/6334A3661695AC9C8D1406EDBF1415E0_375_375.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "zb-1580355380",
@@ -7419,7 +7740,10 @@
    "armazGB": null,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://image.zst.com.br/6A95A1619BDCC3B89ADFB38FDD6710C2_375_375.jpg"
+   "imagem": "https://image.zst.com.br/6A95A1619BDCC3B89ADFB38FDD6710C2_375_375.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "zb-1522781354",
@@ -7458,7 +7782,10 @@
    "pesoKg": null,
    "armazGB": 512,
    "precoDeNum": null,
-   "descontoPct": null
+   "descontoPct": null,
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "zb-1578130409",
@@ -7498,7 +7825,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://image.zst.com.br/22807D6EE6FD1C6D6F977CBBC8CFC218_375_375.jpg"
+   "imagem": "https://image.zst.com.br/22807D6EE6FD1C6D6F977CBBC8CFC218_375_375.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "zb-1576557569",
@@ -7538,7 +7868,10 @@
    "armazGB": null,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://image.zst.com.br/F5DC2D414814E3333CFDDF9D8DA3F537_375_375.jpg"
+   "imagem": "https://image.zst.com.br/F5DC2D414814E3333CFDDF9D8DA3F537_375_375.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "zb-1561940941",
@@ -7578,7 +7911,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://image.zst.com.br/4D2D4407EFADF1AACEDB22F01479B9CE_375_375.jpg"
+   "imagem": "https://image.zst.com.br/4D2D4407EFADF1AACEDB22F01479B9CE_375_375.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "zb-1581684385",
@@ -7618,7 +7954,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://image.zst.com.br/97022F1A447E22AC428D3B713956832D_375_375.jpg"
+   "imagem": "https://image.zst.com.br/97022F1A447E22AC428D3B713956832D_375_375.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "zb-1561940913",
@@ -7658,7 +7997,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://image.zst.com.br/1ED2FD3EEB96A4E25FD2DE766C7728FB_375_375.jpg"
+   "imagem": "https://image.zst.com.br/1ED2FD3EEB96A4E25FD2DE766C7728FB_375_375.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "zb-1582001749",
@@ -7698,7 +8040,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://image.zst.com.br/6A354C32A097C872E5D515987AC280EB_375_375.jpg"
+   "imagem": "https://image.zst.com.br/6A354C32A097C872E5D515987AC280EB_375_375.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "zb-1561940812",
@@ -7738,7 +8083,10 @@
    "armazGB": 512,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://image.zst.com.br/76C07464476DA33FAE8EADE52C2D6885_375_375.jpg"
+   "imagem": "https://image.zst.com.br/76C07464476DA33FAE8EADE52C2D6885_375_375.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   },
   {
    "id": "zb-1579403333",
@@ -7778,7 +8126,10 @@
    "armazGB": null,
    "precoDeNum": null,
    "descontoPct": null,
-   "imagem": "https://image.zst.com.br/8FE29B407BD3607C01604A9E237DE177_375_375.jpg"
+   "imagem": "https://image.zst.com.br/8FE29B407BD3607C01604A9E237DE177_375_375.jpg",
+   "tipo": "Notebook",
+   "marca": "Dell",
+   "temTela": true
   }
  ]
 }

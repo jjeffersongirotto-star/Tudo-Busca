@@ -3,13 +3,20 @@ import logging
 import re
 from urllib.parse import quote
 
+from .classifica import tipo
 from .util import aplicar_preco, imagem_ok, num
 
 log = logging.getLogger('coleta')
 
-LOJAS = {'iByte': 'www.ibyte.com.br', 'WAZ': 'www.waz.com.br', 'Webcontinental': 'www.webcontinental.com.br'}
-TERMOS = ['notebook dell', 'notebook alienware']
-RUIM = re.compile(r'usad|recondicion|seminov|vitrine|open\s*box|mochila|capa|carregador|fonte|bateria|teclado|mouse|suporte|pel[ií]cula', re.I)
+# Lojas com catálogo público VTEX. As que não responderem são ignoradas (e mantêm a coleta anterior).
+LOJAS = {'iByte': 'www.ibyte.com.br', 'WAZ': 'www.waz.com.br', 'Webcontinental': 'www.webcontinental.com.br',
+         'Fast Shop': 'www.fastshop.com.br', 'Gazin': 'www.gazin.com.br', 'Novo Mundo': 'www.novomundo.com.br',
+         'eFácil': 'www.efacil.com.br', 'Colombo': 'www.colombo.com.br', 'Lebes': 'www.lebes.com.br',
+         'Girafa': 'www.girafa.com.br', 'Lojas MM': 'www.lojasmm.com', 'Zema': 'www.zema.com',
+         'Positivo': 'loja.positivotecnologia.com.br', 'Multilaser': 'www.multilaser.com.br', 'Avell': 'avell.com.br',
+         'Carrefour': 'www.carrefour.com.br', 'Havan': 'www.havan.com.br', 'Eletrozema': 'www.eletrozema.com.br'}
+TERMOS = ['notebook', 'notebook gamer', 'computador', 'pc gamer', 'macbook', 'all in one', 'mini pc']
+PAGINAS = 2  # 50 por página
 
 
 def _oferta(item):
@@ -25,7 +32,7 @@ def _oferta(item):
 def _converter(p, loja, host):
     nome = (p.get('productName') or '').strip()
     marca = p.get('brand') or ''
-    if not re.match(r'\s*(notebook|laptop)', nome, re.I) or not re.search(r'dell|alienware', nome + ' ' + marca, re.I) or RUIM.search(nome):
+    if not tipo(nome):
         return None
     item = (p.get('items') or [{}])[0]
     s, o = _oferta(item)
@@ -33,14 +40,15 @@ def _converter(p, loja, host):
         return 'indisponivel'
     specs = {'Anúncio (título)': nome, 'Loja': loja, 'Vendedor (seller VTEX)': s.get('sellerName', ''),
              'Referência': p.get('productReference', ''), 'Marca': marca}
-    for k in p.get('allSpecifications') or []:
+    for k in (p.get('allSpecifications') or [])[:30]:
         v = p.get(k)
         if isinstance(v, list) and v and len(k) < 60:
             specs[k] = ', '.join(str(x) for x in v)[:300]
     link = p.get('link') or ''
     if link.startswith('/'):
         link = 'https://' + host + link
-    n = {'id': f"vtex-{loja.lower()}-{p.get('productId')}", 'loja': loja, 'vendedor': s.get('sellerName', ''), 'nome': nome,
+    slug = re.sub(r'[^a-z0-9]', '', loja.lower().replace('á', 'a'))
+    n = {'id': f"vtex-{slug}-{p.get('productId')}", 'loja': loja, 'vendedor': s.get('sellerName', ''), 'nome': nome,
          'modelo': p.get('productReference', ''), 'url': link, 'specs': specs,
          'imagem': imagem_ok(((item.get('images') or [{}])[0]).get('imageUrl'))}
     aplicar_preco(n, num(o.get('Price')), num(o.get('ListPrice')))
@@ -53,7 +61,7 @@ async def coletar(http, anteriores):
     for loja, host in LOJAS.items():
         achou, falhou = 0, False
         for termo in TERMOS:
-            for ini in range(0, 200, 50):
+            for ini in range(0, 50 * PAGINAS, 50):
                 url = f'https://{host}/api/catalog_system/pub/products/search?ft={quote(termo)}&_from={ini}&_to={ini + 49}'
                 lista = await http.get(url, json=True)
                 if lista is None:
@@ -81,6 +89,7 @@ async def coletar(http, anteriores):
                 itens[a['id']] = {'id': a['id'], 'removido': True}
         if falhou and not achou:
             problemas.append(loja)
+            continue
         else:
             ok_lojas += 1
         log.info('VTEX %s: %d anúncios na busca%s', loja, achou, ' (com falhas)' if falhou else '')
