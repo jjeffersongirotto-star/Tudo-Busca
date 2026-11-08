@@ -10,7 +10,7 @@ android {
         applicationId 'br.tudobusca.app'
         minSdk 24
         targetSdk 34
-        versionCode (System.getenv('VERSAO_CODIGO') ?: '1') as int
+        versionCode Integer.parseInt(System.getenv('VERSAO_CODIGO') ?: '1')
         versionName System.getenv('VERSAO_NOME') ?: '1.0'
     }
     buildTypes {
