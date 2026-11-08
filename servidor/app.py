@@ -58,7 +58,7 @@ async def coletar():
         try:
             novo, resumo = await orquestrador.executar(carregar(), estado)
             salvar(novo)
-            estado.update(estado='concluido', resumo=resumo)
+            estado.update(estado='concluido', resumo={k: v for k, v in resumo.items() if k != 'idsNovos'})
             log.info('coleta concluída: %s', {k: v for k, v in resumo.items() if k not in ('fontes', 'idsNovos')})
         except Exception as e:
             log.exception('coleta falhou')
