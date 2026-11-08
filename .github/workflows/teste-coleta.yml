@@ -25,5 +25,5 @@ jobs:
           python -c "import json; d=json.load(open('/tmp/coleta.json')); json.dump(d, open('dados/dados.json','w'), ensure_ascii=False, indent=1)"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add dados/dados.json
+          git add dados/dados.json dados/banco.json
           git diff --cached --quiet || (git commit -m "Dados iniciais: coleta completa de teste" && git push)

@@ -10,7 +10,12 @@ Página com cupons de desconto e **computadores de qualquer marca** — notebook
   - `app.py` — endereços: `/` (página), `/api/dados`, `POST /api/atualizar`, `/api/status`.
   - `coleta/` — um arquivo por loja (`dell.py`, `kabum.py`, `amazon.py`, `vtex.py`, `zoom.py`), `classifica.py` (tipo, marca, linha e filtro de acessórios/usados), `enrich.py` (processador, GPU, tela…) e `orquestrador.py` (junta tudo, valida e limita a 1.500 produtos).
 - `dados/dados.json` — dados iniciais (usados quando o servidor reinicia).
+- `dados/banco.json` — **banco de dados de produtos**: tudo o que já se descobriu de cada computador (por produto e por código do modelo), mais o histórico de preços. Cada coleta aprende com os anúncios e completa o que falta neles com o que o banco já sabe.
 - `logica-cupons-dell.md` — documentação da lógica original: fontes, esquema dos dados, interface e cálculo da nota.
+
+## Categorias e dados que faltam
+- Cada computador ganha uma categoria, calculada só com o que se sabe dele: **Entrada · Básico · Intermediário · Gamer · Avançado · Topo de linha**.
+- Dado que falta no anúncio: 1º vem do **banco de dados** (mesmo produto ou mesmo modelo em outra loja; marcado como "completado pelo banco"); 2º, se não houver, do **computador típico da categoria** (tabela `PADRAO` em `cupons-dell.html`), em amarelo como "estimado".
 
 ## Regras da coleta
 - Se uma loja não responde, ficam os preços anteriores dela, com o aviso "preço de coleta anterior".

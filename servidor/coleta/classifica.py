@@ -61,7 +61,11 @@ MARCAS = [
 
 
 def marca(nome, marca_loja=''):
-    t = (nome or '') + ' '
+    # a marca da placa de vídeo, placa-mãe ou fonte não é a marca do computador ("RTX 5080 Asus", "ProArt X870E")
+    t = re.sub(r'(RTX|GTX|RX|Arc)\s*\w*\d\w*(\s+(Ti|Super|XT|XTX))?\s+(Asus|MSI|Gigabyte|Galax|Zotac|PNY|Palit|Sapphire|PowerColor|ASRock|Inno3D)\b', ' ', nome or '', flags=re.I)
+    t = re.sub(r'\b(placa[\s\-]m[aã]e|motherboard|fonte|gabinete|cooler|water\s*cooler)\s+\S+(\s+\S+)?', ' ', t, flags=re.I)
+    t = re.sub(r'\b(ProArt|Prime|TUF\s+Gaming\s+[ABXZ]\d{3})\b', ' ', t, flags=re.I) if re.match(r'\s*(pc|computador|cpu|desktop)\b', t, re.I) else t
+    t += ' '
     for pad, m in MARCAS:
         if re.search(pad, t, re.I):
             return m
