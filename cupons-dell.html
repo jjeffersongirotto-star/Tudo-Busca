@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Buscador de Cupons e Computadores</title>
 <meta name="theme-color" content="#09090f">
+<link rel="manifest" href="https://tudo-busca.onrender.com/manifest.webmanifest">
+<link rel="icon" type="image/png" href="https://tudo-busca.onrender.com/icones/favicon-32.png">
+<link rel="apple-touch-icon" href="https://tudo-busca.onrender.com/icones/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Tudo-Busca">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
 <style>
@@ -50,6 +57,13 @@ header .info{font-size:.78rem;color:var(--sub);margin-top:2px;white-space:nowrap
 header .info strong{color:var(--txt);font-weight:600}
 
 /* Botão circular de atualizar: ícone geometricamente centrado, gira no próprio eixo */
+.acoes-topo{display:flex;align-items:center;gap:10px;flex:0 0 auto}
+.btn-instalar{display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 16px;border-radius:999px;border:1px solid var(--borda-forte);
+  background:var(--grad);color:#fff;font:inherit;font-weight:700;font-size:.86rem;cursor:pointer;box-shadow:0 6px 18px -8px rgba(139,92,246,.9);transition:.18s}
+.btn-instalar svg{display:block;width:18px;height:18px}
+.btn-instalar:hover{filter:brightness(1.12);transform:translateY(-1px)}
+.btn-instalar[hidden]{display:none}
+@media(max-width:500px){.btn-instalar span{display:none}.btn-instalar{width:44px;height:44px;padding:0;justify-content:center}}
 .btn-refresh{flex:0 0 auto;position:relative;width:46px;height:46px;padding:0;margin:0;border-radius:50%;border:1px solid var(--borda-forte);
   background:var(--card-forte);color:var(--txt);cursor:pointer;display:grid;place-items:center;line-height:0;
   transition:transform .2s,background .2s,border-color .2s,box-shadow .2s}
@@ -254,9 +268,15 @@ footer strong{color:var(--sub)}
       <div class="info">Atualizado em <strong id="ultimaAtualizacao">—</strong></div>
     </div>
   </div>
+  <div class="acoes-topo">
+  <button id="btnInstalar" class="btn-instalar" type="button" hidden aria-label="Instalar o app" title="Instalar o app">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+    <span>Instalar app</span>
+  </button>
   <button id="btnAtualizar" class="btn-refresh" type="button" aria-label="Atualizar dados" title="Atualizar dados">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
   </button>
+  </div>
 </header>
 <div id="aviso"></div>
 <main id="main" class="cupons-fechado">
@@ -874,6 +894,22 @@ $('btnAtualizar').addEventListener('click', async () => {
       setTimeout(parar, dur - t);
     }, Math.max(0, 800 - (Date.now() - inicio)));
   }
+});
+
+/* ---------- App instalável (celular e computador) ---------- */
+const NO_SERVIDOR = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+const ehIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+const instalado = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+let pedidoInstalacao = null;
+if (NO_SERVIDOR && 'serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); pedidoInstalacao = e; $('btnInstalar').hidden = false; });
+window.addEventListener('appinstalled', () => { $('btnInstalar').hidden = true; aviso('✔ App instalado! Ele aparece junto com os outros apps do aparelho.', 'ok'); });
+if (!instalado() && (ehIOS || !NO_SERVIDOR)) $('btnInstalar').hidden = false;   // iPhone e arquivo aberto direto: mostra as instruções
+$('btnInstalar').addEventListener('click', async () => {
+  if (pedidoInstalacao) { pedidoInstalacao.prompt(); await pedidoInstalacao.userChoice.catch(() => {}); pedidoInstalacao = null; $('btnInstalar').hidden = true; return; }
+  if (!NO_SERVIDOR) { aviso(`Para instalar, abra <a href="${SERVIDOR_PUBLICO}" target="_blank" rel="noopener">${SERVIDOR_PUBLICO.replace('https://', '')}</a> no navegador e toque em <b>Instalar app</b>. Também há APK para Android e instalador para Windows em <a href="https://github.com/jjeffersongirotto-star/Tudo-Busca/releases/latest" target="_blank" rel="noopener">Downloads</a>.`, 'info'); return; }
+  if (ehIOS) { aviso('No iPhone/iPad: toque em <b>Compartilhar</b> (quadrado com seta para cima) e depois em <b>Adicionar à Tela de Início</b>.', 'info'); return; }
+  aviso('No menu do navegador (⋮), escolha <b>Instalar app</b> ou <b>Adicionar à tela inicial</b>.', 'info');
 });
 
 /* ---------- Início ---------- */
