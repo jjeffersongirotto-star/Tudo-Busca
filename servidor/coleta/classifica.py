@@ -54,7 +54,7 @@ MARCAS = [
     (r'multilaser|\bultra\s+u[ld]', 'Multilaser'), (r'\bavell\b', 'Avell'), (r'gigabyte|aorus', 'Gigabyte'),
     (r'microsoft|surface', 'Microsoft'), (r'\blg\b|gram\b', 'LG'), (r'huawei|matebook', 'Huawei'), (r'xiaomi|redmibook', 'Xiaomi'),
     (r'compaq', 'Compaq'), (r'philco', 'Philco'), (r'pichau', 'Pichau'), (r'mancer', 'Mancer'), (r'3green', '3green'),
-    (r'\bintel\s+nuc\b', 'Intel'), (r'beelink', 'Beelink'), (r'minisforum', 'Minisforum'), (r'\bdaten\b', 'Daten'),
+    (r'beelink', 'Beelink'), (r'minisforum', 'Minisforum'), (r'\bdaten\b', 'Daten'),
     (r'login\b', 'Login'), (r'bringit', 'BRX'), (r'\bbrx\b', 'BRX'), (r'neologic', 'Neologic'), (r'\bskill\b', 'Skill'),
 ]
 
@@ -65,7 +65,8 @@ def marca(nome, marca_loja=''):
         if re.search(pad, t, re.I):
             return m
     ml = (marca_loja or '').strip()
-    if ml and not re.search(r'gen[ée]ric|sem\s*marca|outr', ml, re.I) and len(ml) < 30:
+    # marca do processador/placa (AMD, Intel, NVIDIA) não é a marca do computador
+    if ml and not re.search(r'gen[ée]ric|sem\s*marca|outr|^\s*(amd|intel|nvidia|ryzen|geforce)\s*$', ml, re.I) and len(ml) < 30:
         return ml.title() if ml.isupper() or ml.islower() else ml
     return 'Outras / montado'
 

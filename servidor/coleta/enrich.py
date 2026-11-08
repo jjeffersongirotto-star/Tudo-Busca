@@ -80,7 +80,7 @@ def cpu(texto):
             ger = int(num[0])
         return dict(cpuModelo=f'Core i{m.group(1)}-{num}{letras}', cpuFamilia='Core i' + m.group(1), cpuSufixo=suf,
                     cpuGeracao='13ª ger. Intel' if ger >= 13 else 'antiga', _letras=letras, _ger=ger, _intel=True)
-    m = re.search(r'(?:Core\s*)?\bi([3579])\s*(1[0-4]|[2-9])\s*[ªº]', t, re.I)
+    m = re.search(r'(?:Core\s*)?\bi([3579])\s*(1[0-4]|[2-9])\s*(?:[ªº]|[ao]\b|th\b)', t, re.I)
     if m:  # "i3 9ª", "i5 12º"
         ger = int(m.group(2))
         return dict(cpuModelo=f'Core i{m.group(1)} ({ger}ª geração)', cpuFamilia='Core i' + m.group(1), cpuSufixo=None,
@@ -128,7 +128,7 @@ def gpu(texto):
     m = re.search(r'GTX\s*(\d{3,4})\s*(Ti|Super)?', t, re.I)
     if m:
         return 'GTX ' + m.group(1) + (' ' + m.group(2).capitalize() if m.group(2) else ''), True
-    m = re.search(r'\bRX\s*(\d{4})\s*(XTX|XT|GRE)?', t, re.I)
+    m = re.search(r'\bRX\s*(\d{3,4})\s*(XTX|XT|GRE)?', t, re.I)
     if m:
         return 'RX ' + m.group(1) + (' ' + m.group(2).upper() if m.group(2) else ''), True
     m = re.search(r'\bArc\s*([AB]\d{3})', t, re.I)
