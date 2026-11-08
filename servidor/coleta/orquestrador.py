@@ -35,13 +35,19 @@ def _velho(n):
     """Modelos antigos ficam de fora. Notebook: Intel ≤12ª, Ryzen ≤5000, Celeron/Pentium/Athlon.
     Desktop: o que a extração marcou como 'antiga' (Intel ≤11ª, Ryzen ≤3000). Apple M1 continua (ainda é vendido)."""
     t = n.get('nome', '') + ' ' + ' '.join(str(v) for v in (n.get('specs') or {}).values())
-    if re.search(r'DDR3\b|Windows\s*(7|8|10)\b', t, re.I):
+    if re.search(r'DDR3\b|Windows\s*(7|8|10)\b|\bW(7|8|10)\b', t, re.I):
         return True
     if (n.get('cpuFamilia') or '').startswith('Apple'):
         return False
     if n.get('cpuGeracao') == 'antiga':
         return True
     return n.get('tipo') in ('Notebook', 'All-in-one') and bool(re.search(r'Ryzen\s*[3579][\s\-]*[1-5]\d{3}[A-Z]?\b', t, re.I))
+
+
+def _sem_dados(n):
+    """Anúncio sem preço plausível ou sem nenhum dado de hardware: não dá para avaliar."""
+    p = n.get('precoNum')
+    return (p is not None and p < 400) or (not n.get('cpuFamilia') and not n.get('ramGB'))
 
 
 def _pontos_info(n):
@@ -125,7 +131,7 @@ async def executar(dados, status=None):
                 atualizados += 1
             else:
                 n = enriquecer(it)
-                if _velho(n):
+                if _velho(n) or _sem_dados(n):
                     continue
                 novos.append(n['id'])
             recebidos[n['id']] = n
