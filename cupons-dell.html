@@ -406,7 +406,8 @@ const NOTA = {
   oled: 2,
   hz: [[240,4],[144,3],[90,2],[1,1]],
   telaGrande: 1,
-  max: {proc:30, gpu:20, ram:15, armaz:10, tela:15}, maxBruto: 90
+  max: {proc:30, gpu:20, ram:15, armaz:10, tela:15}, maxBruto: 90,
+  pesoPreco: 0.2  // Custo-benefício = 80% Desempenho + 20% valor pelo preço
 };
 const faixa = (tab, v) => { for (const r of tab) if (v >= r[0]) return r[1]; return 0; };
 const fmtPct = v => v.toLocaleString('pt-BR', {maximumFractionDigits: 1}) + '%';
@@ -481,20 +482,24 @@ function calcularNotas(){
     const r = pontuar(n); r.cb = n.precoNum ? r.total / (n.precoNum / 1000) : null; r.grupo = grupo(n); NOTAS.set(n.id, r);
     if (r.cb != null) MELHOR_CB[r.grupo] = Math.max(MELHOR_CB[r.grupo] || 0, r.cb);
   });
-  NOTAS.forEach(r => { const m = MELHOR_CB[r.grupo]; r.cbPct = (r.cb != null && m) ? Math.round(r.cb / m * 100) : null; });
+  NOTAS.forEach(r => {
+    const m = MELHOR_CB[r.grupo];
+    r.cbPct = (r.cb != null && m) ? Math.round(r.cb / m * 100) : null;   // valor pelo preço (0–100, relativo ao grupo)
+    r.cbFinal = r.cbPct == null ? null : r1((1 - NOTA.pesoPreco) * r.total + NOTA.pesoPreco * r.cbPct);
+  });
 }
 /* Checkbox "Custo-benefício": desmarcado = Desempenho (só hardware); marcado = hardware dividido pelo preço. */
 const usaPreco = () => $('fCB').checked;
-const valorNota = n => { const r = NOTAS.get(n.id) || {}; return usaPreco() ? (r.cbPct ?? -1) : (r.total ?? -1); };
+const valorNota = n => { const r = NOTAS.get(n.id) || {}; return usaPreco() ? (r.cbFinal ?? -1) : (r.total ?? -1); };
+const P_HW = Math.round((1 - NOTA.pesoPreco) * 100), P_PRECO = Math.round(NOTA.pesoPreco * 100);
 function htmlNotaCard(r){
   if (!usaPreco()) {
     return `<div class="cb" title="Desempenho: soma do hardware convertida para 0–100 (o preço não entra)">
       Desempenho <b>${fmt1(r.total)}/100</b><span class="barra"><i style="width:${Math.min(100, r.total || 0)}%"></i></span></div>`;
   }
-  if (r.cbPct == null) return `<div class="cb">Custo-benefício <b>sem preço</b><span class="barra"><i style="width:0"></i></span></div>`;
-  return `<div class="cb" title="Pontos de desempenho por R$ 1.000, comparados com o melhor do mesmo grupo (${esc(r.grupo.toLowerCase())})">
-    Custo-benefício <b>${r.cbPct >= 100 ? '🏆 melhor do grupo' : r.cbPct + '% do melhor'}</b><span class="barra"><i style="width:${r.cbPct}%"></i></span>
-    ${fmt1(r.total)}/100</div>`;
+  if (r.cbFinal == null) return `<div class="cb">Custo-benefício <b>sem preço</b><span class="barra"><i style="width:0"></i></span></div>`;
+  return `<div class="cb" title="${P_HW}% Desempenho (${fmt1(r.total)}) + ${P_PRECO}% valor pelo preço (${r.cbPct})">
+    Custo-benefício <b>${fmt1(r.cbFinal)}/100</b><span class="barra"><i style="width:${Math.min(100, r.cbFinal)}%"></i></span></div>`;
 }
 function htmlMedias(){
   return `<table><tr><th>Parte</th><th>Média usada quando falta o dado</th><th>Produtos com o dado</th></tr>${PARTES.map(([k, , r]) => `<tr><td>${r}</td><td>${fmt1(MEDIAS[k].media)}</td><td>${MEDIAS[k].n} de ${dados.produtos.length}</td></tr>`).join('')}</table>`;
@@ -503,7 +508,7 @@ function htmlRegras(){
   const tab = (cab, linhas) => `<table><tr>${cab.map(c => `<th>${c}</th>`).join('')}</tr>${linhas.map(l => `<tr>${l.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</table>`;
   return `<p><b>Duas notas, escolhidas pelo checkbox "Custo-benefício" nos filtros:</b></p>
   <p><b>1. Desempenho (checkbox desmarcado, padrão)</b> — só o hardware, sem olhar o preço. Cada computador soma os pontos dos 5 itens abaixo (máx. ${NOTA.maxBruto}) e a soma vira uma nota de <b>0 a 100</b> (pontos ÷ ${NOTA.maxBruto} × 100). Para chegar a 100 seria preciso ter a melhor peça em todos os itens. Mostra o computador mais completo, mesmo que seja caro.</p>
-  <p><b>2. Custo-benefício (checkbox marcado)</b> — o Desempenho dividido pelo preço: <b>pontos por R$ 1.000 = Desempenho ÷ (preço ÷ 1000)</b>. O resultado é comparado com o melhor <b>do mesmo grupo</b> (notebooks, PCs de mesa ou all-in-one): o melhor aparece como 🏆 <b>melhor do grupo</b> e os outros como "<b>X% do melhor</b>". Produtos sem preço ficam sem custo-benefício.</p>
+  <p><b>2. Custo-benefício (checkbox marcado)</b> — <b>${P_HW}% Desempenho + ${P_PRECO}% valor pelo preço</b>. O valor pelo preço é o Desempenho dividido pelo preço (<b>pontos por R$ 1.000</b>), comparado com o melhor do mesmo grupo (notebooks, PCs de mesa ou all-in-one) e convertido para 0–100. Como o hardware pesa ${P_HW}%, um computador fraco não fica bem avaliado só por ser barato (Desempenho 35 e o mais barato do grupo → ${fmt1((1 - NOTA.pesoPreco) * 35 + NOTA.pesoPreco * 100)}), e um computador forte não perde tanto por ser caro. Produtos sem preço ficam sem custo-benefício.</p>
   <p>PCs sem tela (de mesa, mini PC, Mac mini) não usam o item Tela: a soma vai até ${NOTA.maxBruto - NOTA.max.tela} e vira 0–100 do mesmo jeito. O desconto <b>não</b> soma pontos (ele já está no preço); o selo de desconto e os filtros de promoção são só informativos.</p>
   <p class="caixa-est"><b>Dado que a loja não informou</b> (ex.: modelo da GPU, taxa de atualização, sufixo da CPU): em vez de 0, a parte recebe a <b>média de pontos dessa parte entre todos os computadores que têm o dado</b> (recalculada a cada atualização, arredondada a 1 casa). Essas partes aparecem em <span class="marca-est">amarelo</span> ("estimado").</p>
   <div id="tabMedias">${htmlMedias()}</div>
@@ -680,13 +685,13 @@ function htmlInfo(n){
     ${n.precoAntigo ? `<div class="meta falta">⚠ ${esc((n.specs || {})['Fonte do preço'] || 'Preço de coleta anterior; pode ter mudado.')}</div>` : ''}
     <div class="tags"><span class="tag perf-${CLASSE_PERFIL[n.cpuPerfil] || 'NI'}">⚙️ Perfil: ${esc(n.cpuPerfil || 'Não informado')}</span>${n.pesoKg ? `<span class="tag">⚖️ ${String(n.pesoKg).replace('.', ',')} kg</span>` : ''}</div>
     <div class="nota-box">
-      <h4>Desempenho: ${fmt1(r.total)}/100${usaPreco() ? ` · Custo-benefício: ${r.cbPct == null ? 'sem preço' : r.cbPct >= 100 ? '🏆 melhor do grupo' : r.cbPct + '% do melhor'}` : ''}</h4>
+      <h4>Desempenho: ${fmt1(r.total)}/100${usaPreco() ? ` · Custo-benefício: ${r.cbFinal == null ? 'sem preço' : fmt1(r.cbFinal) + '/100'}` : ''}</h4>
       <table class="pontos">
         <tr><th>Item</th><th>Valor considerado</th><th>Pontos</th></tr>
         ${r.itens.map(x => `<tr class="${x.estimado ? 'linha-est' : ''}"><td>${x.k}</td><td>${esc(x.v)}${x.obs ? `<div class="meta">${esc(x.obs)}</div>` : ''}${x.estimado ? `<div class="meta nota-est">⚠ estimado – média dos outros computadores (${esc(x.partesEst.map(k => PARTES.find(p => p[0] === k)[2] + ' = ' + fmt1(MEDIAS[k].media)).join('; '))})</div>` : ''}</td><td>${fmt1(x.p)}/${x.m}</td></tr>`).join('')}
         <tr><th>Soma</th><td>${fmt1(r.bruto)} de ${r.maxBruto} → × 100 ÷ ${r.maxBruto}${r.semTela ? ' (sem tela: o item Tela não conta)' : ''}</td><td><b>${fmt1(r.total)}/100</b></td></tr>
       </table>
-      <div class="meta">${!usaPreco() ? 'O preço não entra no Desempenho. Marque <b>Custo-benefício</b> nos filtros para comparar com o preço.' : r.cb != null ? `Custo-benefício: ${fmt1(r.total)} ÷ (${esc(n.preco)} ÷ 1000) = <b>${fmt1(r.cb)} pontos por R$ 1.000</b>. O melhor entre os ${esc(r.grupo.toLowerCase())} faz ${fmt1(MELHOR_CB[r.grupo] || 0)} → este fica com <b>${r.cbPct}% do melhor</b>.` : 'Sem preço: custo-benefício não calculado.'} ${r.estimados.length ? 'Linhas em amarelo = dado não informado pela loja; usam a média dos outros computadores.' : ''}</div>
+      <div class="meta">${!usaPreco() ? 'O preço não entra no Desempenho. Marque <b>Custo-benefício</b> nos filtros para comparar com o preço.' : r.cb != null ? `<b>Custo-benefício = ${P_HW}% Desempenho + ${P_PRECO}% valor pelo preço.</b> Valor pelo preço: ${fmt1(r.total)} ÷ (${esc(n.preco)} ÷ 1000) = ${fmt1(r.cb)} pontos por R$ 1.000; o melhor entre os ${esc(r.grupo.toLowerCase())} faz ${fmt1(MELHOR_CB[r.grupo] || 0)} → <b>${r.cbPct}/100</b>. Conta: ${P_HW}% × ${fmt1(r.total)} + ${P_PRECO}% × ${r.cbPct} = <b>${fmt1(r.cbFinal)}/100</b>.` : 'Sem preço: custo-benefício não calculado.'} ${r.estimados.length ? 'Linhas em amarelo = dado não informado pela loja; usam a média dos outros computadores.' : ''}</div>
     </div>
     <table>
       <tr><th>Sistema operacional</th><td>${esc(ni(n.sistema))}</td></tr>
