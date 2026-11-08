@@ -12,7 +12,8 @@ _INICIO = re.compile(
 _RUIM = re.compile(r'usad|recondicion|seminov|vitrine|open\s*box|outlet|refurb|reembalad|\bvitrine\b|para\s+notebook|p/\s*notebook|'
                    r'\bcapa\b|mochila|suporte|pel[ií]cula|carregador|maleta|\bbolsa\b|\bcase\s+para|mesa\s+para|base\s+para|'
                    r'^\s*cpu\s+cooler|adaptador|\bcabo\b|\bskin\b|adesivo|teclado\s+para|bateria\s+para|tela\s+para|'
-                   r'\bpe[cç]as?\b|placa[\s\-]m[aã]e\s+para|carca[cç]a', re.I)
+                   r'\bpe[cç]as?\b|placa[\s\-]m[aã]e\s+para|carca[cç]a|infantil|brinquedo|minigame|educativ|bil[ií]ngue|'
+                   r'impressora\s+de\s+cupom|gaveta|ponto\s+de\s+venda|\bpdv\b|terminal\s+de\s+consulta', re.I)
 
 
 def tipo(nome):

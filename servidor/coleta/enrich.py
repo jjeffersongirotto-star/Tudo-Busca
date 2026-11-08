@@ -49,10 +49,12 @@ def cpu(texto):
     m = re.search(r'\b(?:Intel\s*)?(?:Core\s*i3[\s\-]*)?N(\d{2,3})\b', t)
     if m and re.search(r'intel|\bN(50|95|97|100|150|200|250|300|305|355)\b', t, re.I):
         return dict(cpuModelo=f'Intel N{m.group(1)}', cpuFamilia='Intel N', cpuSufixo='U', cpuGeracao='recente')
+    if re.search(r'(?:CEL[\s\-]*|(?<![\w\-]))[NJ][345]\d{3}\b', t) and not re.search(r'Core|Ryzen|Ultra', t, re.I):
+        return dict(cpuModelo='Celeron', cpuFamilia='Celeron', cpuSufixo='U', cpuGeracao='antiga')
     for pad, fam in ((r'Celeron', 'Celeron'), (r'Pentium', 'Pentium'), (r'Athlon', 'Athlon'), (r'MediaTek|Kompanio', 'MediaTek')):
         if re.search(pad, t, re.I) and not re.search(r'Core\s*i\d|Ryzen|Core\s*Ultra', t, re.I):
             return dict(cpuModelo=fam, cpuFamilia=fam, cpuSufixo='U', cpuGeracao='antiga' if fam != 'MediaTek' else 'recente')
-    m = re.search(r'Snapdragon\s*(?:®\s*)?X\s*(Elite|Plus)', t, re.I)
+    m = re.search(r'Snapdragon\s*(?:®\s*)?X\s*(Elite|Plus)', t, re.I) or re.search(r'QCX(PLUS|ELITE)', t, re.I)
     if m:
         fam = 'Snapdragon X ' + m.group(1).capitalize()
         return dict(cpuModelo=fam, cpuFamilia=fam, cpuSufixo='ARM', cpuGeracao='recente')
@@ -99,6 +101,7 @@ def cpu(texto):
     m = re.search(r'Core\s*([357])\b(?![\.,]\d)', t, re.I)
     if m:
         return dict(cpuModelo=None, cpuFamilia='Core ' + m.group(1), cpuSufixo=None, cpuGeracao='recente')
+    t = re.sub(r'\bR([3579])[\s\-]+(\d{4}[A-Z]{0,3})\b', r'Ryzen \1 \2', t)  # "R9-7940H" → "Ryzen 9 7940H"
     m = re.search(r'Ryzen\s*(AI\s*)?([3579])[\s\-]*(PRO\s*)?(\d{3,4})?\s?(X3D|[A-Z]{0,2})\b', t, re.I)
     if m:
         ai, n, pro, numero = m.group(1), m.group(2), m.group(3), m.group(4)
@@ -173,7 +176,8 @@ def peso(texto):
 def ram(texto):
     t = _limpo(texto)
     # armazenamento é sempre ≥128 GB, então o primeiro "N GB" com N de memória é a RAM
-    for pad in [r'(\d{1,2})\s*GB\s*(?:de\s*)?(?:RAM|DDR|LPDDR|mem)', r'(?:RAM|Mem[oó]ria)\s*(?:de\s*)?(\d{1,2})\s*GB',
+    for pad in [r'(\d{1,2})(?:\.0)?\s*(?:GB|G)?\s*de\s*RAM', r'(\d{1,2})\s*G(?:B)?\s*(?:DDR|LPDDR)', r'(\d{1,2})\s*GB\s*(?:de\s*)?(?:RAM|DDR|LPDDR|mem)',
+                r'/(\d{1,2})G/', r'\b(4|8|12|16|24|32|64)G\b', r'(?:RAM|Mem[oó]ria)\s*(?:de\s*)?(\d{1,2})\s*GB',
                 r'\b(4|8|12|16|24|32|64)\s*gb\b']:
         m = re.search(pad, t, re.I)
         if m and int(m.group(1)) in (4, 8, 12, 16, 18, 24, 32, 36, 48, 64):
@@ -186,6 +190,12 @@ def armaz(texto):
     m = re.search(r'(\d)\s*TB', t, re.I)
     if m:
         return int(m.group(1)) * 1000
+    m = re.search(r'\b(1024|2048)(?:\.0)?\b', t)
+    if m:
+        return int(m.group(1)) // 1024 * 1000
+    m = re.search(r'\b(128|256|512)(?:\.0|G)\b', t)
+    if m:
+        return int(m.group(1))
     m = re.search(r'\b(120|128|240|250|256|480|500|512|960|1000)\s*GB', t, re.I)
     return int(m.group(1)) if m else None
 
