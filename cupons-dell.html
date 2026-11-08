@@ -282,7 +282,7 @@ footer strong{color:var(--sub)}
 <main id="main" class="cupons-fechado">
   <section class="coluna" id="colCupons">
     <h2><span>🏷️ Cupons <span class="contador" id="contCupons"></span></span> <button class="toggle" id="btnCupons" aria-expanded="false">Expandir ▸</button></h2>
-    <div class="cupom-filtro">Loja: <select id="fLojaCupom"></select>
+    <div class="cupom-filtro">Loja: <select id="fLojaCupom"></select> Tipo: <select id="fCatCupom"><option value="">Todos</option><option value="Computadores">💻 Computadores</option><option value="Informática">🖱️ Informática</option><option value="Loja toda">🏬 Loja toda</option><option value="Outros produtos">Outros produtos</option></select>
       <label class="check"><input type="checkbox" id="fCupomVelhos"> mostrar expirados/duvidosos</label></div>
     <div class="lista" id="listaCupons"></div>
   </section>
@@ -367,6 +367,16 @@ function marcarNovos(d){
 function aviso(msg, tipo){ const a = $('aviso'); a.className = tipo; a.innerHTML = msg; }
 
 /* ---------- Cupons ---------- */
+let LIMITE_CUPONS = 50;
+/* Categoria do cupom: a que veio da coleta; nos cupons antigos, deduzida do texto. */
+function catCupom(c){
+  if (['Computadores', 'Informática', 'Loja toda', 'Outros produtos'].includes(c.categoria)) return c.categoria;
+  const t = ((c.descricao || '') + ' ' + (c.categoria || '')).toLowerCase();
+  if (/notebook|laptop|computador|\bpcs?\b|desktop|macbook|all.in.one|alienware|inspiron|xps|latitude|vostro/.test(t)) return 'Computadores';
+  if (/monitor|placa|mem[oó]ria|ssd|impressora|mouse|teclado|acess[oó]rio|perif[eé]ric|gamer|tablet|servidor/.test(t)) return 'Informática';
+  if (/todo o site|site todo|loja toda|primeiro pedido|primeira compra|todo/.test(t)) return 'Loja toda';
+  return 'Outros produtos';
+}
 function renderCupons(){
   const lista = $('listaCupons');
   const selL = $('fLojaCupom'), atualL = selL.value;
@@ -375,8 +385,14 @@ function renderCupons(){
   if (lojasC.includes(atualL)) selL.value = atualL;
   const velhos = $('fCupomVelhos').checked;
   const ativos = dados.cupons.filter(c => c.ativo !== false).length;
-  const visiveis = dados.cupons.map((c, i) => [c, i]).filter(([c]) => (!selL.value || (c.loja || 'Dell.com') === selL.value) && (velhos || c.ativo !== false));
-  $('contCupons').textContent = `${ativos} ativos · ${dados.cupons.length} no total` + (visiveis.length !== ativos ? ` · ${visiveis.length} exibidos` : '');
+  const catC = $('fCatCupom').value;
+  const ordemCat = {'Computadores': 0, 'Informática': 1, 'Loja toda': 2};
+  const todosVis = dados.cupons.map((c, i) => [c, i])
+    .filter(([c]) => (!selL.value || (c.loja || 'Dell.com') === selL.value) && (velhos || c.ativo !== false) && (!catC || catCupom(c) === catC))
+    .sort(([a], [b]) => (ordemCat[catCupom(a)] ?? 3) - (ordemCat[catCupom(b)] ?? 3));   // computadores primeiro
+  const visiveis = todosVis.slice(0, LIMITE_CUPONS);
+  $('contCupons').textContent = `${ativos} ativos · ${dados.cupons.length} no total` + (todosVis.length !== ativos ? ` · ${todosVis.length} exibidos` : '');
+  const maisC = todosVis.length > visiveis.length ? `<div class="mais"><button type="button" class="btn btn-contorno" id="btnMaisCupons">Mostrar mais ${Math.min(50, todosVis.length - visiveis.length)}</button><span class="meta">Mostrando ${visiveis.length} de ${todosVis.length}</span></div>` : '';
   lista.innerHTML = visiveis.map(([c, i]) => `
     <div class="cupom ${c.ativo === false ? 'inativo' : ''}">
       <div class="topo">
@@ -392,8 +408,8 @@ function renderCupons(){
       ${(c.fontesExtras || []).length ? `<div class="meta">📎 Termos vistos em: ${c.fontesExtras.map(f => `<a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.nome)}</a>`).join(' · ')}</div>` : ''}
       ${c.codigo
         ? `<button class="btn btn-azul btn-copiar" data-i="${i}">📋 Copiar</button>`
-        : `<a class="btn btn-contorno btn-copiar" style="text-decoration:none" href="${esc(c.fonteUrl)}" target="_blank" rel="noopener">Resgatar no site da Dell</a>`}
-    </div>`).join('') || '<div class="vazio">Nenhum cupom cadastrado.</div>';
+        : `<a class="btn btn-contorno btn-copiar" style="text-decoration:none" href="${esc(c.fonteUrl)}" target="_blank" rel="noopener">Resgatar no site da loja</a>`}
+    </div>`).join('') + maisC || '<div class="vazio">Nenhum cupom com esses filtros.</div>';
 }
 
 async function copiarTexto(t){
@@ -403,6 +419,7 @@ async function copiarTexto(t){
 }
 
 $('listaCupons').addEventListener('click', async e => {
+  if (e.target.closest('#btnMaisCupons')) { LIMITE_CUPONS += 50; renderCupons(); return; }
   const b = e.target.closest('button.btn-copiar'); if (!b) return;
   const c = dados.cupons[+b.dataset.i];
   try { await copiarTexto(c.codigo); b.textContent = '✔ Copiado!'; b.classList.add('copiado'); }
@@ -410,8 +427,7 @@ $('listaCupons').addEventListener('click', async e => {
   setTimeout(() => { b.textContent = '📋 Copiar'; b.classList.remove('copiado'); }, 1800);
 });
 
-$('fLojaCupom').addEventListener('change', renderCupons);
-$('fCupomVelhos').addEventListener('change', renderCupons);
+['fLojaCupom', 'fCatCupom', 'fCupomVelhos'].forEach(id => $(id).addEventListener('change', () => { LIMITE_CUPONS = 50; renderCupons(); }));
 $('btnCupons').addEventListener('click', () => {
   const fechado = $('main').classList.toggle('cupons-fechado');
   $('btnCupons').textContent = fechado ? 'Expandir ▸' : '◂ Recolher';

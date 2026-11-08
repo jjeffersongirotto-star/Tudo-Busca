@@ -28,6 +28,35 @@ LOJAS = {
     'HP': 'hp', 'Shopee': 'shopee', 'AliExpress': 'aliexpress', 'Multilaser': 'multilaser', 'Vaio': 'vaio', 'Microsoft': 'microsoft',
     'Motorola': 'motorola', 'Submarino': 'submarino', 'Shoptime': 'shoptime', 'Kalunga': 'kalunga', 'Leroy Merlin': 'leroy-merlin',
 }
+# como cada loja aparece escrita nos títulos dos cupons (para não atribuir cupom de uma loja à outra)
+APELIDOS = {'KaBuM!': ['kabum'], 'Amazon': ['amazon'], 'Dell.com': ['dell', 'alienware'], 'Magazine Luiza': ['magalu', 'magazine luiza'],
+            'Casas Bahia': ['casas bahia'], 'Mercado Livre': ['mercado livre', 'meli'], 'Fast Shop': ['fast shop', 'fastshop'],
+            'Lenovo': ['lenovo'], 'Samsung': ['samsung', 'galaxy'], 'Acer': ['acer', 'predator', 'nitro'], 'Asus': ['asus', 'rog', 'zenbook'],
+            'Pichau': ['pichau'], 'Carrefour': ['carrefour'], 'Ponto': ['ponto'], 'Extra': ['extra'], 'Americanas': ['americanas'],
+            'Avell': ['avell'], 'Webcontinental': ['webcontinental'], 'HP': ['hp'], 'Shopee': ['shopee'], 'AliExpress': ['aliexpress'],
+            'Multilaser': ['multilaser'], 'Vaio': ['vaio'], 'Motorola': ['motorola', 'moto g', 'edge'], 'Leroy Merlin': ['leroy']}
+
+
+def categoria_cupom(t):
+    t = (t or '').lower()
+    if re.search(r'notebook|laptop|computador|\bpcs?\b|desktop|macbook|all.in.one|chromebook|ultrabook|alienware|predator|nitro|ideapad|vivobook', t):
+        return 'Computadores'
+    if re.search(r'monitor|placa|mem[oó]ria|\bssd\b|\bhd\b|impressora|multifuncional|mouse|teclado|headset|fone|webcam|roteador|'
+                 r'perif[eé]ric|gamer|processador|tablet|inform[aá]tica|tecnologia|eletr[oô]nico|tv\b|smartphone|celular|scanner|microfone', t):
+        return 'Informática'
+    if re.search(r'loja toda|site todo|todo o site|toda a loja|primeira compra|qualquer|todo o app|em tudo|sem m[ií]nimo|todos os produtos', t):
+        return 'Loja toda'
+    return 'Outros produtos'
+
+
+def _outra_loja(loja, titulo):
+    """True se o título cita outra loja e não cita esta (cupom de outra loja exibido na página)."""
+    t = ' ' + re.sub(r'[^a-z0-9 ]', ' ', (titulo or '').lower()) + ' '
+    proprio = any(f' {a} ' in t for a in APELIDOS.get(loja, []))
+    outra = any(f' {a} ' in t for l, al in APELIDOS.items() if l != loja for a in al if len(a) > 3)
+    return outra and not proprio
+
+
 SITES = {
     'Méliuz': 'https://www.meliuz.com.br/desconto/cupom-{s}',
 }
@@ -148,6 +177,8 @@ async def coletar(http):
             continue
         st['paginas'] += 1
         for c in cups:
+            if _outra_loja(loja, c.get('descricao')):
+                continue
             st['cupons'] += 1
             chave = (loja, c['codigo'])
             if chave not in achados:
@@ -175,7 +206,8 @@ def juntar(antigos, novos, hoje_txt):
         c = por_chave.get(chave)
         if c is None:
             c = {'id': n['codigo'] if n['loja'] == 'Dell.com' else f"{re.sub(r'[^a-z0-9]', '', n['loja'].lower())}-{n['codigo']}",
-                 'codigo': n['codigo'], 'loja': n['loja'], 'categoria': 'Loja toda', 'condicoes': 'Confira as regras no site da loja',
+                 'codigo': n['codigo'], 'loja': n['loja'], 'categoria': categoria_cupom(n.get('descricao')),
+                 'condicoes': 'Confira as regras no site da loja',
                  'descricao': n.get('descricao') or f"Cupom {n['loja']}", 'desconto': n.get('desconto') or '',
                  'validade': n.get('validade') or 'não informada'}
             por_chave[chave] = c
