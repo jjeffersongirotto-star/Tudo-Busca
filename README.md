@@ -4,6 +4,10 @@ Página com cupons de desconto e **computadores de qualquer marca** — notebook
 
 **Endereço:** https://tudo-busca.onrender.com
 
+## Apps
+- **Celular e computador (qualquer sistema):** abra o endereço e toque em **Instalar app** (no iPhone: Compartilhar → Adicionar à Tela de Início). Funciona sem internet com os últimos dados.
+- **Android (APK) e Windows (instalador .exe):** página [Releases](../../releases/latest) do repositório, gerados pelo workflow `Gerar apps` (`apps/android`, `apps/computador`).
+
 ## Como funciona
 - `cupons-dell.html` — a página. Funciona aberta pelo endereço acima **ou** como arquivo (WhatsApp, pasta do celular): os dados vêm embutidos e a seta ⟳ pede preços novos ao servidor.
 - `servidor/` — servidor (Python/FastAPI) que, quando alguém toca na seta, busca os preços atuais nas lojas (cerca de 30 segundos).
@@ -24,7 +28,7 @@ Página com cupons de desconto e **computadores de qualquer marca** — notebook
 - Item novo passa pela extração automática. Ficam de fora: acessórios, peças, usados/recondicionados e modelos antigos (notebook: Intel ≤ 12ª, Ryzen ≤ 5000, Celeron/Pentium; desktop: Intel ≤ 11ª, Ryzen ≤ 3000; DDR3; Windows 10). Apple M1 continua.
 - Custo-benefício: cada produto é comparado com o melhor do mesmo grupo (notebooks, PCs de mesa ou all-in-one). PC sem tela não usa o item Tela da nota.
 - Coletas seguidas têm intervalo mínimo de 5 minutos (para não incomodar as lojas).
-- Cupons com validade vencida deixam de aparecer. Os cupons em si ainda **não** são recoletados automaticamente.
+- Cupons: lidos do **Méliuz** para ~25 lojas (KaBuM!, Amazon, Dell, Magalu, Casas Bahia, Mercado Livre, Lenovo, Samsung, Acer, Asus, HP, Pichau…), só com código completo na página. Cuponomia e CupoNation ficam de fora porque escondem o código. Cupom que some da fonte vira "não apareceu na última coleta"; validade vencida deixa de aparecer.
 
 ## Pendente
 - KaBuM! e Amazon pelo GitHub Actions: falta a autorização (token). Passo a passo em [`docs/autorizacao-github.md`](docs/autorizacao-github.md).
