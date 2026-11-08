@@ -17,6 +17,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 
 from coleta import orquestrador
+from coleta.banco import Banco
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(name)s: %(message)s')
 logging.getLogger('httpx').setLevel(logging.WARNING)
@@ -27,6 +28,7 @@ SEMENTE = RAIZ / 'dados' / 'dados.json'
 PASTA = Path(os.environ.get('PASTA_DADOS', '/tmp/tudo-busca'))
 ATUAL = PASTA / 'dados.json'
 PAGINA = RAIZ / 'cupons-dell.html'
+BANCO = Banco(PASTA / 'banco.json', semente=RAIZ / 'dados' / 'banco.json')
 INTERVALO_MIN = int(os.environ.get('INTERVALO_MIN_SEGUNDOS', '300'))
 
 app = FastAPI(title='Tudo-Busca', docs_url=None, redoc_url=None)
@@ -56,8 +58,9 @@ async def coletar():
     async with _trava:
         estado.update(estado='rodando', inicio=time.time(), fim=None, resumo=None, erro=None, fontes={})
         try:
-            novo, resumo = await orquestrador.executar(carregar(), estado)
+            novo, resumo = await orquestrador.executar(carregar(), estado, banco=BANCO)
             salvar(novo)
+            BANCO.salvar()
             estado.update(estado='concluido', resumo={k: v for k, v in resumo.items() if k != 'idsNovos'})
             log.info('coleta concluída: %s', {k: v for k, v in resumo.items() if k not in ('fontes', 'idsNovos')})
         except Exception as e:
@@ -99,6 +102,12 @@ async def atualizar():
     estado['estado'] = 'rodando'
     asyncio.get_running_loop().create_task(coletar())
     return _status()
+
+
+@app.get('/api/banco')
+def banco_resumo():
+    """Quantos produtos e modelos o banco de dados já conhece."""
+    return BANCO.resumo()
 
 
 @app.get('/healthz')

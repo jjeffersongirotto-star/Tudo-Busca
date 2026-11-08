@@ -72,8 +72,9 @@ def _cupons(cupons, hoje):
     return out
 
 
-async def executar(dados, status=None):
-    """Retorna (dados_novos, resumo). status: dict atualizado durante a coleta (para a página mostrar progresso)."""
+async def executar(dados, status=None, banco=None):
+    """Retorna (dados_novos, resumo). status: dict atualizado durante a coleta (para a página mostrar progresso).
+    banco: Banco de dados de produtos (completa o que falta e aprende com a coleta)."""
     status = status if status is not None else {}
     inicio = time.time()
     ant = {n['id']: n for n in (dados.get('produtos') or dados.get('notebooks') or [])}
@@ -147,6 +148,18 @@ async def executar(dados, status=None):
                 final[i] = n
 
     produtos = list(final.values())
+    completados = 0
+    if banco is not None:
+        data = hoje.strftime('%Y-%m-%d')
+        for n in produtos:
+            antes = n.get('cpuPerfil')
+            if banco.completar(n):
+                completados += 1
+                for k in ('cpuPerfil', 'procFamilia', 'placaVideo'):  # recalcula o que depende do que foi completado
+                    if n.get(k) in (None, '', 'Não informado'):
+                        n.pop(k, None)
+                enriquecer(n)
+            banco.aprender(n, data)
     if len(produtos) > MAX_PRODUTOS:
         produtos.sort(key=lambda n: (n['id'] in ant, _pontos_info(n)), reverse=True)
         produtos = produtos[:MAX_PRODUTOS]
@@ -162,7 +175,8 @@ async def executar(dados, status=None):
     for n in produtos:
         por_tipo[n.get('tipo') or 'Notebook'] = por_tipo.get(n.get('tipo') or 'Notebook', 0) + 1
     resumo = {'produtos': len(produtos), 'porTipo': por_tipo, 'novos': len(novos), 'removidos': len(removidos), 'precosAtualizados': atualizados,
-              'precosAnteriores': antigos, 'cupons': sum(1 for c in out['cupons'] if c.get('ativo') is not False),
+              'precosAnteriores': antigos, 'completadosPeloBanco': completados,
+              'banco': banco.resumo() if banco is not None else None, 'cupons': sum(1 for c in out['cupons'] if c.get('ativo') is not False),
               'segundos': round(time.time() - inicio), 'fontes': status['fontes'], 'idsNovos': novos}
     return out, resumo
 
@@ -172,8 +186,13 @@ if __name__ == '__main__':  # teste: python -m coleta.orquestrador ../dados/dado
     import sys
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
     logging.getLogger('httpx').setLevel(logging.WARNING)
+    from .banco import Banco
     d = json.load(open(sys.argv[1], encoding='utf-8'))
-    novo, r = asyncio.run(executar(d))
+    caminho_banco = sys.argv[1].replace('dados.json', 'banco.json')
+    banco = Banco(caminho_banco)
+    novo, r = asyncio.run(executar(d, banco=banco))
+    banco.salvar()
+    print('banco:', banco.resumo())
     print(json.dumps(r, ensure_ascii=False, indent=1))
     antes = {n['id']: n for n in (d.get('produtos') or d.get('notebooks'))}
     mud = [(n['id'], antes[n['id']].get('preco'), n.get('preco')) for n in novo['produtos'] if n['id'] in antes and antes[n['id']].get('precoNum') != n.get('precoNum')]

@@ -2533,7 +2533,7 @@
    "gpuDedicada": false,
    "telaResW": 1920,
    "telaRes": "Full HD",
-   "telaHz": null,
+   "telaHz": 120,
    "telaOled": false,
    "pesoKg": 1.9,
    "armazGB": 512,
@@ -2543,7 +2543,10 @@
    "tipo": "Notebook",
    "marca": "Dell",
    "temTela": true,
-   "precoPrazo": ""
+   "precoPrazo": "",
+   "doBanco": [
+    "taxa da tela"
+   ]
   },
   {
    "id": "dx13260_reg_03",
@@ -4336,7 +4339,7 @@
    "gpuDedicada": false,
    "telaResW": 1920,
    "telaRes": "Full HD",
-   "telaHz": null,
+   "telaHz": 120,
    "telaOled": false,
    "pesoKg": 1.9,
    "armazGB": 512,
@@ -4346,7 +4349,10 @@
    "tipo": "Notebook",
    "marca": "Dell",
    "temTela": true,
-   "precoAntigo": true
+   "precoAntigo": true,
+   "doBanco": [
+    "taxa da tela"
+   ]
   },
   {
    "id": "ac16250_ltd_24",
@@ -5135,7 +5141,7 @@
    "gpuDedicada": true,
    "telaResW": 1920,
    "telaRes": "Full HD",
-   "telaHz": null,
+   "telaHz": 165,
    "telaOled": false,
    "telaPol": "15.6",
    "pesoKg": null,
@@ -5145,7 +5151,10 @@
    "linha": "Nitro",
    "sistema": "Windows 11 Home",
    "procFamilia": "Intel Core i9",
-   "placaVideo": "NVIDIA RTX 4060"
+   "placaVideo": "NVIDIA RTX 4060",
+   "doBanco": [
+    "taxa da tela"
+   ]
   },
   {
    "id": "kabum-1066357",
@@ -5341,8 +5350,8 @@
    "cpuSufixo": "H",
    "cpuGeracao": "13ª ger. Intel",
    "cpuPerfil": "Desempenho",
-   "gpuModelo": null,
-   "gpuDedicada": null,
+   "gpuModelo": "Integrada",
+   "gpuDedicada": false,
    "telaResW": 1920,
    "telaRes": "Full HD",
    "telaHz": null,
@@ -5353,9 +5362,13 @@
    "armazGB": 512,
    "armazenamento": "512 GB",
    "linha": "IdeaPad",
-   "sistema": "",
+   "sistema": "Windows 11",
    "procFamilia": "Intel Core i5",
-   "placaVideo": "Não informado"
+   "placaVideo": "Integrada",
+   "doBanco": [
+    "placa de vídeo",
+    "sistema"
+   ]
   },
   {
    "id": "kabum-934681",
@@ -6516,11 +6529,11 @@
    "cpuSufixo": "U",
    "cpuGeracao": "recente",
    "cpuPerfil": "Econômico (bateria)",
-   "gpuModelo": null,
-   "gpuDedicada": null,
-   "telaResW": null,
-   "telaRes": null,
-   "telaHz": null,
+   "gpuModelo": "Integrada",
+   "gpuDedicada": false,
+   "telaResW": 1920,
+   "telaRes": "FHD+/WUXGA",
+   "telaHz": 60,
    "telaOled": false,
    "telaPol": "15.3",
    "pesoKg": null,
@@ -6530,7 +6543,12 @@
    "linha": "IdeaPad",
    "sistema": "Windows 11",
    "procFamilia": "Intel Core 3",
-   "placaVideo": "Não informado"
+   "placaVideo": "Integrada",
+   "doBanco": [
+    "placa de vídeo",
+    "resolução da tela",
+    "taxa da tela"
+   ]
   },
   {
    "id": "kabum-956980",
@@ -6846,11 +6864,11 @@
    "tipo": "Notebook",
    "marca": "Acer",
    "temTela": true,
-   "cpuModelo": null,
+   "cpuModelo": "Core Ultra 5 115U",
    "cpuFamilia": "Core Ultra 5",
-   "cpuSufixo": null,
+   "cpuSufixo": "U",
    "cpuGeracao": "recente",
-   "cpuPerfil": "Não informado",
+   "cpuPerfil": "Econômico (bateria)",
    "gpuModelo": null,
    "gpuDedicada": null,
    "telaResW": 1920,
@@ -6865,6 +6883,10 @@
    "linha": "Aspire",
    "sistema": "Windows 11",
    "procFamilia": "Intel Core Ultra 5",
+   "doBanco": [
+    "processador",
+    "perfil do processador"
+   ],
    "placaVideo": "Não informado"
   },
   {
@@ -7023,17 +7045,22 @@
    "gpuDedicada": true,
    "telaResW": 1920,
    "telaRes": "FHD+/WUXGA",
-   "telaHz": null,
+   "telaHz": 240,
    "telaOled": false,
-   "telaPol": "",
+   "telaPol": "16",
    "pesoKg": null,
    "ramGB": 32,
    "armazGB": 1000,
    "armazenamento": "1 TB",
    "linha": "Predator",
-   "sistema": "",
+   "sistema": "Windows 11",
    "procFamilia": "Intel Core Ultra 9",
-   "placaVideo": "NVIDIA RTX 5070"
+   "placaVideo": "NVIDIA RTX 5070",
+   "doBanco": [
+    "taxa da tela",
+    "tamanho da tela",
+    "sistema"
+   ]
   },
   {
    "id": "kabum-1039197",
@@ -7193,14 +7220,17 @@
    "telaHz": null,
    "telaOled": false,
    "telaPol": "15.6",
-   "pesoKg": null,
+   "pesoKg": 2.3,
    "ramGB": 16,
    "armazGB": 512,
    "armazenamento": "512 GB",
    "linha": "LOQ",
    "sistema": "Linux",
    "procFamilia": "Intel Core i7",
-   "placaVideo": "NVIDIA RTX 5050"
+   "placaVideo": "NVIDIA RTX 5050",
+   "doBanco": [
+    "peso"
+   ]
   },
   {
    "id": "kabum-1048798",
@@ -7440,8 +7470,8 @@
    "cpuPerfil": "Desempenho",
    "gpuModelo": "RTX 4050",
    "gpuDedicada": true,
-   "telaResW": null,
-   "telaRes": null,
+   "telaResW": 1920,
+   "telaRes": "Full HD",
    "telaHz": null,
    "telaOled": false,
    "telaPol": "15.6",
@@ -7452,7 +7482,10 @@
    "linha": "Nitro",
    "sistema": "Linux",
    "procFamilia": "Intel Core i5",
-   "placaVideo": "NVIDIA RTX 4050"
+   "placaVideo": "NVIDIA RTX 4050",
+   "doBanco": [
+    "resolução da tela"
+   ]
   },
   {
    "id": "kabum-1034620",
@@ -7727,11 +7760,11 @@
    "tipo": "Notebook",
    "marca": "Asus",
    "temTela": true,
-   "cpuModelo": "Core i7 (modelo exato não informado)",
+   "cpuModelo": "Core i7-13650HX",
    "cpuFamilia": "Core i7",
-   "cpuSufixo": null,
-   "cpuGeracao": null,
-   "cpuPerfil": "Não informado",
+   "cpuSufixo": "HX",
+   "cpuGeracao": "13ª ger. Intel",
+   "cpuPerfil": "Alto desempenho",
    "gpuModelo": "RTX 4050",
    "gpuDedicada": true,
    "telaResW": 1920,
@@ -7746,7 +7779,12 @@
    "linha": "ROG",
    "sistema": "Linux",
    "procFamilia": "Intel Core i7",
-   "placaVideo": "NVIDIA RTX 4050"
+   "placaVideo": "NVIDIA RTX 4050",
+   "doBanco": [
+    "processador",
+    "perfil do processador",
+    "geração do processador"
+   ]
   },
   {
    "id": "kabum-986009",
@@ -7944,9 +7982,9 @@
    "cpuPerfil": "Alto desempenho",
    "gpuModelo": "RTX 5060",
    "gpuDedicada": true,
-   "telaResW": null,
-   "telaRes": null,
-   "telaHz": null,
+   "telaResW": 1920,
+   "telaRes": "Full HD",
+   "telaHz": 144,
    "telaOled": false,
    "telaPol": "15.6",
    "pesoKg": null,
@@ -7956,7 +7994,11 @@
    "linha": "LOQ",
    "sistema": "Windows 11",
    "procFamilia": "Intel Core i5",
-   "placaVideo": "NVIDIA RTX 5060"
+   "placaVideo": "NVIDIA RTX 5060",
+   "doBanco": [
+    "resolução da tela",
+    "taxa da tela"
+   ]
   },
   {
    "id": "kabum-1082302",
@@ -8650,26 +8692,34 @@
    "tipo": "Notebook",
    "marca": "Acer",
    "temTela": true,
-   "cpuModelo": "Core i9 (modelo exato não informado)",
+   "cpuModelo": "Core i9-13900H",
    "cpuFamilia": "Core i9",
-   "cpuSufixo": null,
-   "cpuGeracao": null,
-   "cpuPerfil": "Não informado",
+   "cpuSufixo": "H",
+   "cpuGeracao": "13ª ger. Intel",
+   "cpuPerfil": "Desempenho",
    "gpuModelo": "RTX 4060",
    "gpuDedicada": true,
-   "telaResW": null,
-   "telaRes": null,
+   "telaResW": 1920,
+   "telaRes": "Full HD",
    "telaHz": 165,
    "telaOled": false,
-   "telaPol": "",
+   "telaPol": "15.6",
    "pesoKg": null,
    "ramGB": 32,
    "armazGB": 512,
    "armazenamento": "512 GB",
    "linha": "Acer",
-   "sistema": "",
+   "sistema": "Windows 11",
    "procFamilia": "Intel Core i9",
-   "placaVideo": "NVIDIA RTX 4060"
+   "placaVideo": "NVIDIA RTX 4060",
+   "doBanco": [
+    "processador",
+    "perfil do processador",
+    "geração do processador",
+    "resolução da tela",
+    "tamanho da tela",
+    "sistema"
+   ]
   },
   {
    "id": "kabum-1081907",
@@ -8692,26 +8742,34 @@
    "tipo": "Notebook",
    "marca": "Acer",
    "temTela": true,
-   "cpuModelo": "Core i9 (modelo exato não informado)",
+   "cpuModelo": "Core i9-13900H",
    "cpuFamilia": "Core i9",
-   "cpuSufixo": null,
-   "cpuGeracao": null,
-   "cpuPerfil": "Não informado",
+   "cpuSufixo": "H",
+   "cpuGeracao": "13ª ger. Intel",
+   "cpuPerfil": "Desempenho",
    "gpuModelo": "RTX 4060",
    "gpuDedicada": true,
-   "telaResW": null,
-   "telaRes": null,
+   "telaResW": 1920,
+   "telaRes": "Full HD",
    "telaHz": 165,
    "telaOled": false,
-   "telaPol": "",
+   "telaPol": "15.6",
    "pesoKg": null,
    "ramGB": 64,
    "armazGB": 512,
    "armazenamento": "512 GB",
    "linha": "Acer",
-   "sistema": "",
+   "sistema": "Windows 11",
    "procFamilia": "Intel Core i9",
-   "placaVideo": "NVIDIA RTX 4060"
+   "placaVideo": "NVIDIA RTX 4060",
+   "doBanco": [
+    "processador",
+    "perfil do processador",
+    "geração do processador",
+    "resolução da tela",
+    "tamanho da tela",
+    "sistema"
+   ]
   },
   {
    "id": "kabum-684007",
@@ -14840,21 +14898,26 @@
    "cpuSufixo": "U",
    "cpuGeracao": "13ª ger. Intel",
    "cpuPerfil": "Econômico (bateria)",
-   "gpuModelo": null,
-   "gpuDedicada": null,
+   "gpuModelo": "Integrada",
+   "gpuDedicada": false,
    "telaResW": 1920,
    "telaRes": "Full HD",
    "telaHz": 120,
    "telaOled": false,
    "telaPol": "15.6",
-   "pesoKg": null,
+   "pesoKg": 1.63,
    "ramGB": 8,
    "armazGB": 512,
    "armazenamento": "512 GB",
    "linha": "Inspiron",
-   "sistema": "",
+   "sistema": "Windows 11 Home",
    "procFamilia": "Intel Core i5",
-   "placaVideo": "Não informado"
+   "placaVideo": "Integrada",
+   "doBanco": [
+    "placa de vídeo",
+    "peso",
+    "sistema"
+   ]
   },
   {
    "id": "kabum-1028019",
@@ -16325,17 +16388,22 @@
    "gpuDedicada": true,
    "telaResW": 2560,
    "telaRes": "QHD/2.5K",
-   "telaHz": null,
+   "telaHz": 120,
    "telaOled": false,
-   "telaPol": "",
-   "pesoKg": null,
+   "telaPol": "16",
+   "pesoKg": 2.49,
    "ramGB": 32,
    "armazGB": 512,
    "armazenamento": "512 GB",
    "linha": "Alienware",
    "sistema": "Windows 11 Home",
    "procFamilia": "Intel Core 7",
-   "placaVideo": "NVIDIA RTX 3050"
+   "placaVideo": "NVIDIA RTX 3050",
+   "doBanco": [
+    "taxa da tela",
+    "tamanho da tela",
+    "peso"
+   ]
   },
   {
    "id": "amazon-B0FHCY7WLF",
@@ -16577,20 +16645,27 @@
    "cpuSufixo": "H",
    "cpuGeracao": "recente",
    "cpuPerfil": "Desempenho",
-   "gpuModelo": "Dedicada (modelo não informado)",
+   "gpuModelo": "RTX 3050",
    "gpuDedicada": true,
    "telaResW": 2560,
    "telaRes": "2560 x 1600",
    "telaHz": 120,
    "telaOled": false,
    "telaPol": "16",
-   "pesoKg": null,
-   "ramGB": null,
-   "armazGB": null,
+   "pesoKg": 2.49,
+   "ramGB": 32,
+   "armazGB": 512,
    "linha": "Alienware",
    "sistema": "Ubuntu Linux",
    "procFamilia": "Intel Core 5",
-   "placaVideo": "Dedicada (modelo não informado)"
+   "placaVideo": "NVIDIA RTX 3050",
+   "armazenamento": "512 GB",
+   "doBanco": [
+    "placa de vídeo",
+    "RAM",
+    "armazenamento",
+    "peso"
+   ]
   },
   {
    "id": "amazon-B0GRJNQWHW",
@@ -16618,20 +16693,31 @@
    "cpuSufixo": "H",
    "cpuGeracao": "recente",
    "cpuPerfil": "Desempenho",
-   "gpuModelo": "Dedicada (modelo não informado)",
+   "gpuModelo": "RTX 3050",
    "gpuDedicada": true,
    "telaResW": 2560,
    "telaRes": "2560 x 1600",
-   "telaHz": null,
+   "telaHz": 120,
    "telaOled": false,
-   "telaPol": "",
-   "pesoKg": null,
-   "ramGB": null,
-   "armazGB": null,
+   "telaPol": "16",
+   "pesoKg": 2.49,
+   "ramGB": 32,
+   "armazGB": 512,
    "linha": "Alienware",
    "sistema": "Windows 11 Home",
    "procFamilia": "Intel Core 5",
-   "placaVideo": "Dedicada (modelo não informado)"
+   "placaVideo": "NVIDIA RTX 3050",
+   "armazenamento": "512 GB",
+   "imagem": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/alienware-notebooks/ac16250/media-gallery/laptop-alienware-ac16250-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&wid=600&qlt=90",
+   "doBanco": [
+    "placa de vídeo",
+    "RAM",
+    "armazenamento",
+    "taxa da tela",
+    "tamanho da tela",
+    "peso",
+    "foto"
+   ]
   },
   {
    "id": "vtex-ibyte-59265",
@@ -16740,14 +16826,17 @@
    "telaHz": 120,
    "telaOled": false,
    "telaPol": "15.6",
-   "pesoKg": null,
+   "pesoKg": 1.63,
    "ramGB": 8,
    "armazGB": 512,
    "armazenamento": "512 GB",
    "linha": "Dell (14/15/16)",
    "sistema": "Windows 11",
    "procFamilia": "Intel Core i5",
-   "placaVideo": "Integrada"
+   "placaVideo": "Integrada",
+   "doBanco": [
+    "peso"
+   ]
   },
   {
    "id": "vtex-ibyte-59801",
@@ -17899,14 +17988,17 @@
    "telaHz": 144,
    "telaOled": false,
    "telaPol": "15.6",
-   "pesoKg": null,
+   "pesoKg": 2.38,
    "ramGB": 16,
    "armazGB": 512,
    "armazenamento": "512 GB",
    "linha": "LOQ",
    "sistema": "Windows 11",
    "procFamilia": "Intel Core i7",
-   "placaVideo": "NVIDIA RTX 4050"
+   "placaVideo": "NVIDIA RTX 4050",
+   "doBanco": [
+    "peso"
+   ]
   },
   {
    "id": "vtex-ibyte-59664",
@@ -20507,9 +20599,9 @@
    "temTela": true,
    "cpuModelo": "Core i7-14700",
    "cpuFamilia": "Core i7",
-   "cpuSufixo": null,
+   "cpuSufixo": "HX",
    "cpuGeracao": "13ª ger. Intel",
-   "cpuPerfil": "Não informado",
+   "cpuPerfil": "Alto desempenho",
    "gpuModelo": "RTX 4060",
    "gpuDedicada": true,
    "telaResW": null,
@@ -20524,7 +20616,10 @@
    "linha": "LOQ",
    "sistema": "Windows 11 Pro",
    "procFamilia": "Intel Core i7",
-   "placaVideo": "NVIDIA RTX 4060"
+   "placaVideo": "NVIDIA RTX 4060",
+   "doBanco": [
+    "perfil do processador"
+   ]
   },
   {
    "id": "vtex-waz-132702",
@@ -20773,14 +20868,17 @@
    "telaHz": null,
    "telaOled": false,
    "telaPol": "15.3",
-   "pesoKg": null,
+   "pesoKg": 1.7,
    "ramGB": 8,
    "armazGB": 256,
    "armazenamento": "256 GB",
    "linha": "Acer",
    "sistema": "Windows 11 Pro",
    "procFamilia": "Intel Core i5",
-   "placaVideo": "Integrada"
+   "placaVideo": "Integrada",
+   "doBanco": [
+    "peso"
+   ]
   },
   {
    "id": "vtex-waz-133981",
@@ -21423,9 +21521,12 @@
    "armazGB": 256,
    "armazenamento": "256 GB",
    "linha": "Lenovo V",
-   "sistema": "",
+   "sistema": "Windows 11 Pro",
    "procFamilia": "Intel Core i5",
-   "placaVideo": "Integrada"
+   "placaVideo": "Integrada",
+   "doBanco": [
+    "sistema"
+   ]
   },
   {
    "id": "vtex-waz-133224",
@@ -21797,9 +21898,9 @@
    "cpuPerfil": "Alto desempenho",
    "gpuModelo": "RTX 4050",
    "gpuDedicada": true,
-   "telaResW": null,
-   "telaRes": null,
-   "telaHz": null,
+   "telaResW": 1920,
+   "telaRes": "Full HD",
+   "telaHz": 144,
    "telaOled": false,
    "telaPol": "15.6",
    "pesoKg": 2.38,
@@ -21809,7 +21910,11 @@
    "linha": "LOQ",
    "sistema": "Windows 11 Home",
    "procFamilia": "Intel Core i7",
-   "placaVideo": "NVIDIA RTX 4050"
+   "placaVideo": "NVIDIA RTX 4050",
+   "doBanco": [
+    "resolução da tela",
+    "taxa da tela"
+   ]
   },
   {
    "id": "vtex-waz-133613",
@@ -22899,9 +23004,12 @@
    "armazGB": 256,
    "armazenamento": "256 GB",
    "linha": "Lenovo V",
-   "sistema": "",
+   "sistema": "Windows 11 Pro",
    "procFamilia": "Intel Core i3",
-   "placaVideo": "Integrada"
+   "placaVideo": "Integrada",
+   "doBanco": [
+    "sistema"
+   ]
   },
   {
    "id": "vtex-waz-130574",
@@ -23267,9 +23375,12 @@
    "armazGB": 256,
    "armazenamento": "256 GB",
    "linha": "ThinkCentre",
-   "sistema": "",
+   "sistema": "Windows 11 Pro",
    "procFamilia": "Intel Core i5",
-   "placaVideo": "Integrada"
+   "placaVideo": "Integrada",
+   "doBanco": [
+    "sistema"
+   ]
   },
   {
    "id": "vtex-waz-133359",
@@ -23448,9 +23559,12 @@
    "armazGB": 256,
    "armazenamento": "256 GB",
    "linha": "ThinkCentre",
-   "sistema": "",
+   "sistema": "Windows 11 Pro",
    "procFamilia": "Intel Core i5",
-   "placaVideo": "Integrada"
+   "placaVideo": "Integrada",
+   "doBanco": [
+    "sistema"
+   ]
   },
   {
    "id": "vtex-waz-133639",
@@ -24055,9 +24169,12 @@
    "armazGB": 256,
    "armazenamento": "256 GB",
    "linha": "ThinkCentre",
-   "sistema": "",
+   "sistema": "Windows 11 Pro",
    "procFamilia": "Intel Core i5",
-   "placaVideo": "Integrada"
+   "placaVideo": "Integrada",
+   "doBanco": [
+    "sistema"
+   ]
   },
   {
    "id": "vtex-waz-134003",
@@ -24096,7 +24213,7 @@
    "precoDeNum": null,
    "descontoPct": null,
    "tipo": "Desktop",
-   "marca": "Asus",
+   "marca": "Waz",
    "temTela": false,
    "cpuModelo": "Ryzen 9 9950X3D",
    "cpuFamilia": "Ryzen 9",
@@ -24114,7 +24231,7 @@
    "ramGB": 32,
    "armazGB": 2000,
    "armazenamento": "2 TB",
-   "linha": "Asus",
+   "linha": "Waz",
    "sistema": "",
    "procFamilia": "AMD Ryzen 9",
    "placaVideo": "NVIDIA RTX 5080"
@@ -24156,7 +24273,7 @@
    "precoDeNum": null,
    "descontoPct": null,
    "tipo": "Desktop",
-   "marca": "Asus",
+   "marca": "Waz",
    "temTela": false,
    "cpuModelo": "Ryzen 9 7900X",
    "cpuFamilia": "Ryzen 9",
@@ -24174,7 +24291,7 @@
    "ramGB": 32,
    "armazGB": 2000,
    "armazenamento": "2 TB",
-   "linha": "Asus",
+   "linha": "Waz",
    "sistema": "",
    "procFamilia": "AMD Ryzen 9",
    "placaVideo": "NVIDIA RTX 5080"
@@ -26668,10 +26785,10 @@
    "cpuSufixo": "H",
    "cpuGeracao": "13ª ger. Intel",
    "cpuPerfil": "Desempenho",
-   "gpuModelo": null,
-   "gpuDedicada": null,
-   "telaResW": null,
-   "telaRes": null,
+   "gpuModelo": "Integrada",
+   "gpuDedicada": false,
+   "telaResW": 1920,
+   "telaRes": "FHD+/WUXGA",
    "telaHz": null,
    "telaOled": false,
    "telaPol": "15.3",
@@ -26682,7 +26799,11 @@
    "linha": "IdeaPad",
    "sistema": "Windows 11",
    "procFamilia": "Intel Core i5",
-   "placaVideo": "Não informado"
+   "placaVideo": "Integrada",
+   "doBanco": [
+    "placa de vídeo",
+    "resolução da tela"
+   ]
   },
   {
    "id": "zb-1572257273",
@@ -26754,9 +26875,9 @@
    "cpuPerfil": "Desempenho",
    "gpuModelo": "RTX 4060",
    "gpuDedicada": true,
-   "telaResW": null,
-   "telaRes": null,
-   "telaHz": null,
+   "telaResW": 1920,
+   "telaRes": "Full HD",
+   "telaHz": 165,
    "telaOled": false,
    "telaPol": "15.6",
    "pesoKg": null,
@@ -26766,7 +26887,11 @@
    "linha": "Nitro",
    "sistema": "Windows 11",
    "procFamilia": "Intel Core i9",
-   "placaVideo": "NVIDIA RTX 4060"
+   "placaVideo": "NVIDIA RTX 4060",
+   "doBanco": [
+    "resolução da tela",
+    "taxa da tela"
+   ]
   },
   {
    "id": "zb-1372963380",
@@ -26842,14 +26967,17 @@
    "telaHz": null,
    "telaOled": false,
    "telaPol": "15.6",
-   "pesoKg": null,
+   "pesoKg": 2.38,
    "ramGB": 16,
    "armazGB": 512,
    "armazenamento": "512 GB",
    "linha": "LOQ",
    "sistema": "Windows 11",
    "procFamilia": "Intel Core i7",
-   "placaVideo": "NVIDIA RTX 4060"
+   "placaVideo": "NVIDIA RTX 4060",
+   "doBanco": [
+    "peso"
+   ]
   },
   {
    "id": "zb-1573742099",
@@ -26879,19 +27007,24 @@
    "cpuPerfil": "Alto desempenho",
    "gpuModelo": "RTX 4050",
    "gpuDedicada": true,
-   "telaResW": null,
-   "telaRes": null,
-   "telaHz": null,
+   "telaResW": 1920,
+   "telaRes": "Full HD",
+   "telaHz": 144,
    "telaOled": false,
    "telaPol": "15.6",
-   "pesoKg": null,
+   "pesoKg": 2.38,
    "ramGB": 16,
    "armazGB": 512,
    "armazenamento": "512 GB",
    "linha": "LOQ",
    "sistema": "Windows 11",
    "procFamilia": "Intel Core i7",
-   "placaVideo": "NVIDIA RTX 4050"
+   "placaVideo": "NVIDIA RTX 4050",
+   "doBanco": [
+    "resolução da tela",
+    "taxa da tela",
+    "peso"
+   ]
   },
   {
    "id": "zb-1575898977",
@@ -26963,9 +27096,9 @@
    "cpuPerfil": "Desempenho",
    "gpuModelo": "RTX 4060",
    "gpuDedicada": true,
-   "telaResW": null,
-   "telaRes": null,
-   "telaHz": null,
+   "telaResW": 1920,
+   "telaRes": "Full HD",
+   "telaHz": 165,
    "telaOled": false,
    "telaPol": "15.6",
    "pesoKg": null,
@@ -26975,7 +27108,11 @@
    "linha": "Nitro",
    "sistema": "Linux",
    "procFamilia": "Intel Core i7",
-   "placaVideo": "NVIDIA RTX 4060"
+   "placaVideo": "NVIDIA RTX 4060",
+   "doBanco": [
+    "resolução da tela",
+    "taxa da tela"
+   ]
   },
   {
    "id": "zb-1518965764",
@@ -27045,11 +27182,11 @@
    "cpuSufixo": "HX",
    "cpuGeracao": "recente",
    "cpuPerfil": "Alto desempenho",
-   "gpuModelo": null,
-   "gpuDedicada": null,
-   "telaResW": null,
-   "telaRes": null,
-   "telaHz": null,
+   "gpuModelo": "RTX 5070",
+   "gpuDedicada": true,
+   "telaResW": 1920,
+   "telaRes": "FHD+/WUXGA",
+   "telaHz": 240,
    "telaOled": false,
    "telaPol": "16",
    "pesoKg": null,
@@ -27059,7 +27196,12 @@
    "linha": "Predator",
    "sistema": "Windows 11",
    "procFamilia": "Intel Core Ultra 9",
-   "placaVideo": "Não informado"
+   "placaVideo": "NVIDIA RTX 5070",
+   "doBanco": [
+    "placa de vídeo",
+    "resolução da tela",
+    "taxa da tela"
+   ]
   },
   {
    "id": "zb-1433313015",
@@ -27861,18 +28003,23 @@
    "cpuPerfil": "Econômico (bateria)",
    "gpuModelo": null,
    "gpuDedicada": null,
-   "telaResW": null,
-   "telaRes": null,
+   "telaResW": 1920,
+   "telaRes": "Full HD",
    "telaHz": null,
    "telaOled": false,
-   "telaPol": "",
+   "telaPol": "16",
    "pesoKg": null,
    "ramGB": 16,
    "armazGB": 512,
    "armazenamento": "512 GB",
    "linha": "Vivobook",
-   "sistema": "",
+   "sistema": "Windows 11 Home",
    "procFamilia": "Intel Core i7",
+   "doBanco": [
+    "resolução da tela",
+    "tamanho da tela",
+    "sistema"
+   ],
    "placaVideo": "Não informado"
   },
   {
@@ -28027,11 +28174,11 @@
    "cpuSufixo": "U",
    "cpuGeracao": "13ª ger. Intel",
    "cpuPerfil": "Econômico (bateria)",
-   "gpuModelo": null,
-   "gpuDedicada": null,
-   "telaResW": null,
-   "telaRes": null,
-   "telaHz": null,
+   "gpuModelo": "Integrada",
+   "gpuDedicada": false,
+   "telaResW": 1920,
+   "telaRes": "FHD+/WUXGA",
+   "telaHz": 60,
    "telaOled": false,
    "telaPol": "15.3",
    "pesoKg": null,
@@ -28041,7 +28188,12 @@
    "linha": "Aspire Go",
    "sistema": "Windows 11",
    "procFamilia": "Intel Core i5",
-   "placaVideo": "Não informado"
+   "placaVideo": "Integrada",
+   "doBanco": [
+    "placa de vídeo",
+    "resolução da tela",
+    "taxa da tela"
+   ]
   },
   {
    "id": "zb-1507717829",
@@ -28197,9 +28349,9 @@
    "cpuPerfil": "Econômico (bateria)",
    "gpuModelo": null,
    "gpuDedicada": null,
-   "telaResW": null,
-   "telaRes": null,
-   "telaHz": null,
+   "telaResW": 1920,
+   "telaRes": "FHD+/WUXGA",
+   "telaHz": 60,
    "telaOled": false,
    "telaPol": "16",
    "pesoKg": null,
@@ -28209,6 +28361,10 @@
    "linha": "Aspire",
    "sistema": "Windows 11",
    "procFamilia": "Intel Core Ultra 5",
+   "doBanco": [
+    "resolução da tela",
+    "taxa da tela"
+   ],
    "placaVideo": "Não informado"
   },
   {
@@ -28274,25 +28430,31 @@
    "tipo": "Notebook",
    "marca": "Asus",
    "temTela": true,
-   "cpuModelo": null,
-   "cpuFamilia": null,
-   "cpuSufixo": null,
-   "cpuGeracao": null,
-   "cpuPerfil": "Não informado",
+   "cpuModelo": "Core Ultra 7 256V",
+   "cpuFamilia": "Core Ultra 7",
+   "cpuSufixo": "V",
+   "cpuGeracao": "recente",
+   "cpuPerfil": "Eficiência (bateria)",
    "gpuModelo": null,
    "gpuDedicada": null,
    "telaResW": null,
    "telaRes": null,
    "telaHz": null,
    "telaOled": false,
-   "telaPol": "",
+   "telaPol": "14",
    "pesoKg": null,
    "ramGB": 32,
    "armazGB": 1000,
    "armazenamento": "1 TB",
    "linha": "Vivobook",
    "sistema": "Windows 11",
-   "procFamilia": "Não informado",
+   "procFamilia": "Intel Core Ultra 7",
+   "doBanco": [
+    "processador",
+    "perfil do processador",
+    "geração do processador",
+    "tamanho da tela"
+   ],
    "placaVideo": "Não informado"
   },
   {
@@ -28617,8 +28779,8 @@
    "cpuPerfil": "Econômico (bateria)",
    "gpuModelo": null,
    "gpuDedicada": null,
-   "telaResW": null,
-   "telaRes": null,
+   "telaResW": 1920,
+   "telaRes": "Full HD",
    "telaHz": null,
    "telaOled": false,
    "telaPol": "15.6",
@@ -28629,6 +28791,9 @@
    "linha": "Vivobook",
    "sistema": "Windows 11",
    "procFamilia": "AMD Ryzen 5",
+   "doBanco": [
+    "resolução da tela"
+   ],
    "placaVideo": "Não informado"
   },
   {
@@ -33058,9 +33223,9 @@
    "cpuPerfil": "Alto desempenho",
    "gpuModelo": "RTX 4050",
    "gpuDedicada": true,
-   "telaResW": null,
-   "telaRes": null,
-   "telaHz": null,
+   "telaResW": 1920,
+   "telaRes": "Full HD",
+   "telaHz": 165,
    "telaOled": false,
    "telaPol": "16",
    "pesoKg": null,
@@ -33070,7 +33235,11 @@
    "linha": "ROG",
    "sistema": "Linux",
    "procFamilia": "Intel Core i7",
-   "placaVideo": "NVIDIA RTX 4050"
+   "placaVideo": "NVIDIA RTX 4050",
+   "doBanco": [
+    "resolução da tela",
+    "taxa da tela"
+   ]
   },
   {
    "id": "zb-1543941178",
