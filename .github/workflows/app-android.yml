@@ -1,0 +1,74 @@
+name: App novo — APK Android
+
+# Gera o APK nativo do app novo (app/, Expo) e, na main, publica no GitHub Releases com tag nativo-v2.0.N.
+# NÃO marca o Release como "latest": o "latest" continua sendo o do app antigo (apps.yml), cujo aviso de
+# atualização lê releases/latest. O servidor informa o APK novo em /api/versao -> "nativo".
+on:
+  push:
+    branches: [main]
+    paths: ['app/**', '!app/src/versaoApp.ts', '.github/workflows/app-android.yml']
+  pull_request:
+    paths: ['app/app.json', 'app/package.json', 'app/package-lock.json', '.github/workflows/app-android.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: app-android-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+      - run: npm ci
+      - name: Versão 2.0.${{ github.run_number }}
+        run: |
+          node -e '
+            const fs = require("fs"), a = JSON.parse(fs.readFileSync("app.json", "utf8"));
+            a.expo.version = "2.0." + process.env.N;
+            a.expo.android.versionCode = Number(process.env.N);
+            fs.writeFileSync("app.json", JSON.stringify(a, null, 2) + "\n");'
+        env:
+          N: ${{ github.run_number }}
+      - name: Gerar o projeto Android (expo prebuild)
+        run: npx expo prebuild -p android --clean --no-install
+      - name: Compilar o APK (release)
+        working-directory: app/android
+        # assinado com a chave fixa do template do Expo (android/app/debug.keystore): todas as versões têm a
+        # mesma assinatura, então o APK novo instala por cima do anterior.
+        run: ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=arm64-v8a,armeabi-v7a,x86_64 -Dorg.gradle.jvmargs=-Xmx4g
+      - name: Separar o APK
+        run: |
+          mkdir -p ../saida
+          cp android/app/build/outputs/apk/release/app-release.apk ../saida/Tudo-Busca-Nativo.apk
+          ls -l ../saida
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Tudo-Busca-Nativo-2.0.${{ github.run_number }}
+          path: saida/Tudo-Busca-Nativo.apk
+      - name: Publicar no Releases (nativo-v2.0.${{ github.run_number }})
+        if: github.event_name != 'pull_request'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: nativo-v2.0.${{ github.run_number }}
+          name: Tudo-Busca app novo (Android) 2.0.${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          make_latest: false
+          files: saida/Tudo-Busca-Nativo.apk
+          body: |
+            App novo do Tudo-Busca para Android (mesmo código do site /novo).
+            Baixe **Tudo-Busca-Nativo.apk** abaixo e instale (permita "instalar apps desconhecidos" se o Android pedir).

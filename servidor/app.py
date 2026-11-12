@@ -171,10 +171,34 @@ async def _app_mais_novo():
     return _release['dados']
 
 
+_nativo = {'em': 0.0, 'dados': None}
+
+
+async def _nativo_mais_novo():
+    """Último APK do app novo (Releases com tag nativo-v2.0.N; não são o 'latest', que segue sendo o app antigo). Cache de 15 min."""
+    if _nativo['dados'] is not None and time.time() - _nativo['em'] < 900:
+        return _nativo['dados']
+    try:
+        async with httpx.AsyncClient(timeout=8, headers={'Accept': 'application/vnd.github+json', 'User-Agent': 'tudo-busca'}) as c:
+            r = await c.get(f'https://api.github.com/repos/{REPO}/releases', params={'per_page': 30})
+            r.raise_for_status()
+        rel = next((j for j in r.json() if str(j.get('tag_name', '')).startswith('nativo-v') and not j.get('draft')), None)
+        if rel:
+            apk = next((a.get('browser_download_url') for a in rel.get('assets') or [] if str(a.get('name', '')).endswith('.apk')), None)
+            _nativo['dados'] = {'versao': rel['tag_name'][len('nativo-v'):], 'tag': rel['tag_name'], 'android': apk,
+                                'pagina': rel.get('html_url') or f'https://github.com/{REPO}/releases'}
+        _nativo['em'] = time.time()
+    except Exception as e:
+        log.warning('releases do app nativo indisponíveis: %s', e)
+        _nativo['em'] = time.time() - 600
+    return _nativo['dados']
+
+
 @app.get('/api/versao')
 async def versao():
     return JSONResponse({'versao': versao_app.gravada(PAGINA.read_text(encoding='utf-8')), 'app': await _app_mais_novo(),
-                         'novo': _versao_novo(), 'baixar': '/baixar'}, headers={'Cache-Control': 'no-store'})
+                         'novo': _versao_novo(), 'nativo': await _nativo_mais_novo(), 'baixar': '/baixar'},
+                        headers={'Cache-Control': 'no-store'})
 
 
 @app.get('/baixar')
