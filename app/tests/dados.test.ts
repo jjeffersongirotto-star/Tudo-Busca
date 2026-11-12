@@ -47,6 +47,10 @@ describe('versões', () => {
     expect(decidirVersao(v, {nativo: true, versaoNativa: '2.0.1', versaoWeb: ''})?.tipo).toBe('app');
     expect(decidirVersao(v, {nativo: false, versaoWeb: '2026.11.12.0000-y'})?.tipo).toBe('pagina');
     expect(decidirVersao(null, {nativo: true, versaoNativa: '1', versaoWeb: ''})).toBeNull();
+    const s = {nativo: {versao: '2.0.7', android: 'apk', pagina: 'p'}};
+    expect(decidirVersao(s, {nativo: true, versaoNativa: '2.0.5', versaoWeb: ''})).toEqual({tipo: 'app', versao: '2.0.7', link: 'apk', pagina: 'p'});
+    expect(decidirVersao(s, {nativo: true, versaoNativa: '2.0.7', versaoWeb: ''})).toBeNull();
+    expect(decidirVersao(s, {nativo: false, versaoWeb: ''})).toBeNull();
   });
 });
 
