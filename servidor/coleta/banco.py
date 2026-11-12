@@ -77,8 +77,9 @@ class Banco:
             n.pop('doBanco', None)
         return usados
 
-    def aprender(self, n, data):
-        """Guarda o que se sabe de n (dado novo substitui o antigo; vazio não apaga nada)."""
+    def aprender(self, n, data, modelos=True):
+        """Guarda o que se sabe de n (dado novo substitui o antigo; vazio não apaga nada).
+        modelos=False: só guarda o produto e o histórico de preço (usado para o que não é computador)."""
         conhecido = {k: n[k] for k in CAMPOS if not _vazio(n.get(k)) and k not in (n.get('_estimados') or [])}
         reg = self.d['produtos'].setdefault(n['id'], {})
         reg.update(conhecido)
@@ -91,7 +92,7 @@ class Banco:
             if not hist or hist[-1][1] != n['precoNum']:
                 hist.append([data, n['precoNum']])
                 del hist[:-30]  # guarda as 30 últimas mudanças de preço
-        cod = codigo_modelo(n)
+        cod = codigo_modelo(n) if modelos else ''
         if cod:
             reg['codigo'] = cod
             mod = self.d['modelos'].setdefault(cod, {})
@@ -105,6 +106,14 @@ class Banco:
         tmp = self.caminho.with_suffix('.tmp')
         tmp.write_text(json.dumps(self.d, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
         tmp.replace(self.caminho)
+
+    def historico(self, i):
+        """(menor preço já visto, data) do produto i, ou (None, None)."""
+        hist = (self.d['produtos'].get(i) or {}).get('precos') or []
+        if not hist:
+            return None, None
+        data, preco = min(hist, key=lambda h: h[1])
+        return preco, data
 
     def resumo(self):
         return {'produtos': len(self.d['produtos']), 'modelos': len(self.d['modelos'])}

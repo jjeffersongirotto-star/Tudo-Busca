@@ -151,6 +151,12 @@ cd /workspace && bash dell-scraper/atualizar_tudo.sh
 ```
 Só mudou o visual/pesos? `python3 dell-scraper/gerar_html.py`.
 
+## 10b. Seções (cards) e Games — novembro/2026
+- Produtos com `secao` (ex.: `"games"`) seguem outro caminho; sem `secao` = computador (dados antigos continuam iguais).
+- Campos de um produto de games: `id` (`g-<item>-<loja>-<código>`), `secao`, `sub` (`acessorios`), `item` (`controle-ps5`), `tipo`, `loja`, `vendedor`, `nome`, `url`, `imagem`, `modelo` (DualSense / DualSense Edge / Access (adaptado) / Compatível (outra marca)), `marca`, `original`, `kit`, `edicao`, preços (`preco`, `precoNum`, `precoDe`…), `menorPrecoVisto`/`menorPrecoData` (do banco), `precoAntigo` e `specs`.
+- Servidor: `coleta/categorias.py` (catálogo + classificação), `coleta/games.py` (busca por loja; loja que não responde mantém os anúncios anteriores marcados). O orquestrador valida os computadores como antes (≥30) e junta os de games depois.
+- Página: `SECOES` define cards, sub-cards, itens, as lojas de cupom de cada seção (`lojasCupom`) e o peso de cada categoria de cupom (`pesosCupom`). A coluna de cupons mostra só os relevantes à seleção; a caixa "todos os cupons" volta a mostrar tudo.
+
 ## 11. Instruções para o Claude
 Regras: responder/rotular em português; nunca inventar preço, código ou URL; manter ids estáveis; manter o HTML único e offline (dados embutidos via `__DADOS__`); o botão Atualizar nunca abre abas; nada de atualização automática.
 
