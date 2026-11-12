@@ -1,0 +1,51 @@
+name: App novo (Expo)
+
+# app/ = código único do site novo e do app nativo (Expo / React Native + TypeScript).
+# PRs: lint, TypeScript, testes (paridade com a página antiga) e build web.
+# main: refaz o build web e grava em web-novo/ (servido pelo FastAPI em /novo), para o Render não precisar de Node.
+on:
+  push:
+    branches: [main]
+    paths: ['app/**', '.github/workflows/app-novo.yml']
+  pull_request:
+    paths: ['app/**', 'web-novo/**', 'servidor/app.py', '.github/workflows/app-novo.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: app-novo-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  app:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - run: npm ci
+      - name: Lint
+        run: npx expo lint --max-warnings 0
+      - name: TypeScript
+        run: npx tsc --noEmit
+      - name: Testes
+        run: npm test
+      - name: Build web (/novo)
+        run: npm run export:web
+      - name: Gravar o build na main
+        if: github.event_name != 'pull_request'
+        working-directory: .
+        run: |
+          git add -A web-novo app/src/versaoApp.ts
+          if ! git diff --cached --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "App novo: build web $(sed -nE "s/.*VERSAO_WEB = '([^']+)'.*/\1/p" app/src/versaoApp.ts)"
+            for i in 1 2 3; do git pull --rebase origin main && git push && break; sleep 5; done
+          fi

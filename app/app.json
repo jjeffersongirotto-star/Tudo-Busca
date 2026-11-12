@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "Tudo-Busca",
+    "slug": "tudo-busca",
+    "version": "2.0.0",
+    "orientation": "default",
+    "icon": "./assets/icon.png",
+    "scheme": "tudobusca",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#09090f",
+    "android": {
+      "package": "br.tudobusca.nativo",
+      "adaptiveIcon": {
+        "backgroundColor": "#09090f",
+        "foregroundImage": "./assets/android-icon-foreground.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "output": "single",
+      "bundler": "metro",
+      "name": "Tudo-Busca",
+      "themeColor": "#09090f",
+      "backgroundColor": "#09090f"
+    },
+    "experiments": {
+      "baseUrl": "/novo",
+      "typedRoutes": false
+    },
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      "expo-image"
+    ]
+  }
+}

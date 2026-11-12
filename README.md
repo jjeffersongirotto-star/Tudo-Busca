@@ -14,6 +14,29 @@ No topo há **cards de seleção**: **💻 Computadores** (tudo acima) e **🎮 
 - **Celular e computador (qualquer sistema):** abra o endereço e toque em **Instalar app** (no iPhone: Compartilhar → Adicionar à Tela de Início). Funciona sem internet com os últimos dados.
 - **Android (APK) e Windows (instalador .exe):** página [Releases](../../releases/latest) do repositório, gerados pelo workflow `Gerar apps` (`apps/android`, `apps/computador`).
 
+## App novo (em construção) — `app/`
+
+O site e os apps estão sendo reescritos num **código único** com Expo (React Native + TypeScript + expo-router):
+o mesmo código gera o **site** e o **app Android nativo** (iOS depois). O servidor (`servidor/`) continua o mesmo.
+
+- **Ver agora:** https://tudo-busca.onrender.com/novo (o site atual continua em `/` até o novo ter tudo).
+- **Lógica compartilhada** em `app/src/logica/` (nota/categorias/padrão, filtros, cupons, ofertas de games, junção de dados, versões),
+  com testes em `app/tests/` que comparam o resultado com as funções da página antiga (`cupons-dell.html`) sobre um retrato dos dados.
+- **Dados:** `app/src/dados/` — cliente do servidor (`/api/dados`, `/api/atualizar`, `/api/status`, `/api/versao`) e cópia offline
+  guardada no aparelho (mesmas chaves da página antiga: favoritos, seleção e cache continuam).
+- **Build web:** o GitHub (workflow *App novo*) refaz o build a cada mudança em `app/` e grava em `web-novo/`; o FastAPI serve em `/novo`.
+  O Render não precisa de Node.
+
+Rodar localmente:
+
+```bash
+cd app
+npm install
+npm test            # testes da lógica
+npx expo start --web   # usa o servidor público; para um servidor local: EXPO_PUBLIC_API_URL=http://localhost:8000
+npm run export:web  # gera web-novo/ (servido em /novo)
+```
+
 ## Como funciona
 - `cupons-dell.html` — a página. Funciona aberta pelo endereço acima **ou** como arquivo (WhatsApp, pasta do celular): os dados vêm embutidos e a seta ⟳ pede preços novos ao servidor.
 - `servidor/` — servidor (Python/FastAPI) que, quando alguém toca na seta, busca os preços atuais nas lojas (cerca de 30 segundos).

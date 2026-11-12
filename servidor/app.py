@@ -118,6 +118,35 @@ def icone(nome: str):
     return FileResponse(arq, media_type='image/png', headers={'Cache-Control': 'public, max-age=604800'})
 
 
+NOVO = RAIZ / 'web-novo'   # app novo (Expo, exportado por `npm run export:web` em app/)
+_TIPOS = {'.js': 'application/javascript', '.css': 'text/css', '.json': 'application/json', '.html': 'text/html; charset=utf-8',
+          '.png': 'image/png', '.ico': 'image/x-icon', '.svg': 'image/svg+xml', '.ttf': 'font/ttf', '.woff2': 'font/woff2', '.webmanifest': 'application/manifest+json'}
+
+
+def _versao_novo():
+    try:
+        return json.loads((NOVO / 'versao.json').read_text(encoding='utf-8')).get('versao')
+    except (OSError, ValueError):
+        return None
+
+
+@app.get('/novo')
+@app.get('/novo/{caminho:path}')
+def app_novo(caminho: str = ''):
+    """App novo na web: arquivos do build; qualquer outra rota cai no index.html (o expo-router resolve no navegador)."""
+    raiz = NOVO.resolve()
+    if caminho:
+        arq = (NOVO / caminho).resolve()
+        if arq.is_relative_to(raiz) and arq.is_file():
+            fixo = '/_expo/static/' in '/' + caminho or caminho.startswith('assets/')   # nomes com hash: podem ficar em cache
+            return FileResponse(arq, media_type=_TIPOS.get(arq.suffix.lower()),
+                                headers={'Cache-Control': 'public, max-age=31536000, immutable' if fixo else 'no-cache'})
+    indice = NOVO / 'index.html'
+    if not indice.exists():
+        return JSONResponse({'erro': 'app novo ainda não publicado'}, status_code=404)
+    return FileResponse(indice, media_type='text/html; charset=utf-8', headers={'Cache-Control': 'no-cache'})
+
+
 REPO = 'jjeffersongirotto-star/Tudo-Busca'
 RELEASES = f'https://github.com/{REPO}/releases/latest'
 _release = {'em': 0.0, 'dados': None}
@@ -145,7 +174,7 @@ async def _app_mais_novo():
 @app.get('/api/versao')
 async def versao():
     return JSONResponse({'versao': versao_app.gravada(PAGINA.read_text(encoding='utf-8')), 'app': await _app_mais_novo(),
-                         'baixar': '/baixar'}, headers={'Cache-Control': 'no-store'})
+                         'novo': _versao_novo(), 'baixar': '/baixar'}, headers={'Cache-Control': 'no-store'})
 
 
 @app.get('/baixar')
