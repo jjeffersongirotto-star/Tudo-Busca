@@ -2,8 +2,9 @@
 
 GET  /              página (cupons-dell.html)
 GET  /api/dados     dados atuais (JSON)
-POST /api/atualizar começa uma coleta nova nas lojas (uma por vez; intervalo mínimo entre coletas)
-GET  /api/status    andamento da coleta
+POST /api/atualizar?categoria=computadores|games  coleta nova só da categoria do card escolhido
+                    (sem categoria = todas; uma coleta por vez, as outras esperam na fila; 5 min mínimos por categoria)
+GET  /api/status?categoria=…  andamento da coleta dessa categoria (+ resumo de todas em "categorias")
 GET  /api/versao    versão da página no servidor e do app (Android/Windows) mais novo publicado no GitHub
 GET  /baixar        baixa a página (com dados embutidos) para usar como arquivo
 """
@@ -14,7 +15,7 @@ import os
 import time
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 
@@ -39,8 +40,13 @@ INTERVALO_MIN = int(os.environ.get('INTERVALO_MIN_SEGUNDOS', '300'))
 app = FastAPI(title='Tudo-Busca', docs_url=None, redoc_url=None)
 app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_methods=['GET', 'POST'], allow_headers=['*'])
 
-estado = {'estado': 'parado', 'inicio': None, 'fim': None, 'fontes': {}, 'resumo': None, 'erro': None}
-_trava = asyncio.Lock()
+CATEGORIAS = orquestrador.CATEGORIAS
+estados = {c: {'estado': 'parado', 'inicio': None, 'fim': None, 'fontes': {}, 'resumo': None, 'erro': None} for c in CATEGORIAS}
+_trava = asyncio.Lock()   # uma coleta por vez (todas gravam o mesmo arquivo); as outras esperam na fila
+
+
+def _cat(c):
+    return c if c in CATEGORIAS else 'todas'
 
 
 def carregar():
@@ -59,25 +65,30 @@ def salvar(d):
     tmp.replace(ATUAL)
 
 
-async def coletar():
+async def coletar(categoria='todas'):
+    estado = estados[categoria]
+    estado.update(estado='rodando', fila=_trava.locked(), inicio=time.time(), fim=None, resumo=None, erro=None, fontes={})
     async with _trava:
-        estado.update(estado='rodando', inicio=time.time(), fim=None, resumo=None, erro=None, fontes={})
+        estado.update(fila=False, inicio=time.time())
         try:
-            novo, resumo = await orquestrador.executar(carregar(), estado, banco=BANCO)
+            novo, resumo = await orquestrador.executar(carregar(), estado, banco=BANCO, categoria=categoria)
             salvar(novo)
             BANCO.salvar()
             estado.update(estado='concluido', resumo={k: v for k, v in resumo.items() if k != 'idsNovos'})
-            log.info('coleta concluída: %s', {k: v for k, v in resumo.items() if k not in ('fontes', 'idsNovos')})
+            log.info('coleta (%s) concluída: %s', categoria, {k: v for k, v in resumo.items() if k not in ('fontes', 'idsNovos')})
         except Exception as e:
-            log.exception('coleta falhou')
+            log.exception('coleta (%s) falhou', categoria)
             estado.update(estado='erro', erro=str(e)[:300])
         finally:
             estado['fim'] = time.time()
 
 
-def _status():
-    s = {k: estado[k] for k in ('estado', 'inicio', 'fim', 'fontes', 'resumo', 'erro')}
+def _status(categoria='todas'):
+    e = estados[categoria]
+    s = {k: e.get(k) for k in ('estado', 'inicio', 'fim', 'fontes', 'resumo', 'erro', 'fila')}
+    s['categoria'] = categoria
     s['agora'] = time.time()
+    s['categorias'] = {c: {'estado': v['estado'], 'fim': v['fim']} for c, v in estados.items()}
     return s
 
 
@@ -148,21 +159,24 @@ def dados():
 
 
 @app.get('/api/status')
-def status():
-    return JSONResponse(_status(), headers={'Cache-Control': 'no-store'})
+def status(categoria: str = Query('todas')):
+    return JSONResponse(_status(_cat(categoria)), headers={'Cache-Control': 'no-store'})
 
 
 @app.post('/api/atualizar')
-async def atualizar():
+async def atualizar(categoria: str = Query('todas')):
+    """Coleta só a categoria do card escolhido (computadores ou games); as outras ficam como estavam."""
+    categoria = _cat(categoria)
+    estado = estados[categoria]
     if estado['estado'] == 'rodando':
-        return _status()
+        return _status(categoria)
     if estado['fim'] and estado['estado'] == 'concluido' and time.time() - estado['fim'] < INTERVALO_MIN:
-        s = _status()
-        s['recente'] = True  # coleta feita há pouco: devolve a mesma, sem incomodar as lojas de novo
+        s = _status(categoria)
+        s['recente'] = True  # coleta dessa categoria feita há pouco: devolve a mesma, sem incomodar as lojas de novo
         return s
     estado['estado'] = 'rodando'
-    asyncio.get_running_loop().create_task(coletar())
-    return _status()
+    asyncio.get_running_loop().create_task(coletar(categoria))
+    return _status(categoria)
 
 
 @app.get('/api/banco')
