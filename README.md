@@ -2,7 +2,11 @@
 
 Página com cupons de desconto e **computadores de qualquer marca** — notebooks, MacBooks, PCs de mesa/gamer, all-in-one, mini PCs e Macs — de várias lojas (Dell.com, KaBuM!, Amazon, iByte, WAZ, Webcontinental, Lojas MM, Multilaser e as ofertas do Zoom/Buscapé), com filtros (tipo, marca, loja, processador…), foto, nota de custo-benefício e lista de 50 em 50.
 
-No topo há **cards de seleção**: **💻 Computadores** (tudo acima) e **🎮 Games** (sub-cards **Consoles** — em breve — e **Acessórios**, hoje com **Controles de PS5**: DualSense, DualSense Edge, Access e controles compatíveis de outras marcas). A coluna de **cupons muda conforme o card escolhido**: mostra só as lojas e as categorias de cupom que valem para aquela seleção (ex.: em Controles de PS5, cupons de games e da loja toda da KaBuM!, AliExpress, Shopee, Amazon, Magalu…). Cada oferta de games mostra, nos detalhes, os cupons da loja que podem valer.
+No topo há **cards de seleção**: **💻 Computadores** (tudo acima) e **🎮 Games** (sub-cards **Consoles** — em breve — e **Acessórios**, hoje com **Controles de PS5**: DualSense, DualSense Edge, Access e controles compatíveis de outras marcas). A coluna de **cupons muda conforme o card escolhido**: mostra só as lojas e as categorias de cupom que valem para aquela seleção (ex.: em Controles de PS5, cupons de games e da loja toda da KaBuM!, AliExpress, Shopee, Amazon, Magalu…). Cada oferta (games e computadores) mostra, nos detalhes, os cupons da loja que podem valer para ela, lendo o título **e as regras** de cada cupom:
+  - **do item** (cita o próprio produto, ex.: "DualSense") e **gerais da loja** (não citam produto, categoria nem marca — ex.: "R$50 OFF em compras a partir de R$290" do AliExpress) entram como válidos;
+  - **itens selecionados** ("produtos participantes", "seleção do link", "50% OFF em jogos e acessórios gamer selecionados") aparecem por último, como "confira se este item participa", sem preço estimado;
+  - cupons de **outra categoria, produto ou marca** (ex.: "30% OFF no Samsung S26", "Produtos JBL", "PS5 Pro com R$500", código PHILCO50) ou cujas regras excluem a categoria **não aparecem** como válidos;
+  - para cada cupom: ✔/✖ se o preço atinge a **compra mínima** (quando a regra informa) e o **preço estimado com o cupom** (preço − desconto, respeitando teto como "limitado a R$80"). O card mostra o menor preço estimado com um cupom do item ou geral. Sempre confira no carrinho.
 
 **Endereço:** https://tudo-busca.onrender.com
 

@@ -150,8 +150,25 @@ def _do_meliuz(html):
             continue  # oferta sem código
         tit = re.search(r'data-offer-title="([^"]*)"', bloco[:1500])
         texto = _texto(bloco[:6000])
-        out.append({'codigo': cod, 'descricao': H.unescape(tit.group(1)).strip() if tit else '', 'janela': texto})
+        # regras do cupom: o texto depois de "Ver cupom CODIGO" (mínimo de compra, exclusões, validade…)
+        r = re.search(r'Ver cupom\s+' + re.escape(cod) + r'\s+(.{10,400}?)(?:\s+(?:Ver mais|Mostrar|Copiar|Ativar)\b|$)', texto)
+        out.append({'codigo': cod, 'descricao': H.unescape(tit.group(1)).strip() if tit else '', 'janela': texto,
+                    'regras': r.group(1).strip()[:300] if r else ''})
     return out
+
+
+_MINIMO = re.compile(r'(?:acima\s+de|a\s+partir\s+de|superiores?\s+a|m[ií]nim[oa]\s+(?:de\s+)?(?:compra\s+)?(?:de\s+)?)\s*R\$\s*([\d\.]+(?:,\d{1,2})?)', re.I)
+
+
+def minimo_compra(texto):
+    """Valor mínimo de compra citado no texto do cupom (float) ou None."""
+    m = _MINIMO.search(texto or '')
+    if not m:
+        return None
+    try:
+        return float(m.group(1).replace('.', '').replace(',', '.'))
+    except ValueError:
+        return None
 
 
 def _validade_iso(v):
@@ -187,6 +204,8 @@ async def _pagina(http, site, url, loja):
             c['descricao'] = texto[:200]
         c['validade'] = c['validade'] or _validade_iso(a.get('validadeBruta')) or _validade(a.get('janela') or texto)
         c['desconto'] = c.get('desconto') or _desconto(texto) or _desconto(a.get('janela') or '')
+        if a.get('regras') and not c.get('regras'):
+            c['regras'] = a['regras']
     return site, loja, list(cupons.values())
 
 
@@ -208,7 +227,7 @@ async def coletar(http):
             if chave not in achados:
                 achados[chave] = dict(c, loja=loja, fontes=[])
             achados[chave]['fontes'].append({'nome': site, 'url': SITES[site].format(s=LOJAS[loja])})
-            for k in ('descricao', 'validade', 'desconto'):
+            for k in ('descricao', 'validade', 'desconto', 'regras'):
                 if not achados[chave].get(k) and c.get(k):
                     achados[chave][k] = c[k]
     log.info('Cupons por site: %s', por_site)
@@ -240,6 +259,15 @@ def juntar(antigos, novos, hoje_txt):
                 if n.get(k) and (not c.get(k) or c.get(k) in ('não informada', 'não informado')):
                     c[k] = n[k]
             c['categoria'] = categoria_cupom(c.get('descricao'))  # categorias foram refinadas (Games, Geral…)
+        if n.get('regras'):
+            c['regras'] = n['regras']
+            if c.get('condicoes') in (None, '', 'Confira as regras no site da loja'):
+                c['condicoes'] = n['regras']
+        minimo = minimo_compra((c.get('descricao') or '') + ' ' + (c.get('regras') or ''))
+        if minimo:
+            c['minimo'] = minimo
+        else:
+            c.pop('minimo', None)
         c['fonte'] = n['fontes'][0]['nome']
         c['fonteUrl'] = n['fontes'][0]['url']
         c['fontesExtras'] = [{'nome': f['nome'], 'url': f['url']} for f in n['fontes'][1:]]
