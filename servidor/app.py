@@ -22,6 +22,7 @@ from fastapi.responses import FileResponse, JSONResponse
 import httpx
 
 import versao as versao_app
+import keepalive
 from coleta import orquestrador
 from coleta.banco import Banco
 
@@ -245,5 +246,6 @@ def saude():
 
 @app.on_event('startup')
 async def iniciar():
+    keepalive.iniciar()  # ping na URL pública a cada ~10 min, para o Render não dormir
     if os.environ.get('COLETAR_AO_INICIAR') == '1':
         asyncio.get_running_loop().create_task(coletar())

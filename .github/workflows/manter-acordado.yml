@@ -1,7 +1,9 @@
 name: Manter servidor acordado
 
-# O plano gratuito do Render "dorme" após 15 min sem acesso.
-# Este workflow acessa o site a cada 10 minutos para mantê-lo ligado.
+# Reserva: o app já faz ping em si mesmo a cada 10 min (servidor/keepalive.py).
+# Este workflow tenta acordar o Render se ele mesmo assim dormir.
+# O cron do GitHub às vezes não dispara em repositórios pouco ativos; o
+# workflow_dispatch serve para rodar na mão.
 on:
   schedule:
     - cron: "*/10 * * * *"
