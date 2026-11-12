@@ -27,6 +27,7 @@ LOJAS = {
     'Ponto': 'ponto', 'Extra': 'extra', 'Americanas': 'americanas', 'Avell': 'avell', 'Webcontinental': 'webcontinental',
     'HP': 'hp', 'Shopee': 'shopee', 'AliExpress': 'aliexpress', 'Multilaser': 'multilaser', 'Vaio': 'vaio', 'Microsoft': 'microsoft',
     'Motorola': 'motorola', 'Submarino': 'submarino', 'Shoptime': 'shoptime', 'Kalunga': 'kalunga', 'Leroy Merlin': 'leroy-merlin',
+    'Temu': 'temu',
 }
 # como cada loja aparece escrita nos títulos dos cupons (para não atribuir cupom de uma loja à outra)
 APELIDOS = {'KaBuM!': ['kabum'], 'Amazon': ['amazon'], 'Dell.com': ['dell', 'alienware'], 'Magazine Luiza': ['magalu', 'magazine luiza'],
@@ -34,19 +35,42 @@ APELIDOS = {'KaBuM!': ['kabum'], 'Amazon': ['amazon'], 'Dell.com': ['dell', 'ali
             'Lenovo': ['lenovo'], 'Samsung': ['samsung', 'galaxy'], 'Acer': ['acer', 'predator', 'nitro'], 'Asus': ['asus', 'rog', 'zenbook'],
             'Pichau': ['pichau'], 'Carrefour': ['carrefour'], 'Ponto': ['ponto'], 'Extra': ['extra'], 'Americanas': ['americanas'],
             'Avell': ['avell'], 'Webcontinental': ['webcontinental'], 'HP': ['hp'], 'Shopee': ['shopee'], 'AliExpress': ['aliexpress'],
-            'Multilaser': ['multilaser'], 'Vaio': ['vaio'], 'Motorola': ['motorola', 'moto g', 'edge'], 'Leroy Merlin': ['leroy']}
+            'Multilaser': ['multilaser'], 'Vaio': ['vaio'], 'Motorola': ['motorola', 'moto g'], 'Leroy Merlin': ['leroy'], 'Temu': ['temu']}
+
+
+# Categorias do cupom (a página mostra os cupons conforme o card escolhido: Computadores, Games…).
+# A mesma lógica está em catCupom() no cupons-dell.html.
+_CAT_GAMES = re.compile(r'\bps\s?[2345]\b|playstation|dual\s?sense|xbox|nintendo|\bswitch\b|\bconsoles?\b|video\s?games?|\bgames?\b|'
+                        r'\bjogos?\s+(?:de\s+)?(?:ps|xbox|switch|pc|videogame)|gamepad|joystick|controles?\s+(?:sem\s+fio|ps|xbox|gamer|dualsense)|\bgta\b')
+_CAT_PCS = re.compile(r'notebook|laptop|computador|\bpcs?\b|desktop|macbook|all.in.one|chromebook|ultrabook|alienware|predator|nitro|ideapad|vivobook')
+_CAT_INFO = re.compile(r'monitor|placa|mem[oó]ria|\bssd\b|\bhd\b|impressora|multifuncional|mouse|teclado|headset|fone|webcam|roteador|'
+                       r'perif[eé]ric|gamer|processador|tablet|inform[aá]tica|tecnologia|eletr[oô]nico|tv\b|smartphone|celular|scanner|microfone')
+_CAT_OUTRO = re.compile(r'pneu|m[oó]ve(?:l|is)|ar.condicionado|aspirador|geladeira|refrigerador|fog[aã]o|lavadora|lava.lou[cç]as|micro.?ondas|'
+                        r'air.?fryer|cafeteira|ventilador|colch[aã]o|sof[aá]|\bcama\b|panela|eletrodom|moda|roupa|vestu[aá]rio|cal[cç]ado|t[eê]nis|'
+                        r'sapato|beleza|cosm[eé]tic|perfum|maquiagem|skincare|supermercado|mercado\b|bebida|vinho|cerveja|brinquedo|livro|\bpet\b|'
+                        r'ra[cç][aã]o|ferrament|jardim|piscina|farm[aá]cia|suplement|bolsa|rel[oó]gio|decora[cç]|cozinha|banheiro|beb[eê]|infantil|'
+                        r'viagem|hotel|passage|automotiv|\bcarro|im[oó]ve|seguro|curso|smart\s?tv|epson|brother|aspira')
+_CAT_LOJA = re.compile(r'loja toda|site todo|todo o site|toda a loja|primeira compra|primeiro pedido|qualquer|todo o app|em tudo|sem m[ií]nimo|'
+                       r'todos os produtos|novos? usu[aá]rios?|novos? clientes?')
+_CAT_SELECAO = re.compile(r'selecionad|participantes|sele[cç][aã]o|categorias?\s+selec')
 
 
 def categoria_cupom(t):
+    """Games · Computadores · Informática · Loja toda · Produtos selecionados · Geral (não cita produto) · Outros produtos."""
     t = (t or '').lower()
-    if re.search(r'notebook|laptop|computador|\bpcs?\b|desktop|macbook|all.in.one|chromebook|ultrabook|alienware|predator|nitro|ideapad|vivobook', t):
+    if _CAT_GAMES.search(t):
+        return 'Games'
+    if _CAT_PCS.search(t):
         return 'Computadores'
-    if re.search(r'monitor|placa|mem[oó]ria|\bssd\b|\bhd\b|impressora|multifuncional|mouse|teclado|headset|fone|webcam|roteador|'
-                 r'perif[eé]ric|gamer|processador|tablet|inform[aá]tica|tecnologia|eletr[oô]nico|tv\b|smartphone|celular|scanner|microfone', t):
+    if _CAT_INFO.search(t):
         return 'Informática'
-    if re.search(r'loja toda|site todo|todo o site|toda a loja|primeira compra|qualquer|todo o app|em tudo|sem m[ií]nimo|todos os produtos', t):
+    if _CAT_OUTRO.search(t):
+        return 'Outros produtos'
+    if _CAT_LOJA.search(t):
         return 'Loja toda'
-    return 'Outros produtos'
+    if _CAT_SELECAO.search(t):
+        return 'Produtos selecionados'
+    return 'Geral'
 
 
 def _outra_loja(loja, titulo):
@@ -215,6 +239,7 @@ def juntar(antigos, novos, hoje_txt):
             for k in ('descricao', 'desconto', 'validade'):
                 if n.get(k) and (not c.get(k) or c.get(k) in ('não informada', 'não informado')):
                     c[k] = n[k]
+            c['categoria'] = categoria_cupom(c.get('descricao'))  # categorias foram refinadas (Games, Geral…)
         c['fonte'] = n['fontes'][0]['nome']
         c['fonteUrl'] = n['fontes'][0]['url']
         c['fontesExtras'] = [{'nome': f['nome'], 'url': f['url']} for f in n['fontes'][1:]]

@@ -12,7 +12,7 @@ import logging
 import re
 import time
 
-from . import amazon, cupons as cupons_mod, dell, kabum, vtex, zoom
+from . import amazon, cupons as cupons_mod, dell, games, kabum, vtex, zoom
 from .enrich import enriquecer
 from .http import Http
 from .util import agora, texto_data
@@ -77,9 +77,13 @@ async def executar(dados, status=None, banco=None):
     banco: Banco de dados de produtos (completa o que falta e aprende com a coleta)."""
     status = status if status is not None else {}
     inicio = time.time()
-    ant = {n['id']: n for n in (dados.get('produtos') or dados.get('notebooks') or [])}
+    todos_ant = dados.get('produtos') or dados.get('notebooks') or []
+    # computadores (seção original, sem o campo "secao") e as outras seções (games…) seguem caminhos separados
+    ant = {n['id']: n for n in todos_ant if n.get('secao', 'computadores') == 'computadores'}
+    ant_outros = [n for n in todos_ant if n.get('secao', 'computadores') != 'computadores']
     data_ant = (dados.get('ultimaAtualizacaoTexto') or '').split(' às')[0]
     status['fontes'] = {nome: {'estado': 'aguardando'} for nome, _, _ in FONTES}
+    status['fontes'].update({f'Games: {nome}': {'estado': 'aguardando'} for nome, _, _ in games.LOJAS})
     http = Http()
 
     async def rodar(nome, mod, filtro):
@@ -108,12 +112,22 @@ async def executar(dados, status=None, banco=None):
                                       'msg': info if isinstance(info, str) else ', '.join(f"{k}: {v['cupons']}" for k, v in info.items())}
         return r
 
+    async def rodar_games():
+        try:
+            return await games.coletar(http, ant_outros, status, agora().strftime('%d/%m/%Y'), data_ant)
+        except Exception:
+            log.exception('games')
+            return None, {}
+
     try:
-        *resultados, cupons_novos = await asyncio.gather(*(rodar(n, m, f) for n, m, f in FONTES), rodar_cupons())
+        *resultados, cupons_novos, (outros, resumo_games) = await asyncio.gather(*(rodar(n, m, f) for n, m, f in FONTES), rodar_cupons(),
+                                                                                rodar_games())
     finally:
         await http.fechar()
+    if outros is None:  # a coleta de games quebrou: fica tudo como estava
+        outros = ant_outros
 
-    if all(r is None for r in resultados) and cupons_novos is None:
+    if all(r is None for r in resultados) and cupons_novos is None and not any(v.get('estado') == 'ok' for v in resumo_games.values()):
         raise RuntimeError('nenhuma loja respondeu; os dados anteriores foram mantidos')
     hoje = agora()
     novos, removidos, atualizados, antigos, final = [], [], 0, 0, {}
@@ -176,9 +190,22 @@ async def executar(dados, status=None, banco=None):
         produtos = produtos[:MAX_PRODUTOS]
     if len(produtos) < 30 or len({n['id'] for n in produtos}) != len(produtos):
         raise RuntimeError(f'validação falhou: {len(produtos)} produtos')
+    # outras seções (games…): histórico de preço no banco (menor preço já visto)
+    ids_pc = {n['id'] for n in produtos}
+    outros = [n for n in outros if n['id'] not in ids_pc]
+    if banco is not None:
+        data = hoje.strftime('%Y-%m-%d')
+        for n in outros:
+            if not n.get('precoAntigo'):
+                banco.aprender(n, data, modelos=False)
+            menor, quando = banco.historico(n['id'])
+            if menor:
+                n['menorPrecoVisto'] = menor
+                n['menorPrecoData'] = quando
+    novos_outros = [n['id'] for n in outros if n['id'] not in {a['id'] for a in ant_outros}]
     out = dict(dados)
     out.pop('notebooks', None)
-    out['produtos'] = produtos
+    out['produtos'] = produtos + outros
     lista_cupons = dados.get('cupons', [])
     if cupons_novos is not None:
         lista_cupons = cupons_mod.juntar(lista_cupons, cupons_novos, hoje.strftime('%d/%m/%Y'))
@@ -188,10 +215,13 @@ async def executar(dados, status=None, banco=None):
     por_tipo = {}
     for n in produtos:
         por_tipo[n.get('tipo') or 'Notebook'] = por_tipo.get(n.get('tipo') or 'Notebook', 0) + 1
-    resumo = {'produtos': len(produtos), 'porTipo': por_tipo, 'novos': len(novos), 'removidos': len(removidos), 'precosAtualizados': atualizados,
+    por_secao = {'computadores': len(produtos)}
+    for n in outros:
+        por_secao[n['secao']] = por_secao.get(n['secao'], 0) + 1
+    resumo = {'produtos': len(produtos), 'porTipo': por_tipo, 'porSecao': por_secao, 'games': resumo_games, 'novosGames': len(novos_outros), 'novos': len(novos), 'removidos': len(removidos), 'precosAtualizados': atualizados,
               'precosAnteriores': antigos, 'completadosPeloBanco': completados,
               'banco': banco.resumo() if banco is not None else None, 'cupons': sum(1 for c in out['cupons'] if c.get('ativo') is not False),
-              'segundos': round(time.time() - inicio), 'fontes': status['fontes'], 'idsNovos': novos}
+              'segundos': round(time.time() - inicio), 'fontes': status['fontes'], 'idsNovos': novos + novos_outros}
     return out, resumo
 
 
@@ -209,6 +239,11 @@ if __name__ == '__main__':  # teste: python -m coleta.orquestrador ../dados/dado
     print('banco:', banco.resumo())
     print(json.dumps(r, ensure_ascii=False, indent=1))
     antes = {n['id']: n for n in (d.get('produtos') or d.get('notebooks'))}
+    import collections
+    jogos = [n for n in novo['produtos'] if n.get('secao') == 'games']
+    print('GAMES por loja:', dict(collections.Counter(n['loja'].split(' (')[0] for n in jogos)))
+    for n in sorted([n for n in jogos if n.get('original')], key=lambda n: n['precoNum'])[:8]:
+        print('  GAME', n['preco'], '|', n['modelo'], '|', n['loja'], '|', n['nome'][:70], '|', n['url'])
     mud = [(n['id'], antes[n['id']].get('preco'), n.get('preco')) for n in novo['produtos'] if n['id'] in antes and antes[n['id']].get('precoNum') != n.get('precoNum')]
     import collections as _c
     ativos = [c for c in novo['cupons'] if c.get('ativo') is not False]
