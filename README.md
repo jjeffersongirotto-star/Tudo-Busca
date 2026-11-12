@@ -48,13 +48,13 @@ No topo há **cards de seleção**: **💻 Computadores** (tudo acima) e **🎮 
 
 ## Versões e aviso de atualização
 
-Ao tocar em **⟳**, antes de buscar preços a página pergunta ao servidor (`/api/versao`) qual é a versão mais nova. Se houver versão nova, aparece **"🆕 Nova versão disponível"** e a busca **só acontece depois de atualizar**:
+Ao tocar em **⟳**, a página consulta o servidor (`/api/versao`) para saber se há versão nova:
 
-| Onde o app roda | O que aparece |
+| Onde o app roda | O que acontece |
 |---|---|
-| Site / app instalado pelo navegador (PWA) | botão **Atualizar agora**: troca a cópia do app (service worker) e recarrega; a busca começa sozinha em seguida |
-| Página aberta como arquivo (WhatsApp, pasta do celular) | **Baixar a página nova** (`/baixar`) ou **abrir o site** |
-| APK Android / app do Windows | se o próprio app (APK/instalador) estiver atrás do último [Release](https://github.com/jjeffersongirotto-star/Tudo-Busca/releases/latest): **Baixar a versão nova**; se só a página mudou, **Atualizar agora** (o app carrega a página do site) |
+| Navegador no computador ou no celular (inclusive app instalado pelo navegador) | **nunca trava**: a busca começa na hora. Se a página estiver desatualizada, o app se atualiza em segundo plano (vale na próxima abertura) e aparece só uma dica pequena com **Recarregar agora** e ✕ para fechar |
+| Página aberta como arquivo (WhatsApp, pasta do celular) | **nunca trava**: busca na hora e mostra uma dica pequena com **Baixar** a página nova / abrir o site |
+| APK Android / app do Windows baixados | se o app instalado estiver atrás do último [Release](https://github.com/jjeffersongirotto-star/Tudo-Busca/releases/latest): aviso **"🆕 Nova versão disponível"** com **Baixar a versão nova**, e a busca fica pausada até instalar. Se só a página mudou, mostra a dica pequena e busca normalmente |
 
 Sem internet, servidor fora ou GitHub sem resposta, a busca segue normalmente (não trava).
 
