@@ -4,6 +4,8 @@ GET  /              página (cupons-dell.html)
 GET  /api/dados     dados atuais (JSON)
 POST /api/atualizar começa uma coleta nova nas lojas (uma por vez; intervalo mínimo entre coletas)
 GET  /api/status    andamento da coleta
+GET  /api/versao    versão da página no servidor e do app (Android/Windows) mais novo publicado no GitHub
+GET  /baixar        baixa a página (com dados embutidos) para usar como arquivo
 """
 import asyncio
 import json
@@ -16,6 +18,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 
+import httpx
+
+import versao as versao_app
 from coleta import orquestrador
 from coleta.banco import Banco
 
@@ -100,6 +105,41 @@ def icone(nome: str):
     if arq.parent != (WEB / 'icones').resolve() or not arq.exists() or arq.suffix != '.png':
         return JSONResponse({'erro': 'não encontrado'}, status_code=404)
     return FileResponse(arq, media_type='image/png', headers={'Cache-Control': 'public, max-age=604800'})
+
+
+REPO = 'jjeffersongirotto-star/Tudo-Busca'
+RELEASES = f'https://github.com/{REPO}/releases/latest'
+_release = {'em': 0.0, 'dados': None}
+
+
+async def _app_mais_novo():
+    """Último Release dos apps no GitHub (guardado por 15 min; sem resposta, devolve o último conhecido ou None)."""
+    if _release['dados'] is not None and time.time() - _release['em'] < 900:
+        return _release['dados']
+    try:
+        async with httpx.AsyncClient(timeout=8, headers={'Accept': 'application/vnd.github+json', 'User-Agent': 'tudo-busca'}) as c:
+            r = await c.get(f'https://api.github.com/repos/{REPO}/releases/latest')
+            r.raise_for_status()
+            j = r.json()
+        tag = j.get('tag_name', '')
+        _release.update(em=time.time(), dados={
+            'versao': tag.split('-v', 1)[-1] if '-v' in tag else tag.lstrip('v'), 'tag': tag, 'pagina': j.get('html_url') or RELEASES,
+            'android': f'{RELEASES}/download/Tudo-Busca-Android.apk', 'windows': f'{RELEASES}/download/Tudo-Busca-Instalador-Windows.exe'})
+    except Exception as e:  # GitHub fora do ar ou limite de acessos: a busca segue normalmente
+        log.warning('release do GitHub indisponível: %s', e)
+        _release['em'] = time.time() - 600   # tenta de novo em ~5 min
+    return _release['dados']
+
+
+@app.get('/api/versao')
+async def versao():
+    return JSONResponse({'versao': versao_app.gravada(PAGINA.read_text(encoding='utf-8')), 'app': await _app_mais_novo(),
+                         'baixar': '/baixar'}, headers={'Cache-Control': 'no-store'})
+
+
+@app.get('/baixar')
+def baixar():
+    return FileResponse(PAGINA, media_type='text/html; charset=utf-8', filename='tudo-busca.html', headers={'Cache-Control': 'no-cache'})
 
 
 @app.get('/api/dados')
