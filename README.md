@@ -19,7 +19,8 @@ No topo há **cards de seleção**: **💻 Computadores** (tudo acima) e **🎮 
 O site e os apps estão sendo reescritos num **código único** com Expo (React Native + TypeScript + expo-router):
 o mesmo código gera o **site** e o **app Android nativo** (iOS depois). O servidor (`servidor/`) continua o mesmo.
 
-- **Ver agora:** https://tudo-busca.onrender.com/novo (o site atual continua em `/` até o novo ter tudo).
+- **Ver agora:** https://tudo-busca.onrender.com/novo — já com tudo do site atual (cards, filtros, notas, cupons do card, ⟳ por card, favoritos, cópia offline). O site atual continua em `/` até a troca.
+- **Interface** em `app/src/ui/` (topo/cards, coluna de cupons, lista, especificações, regras); a mesma tela roda no navegador e no Android.
 - **Lógica compartilhada** em `app/src/logica/` (nota/categorias/padrão, filtros, cupons, ofertas de games, junção de dados, versões),
   com testes em `app/tests/` que comparam o resultado com as funções da página antiga (`cupons-dell.html`) sobre um retrato dos dados.
 - **Dados:** `app/src/dados/` — cliente do servidor (`/api/dados`, `/api/atualizar`, `/api/status`, `/api/versao`) e cópia offline
