@@ -46,6 +46,23 @@ No topo há **cards de seleção**: **💻 Computadores** (tudo acima) e **🎮 
 - **Lojas** (testadas em 11/11/2026): KaBuM! ✔, Zoom/Buscapé ✔ (ofertas de Amazon, Magalu, Fast Shop…), AliExpress ✔, iByte/Webcontinental ✔. **Shopee** (HTTP 403 na API de busca), **Temu** (desafio em JavaScript) e **Mercado Livre** (verificação anti-robô) recusam buscas automáticas: são tentadas a cada coleta e, se recusarem, ficam os anúncios da coleta anterior (hoje nenhum).
 - Cupons: Méliuz agora inclui **Temu** (em 11/11/2026 o Méliuz não tinha nenhum cupom da Temu com código). As categorias dos cupons foram refinadas: Computadores, Games, Informática, Loja toda, Produtos selecionados, Geral (não cita produto) e Outros produtos.
 
+## Versões e aviso de atualização
+
+Ao tocar em **⟳**, antes de buscar preços a página pergunta ao servidor (`/api/versao`) qual é a versão mais nova. Se houver versão nova, aparece **"🆕 Nova versão disponível"** e a busca **só acontece depois de atualizar**:
+
+| Onde o app roda | O que aparece |
+|---|---|
+| Site / app instalado pelo navegador (PWA) | botão **Atualizar agora**: troca a cópia do app (service worker) e recarrega; a busca começa sozinha em seguida |
+| Página aberta como arquivo (WhatsApp, pasta do celular) | **Baixar a página nova** (`/baixar`) ou **abrir o site** |
+| APK Android / app do Windows | se o próprio app (APK/instalador) estiver atrás do último [Release](https://github.com/jjeffersongirotto-star/Tudo-Busca/releases/latest): **Baixar a versão nova**; se só a página mudou, **Atualizar agora** (o app carrega a página do site) |
+
+Sem internet, servidor fora ou GitHub sem resposta, a busca segue normalmente (não trava).
+
+**Como a versão é definida (automático):**
+- Página: `const VERSAO_APP = 'AAAA.MM.DD.HHMM-hash'` em `cupons-dell.html` e a mesma em `web/sw.js` — data/hora (Brasília) da mudança + hash do código. Recoletar ou embutir dados **não** muda a versão.
+- Não precisa lembrar: o workflow **Versão do app** carimba sozinho na `main` sempre que o código da página muda (e avisa nos PRs). Para carimbar na mão: `python servidor/versao.py --carimbar` (`--conferir` só verifica).
+- APK e Windows: versão `1.0.<número da execução>` do workflow **Gerar apps**, igual à tag do Release (`apps-v1.0.N`). Os apps informam a versão instalada à página (`?shell=1.0.N`); APKs/instaladores anteriores a esta mudança não informam, então só recebem o aviso de página nova.
+
 ## Pendente
 - KaBuM! e Amazon pelo GitHub Actions: falta a autorização (token). Passo a passo em [`docs/autorizacao-github.md`](docs/autorizacao-github.md).
 

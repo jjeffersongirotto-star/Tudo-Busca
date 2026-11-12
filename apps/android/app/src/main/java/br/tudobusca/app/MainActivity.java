@@ -36,7 +36,12 @@ public class MainActivity extends Activity {
             }
         });
         setContentView(web);
-        if (estado != null) web.restoreState(estado); else web.loadUrl(ENDERECO);
+        if (estado != null) web.restoreState(estado); else web.loadUrl(ENDERECO + "&shell=" + Uri.encode(versaoInstalada()));
+    }
+
+    /** Versão deste APK (ex.: 1.0.7): a página compara com o último Release e avisa quando há APK novo. */
+    private String versaoInstalada() {
+        try { return getPackageManager().getPackageInfo(getPackageName(), 0).versionName; } catch (Exception e) { return ""; }
     }
 
     @Override

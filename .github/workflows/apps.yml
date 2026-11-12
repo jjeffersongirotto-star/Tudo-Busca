@@ -39,7 +39,7 @@ jobs:
         working-directory: apps/computador
         run: |
           npm install --no-audit --no-fund
-          npm run dist
+          npm run dist -- -c.extraMetadata.version=1.0.${{ github.run_number }}
       - uses: actions/upload-artifact@v4
         with: { name: windows, path: apps/computador/dist/Tudo-Busca-Instalador-Windows.exe }
   publicar:

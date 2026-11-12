@@ -12,7 +12,8 @@ function criarJanela() {
     icon: path.join(__dirname, 'build', 'icon.png'),
     webPreferences: { contextIsolation: true, sandbox: true },
   });
-  janela.loadURL(ENDERECO);
+  // informa a versão instalada: a página compara com o último Release e avisa quando há instalador novo
+  janela.loadURL(ENDERECO + '&shell=' + encodeURIComponent(app.getVersion()));
   // links de lojas e cupons abrem no navegador padrão
   janela.webContents.setWindowOpenHandler(({ url }) => { shell.openExternal(url); return { action: 'deny' }; });
   janela.webContents.on('will-navigate', (e, url) => { if (new URL(url).host !== HOST) { e.preventDefault(); shell.openExternal(url); } });

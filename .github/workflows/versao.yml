@@ -1,0 +1,34 @@
+name: Versão do app
+
+# A versão (data/hora + hash do código) fica em cupons-dell.html e web/sw.js.
+# Na main, é carimbada sozinha sempre que o código muda; nos PRs, só confere e avisa.
+on:
+  push:
+    branches: [main]
+    paths: ['cupons-dell.html', 'web/**', 'servidor/versao.py', '.github/workflows/versao.yml']
+  pull_request:
+    paths: ['cupons-dell.html', 'web/**']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  versao:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: Conferir (PR)
+        if: github.event_name == 'pull_request'
+        run: python servidor/versao.py --conferir || echo "::warning::A versão será carimbada sozinha depois do merge na main."
+      - name: Carimbar e enviar (main)
+        if: github.event_name != 'pull_request'
+        run: |
+          python servidor/versao.py --carimbar
+          if ! git diff --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -am "Versão do app: $(python servidor/versao.py | sed -E 's/gravada: ([^ ]+).*/\1/')"
+            git push
+          fi
