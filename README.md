@@ -46,6 +46,8 @@ No topo há **cards de seleção**: **💻 Computadores** (tudo acima) e **🎮 
 - **Lojas** (testadas em 11/11/2026): KaBuM! ✔, Zoom/Buscapé ✔ (ofertas de Amazon, Magalu, Fast Shop…), AliExpress ✔, iByte/Webcontinental ✔. **Shopee** (HTTP 403 na API de busca), **Temu** (desafio em JavaScript) e **Mercado Livre** (verificação anti-robô) recusam buscas automáticas: são tentadas a cada coleta e, se recusarem, ficam os anúncios da coleta anterior (hoje nenhum).
 - Cupons: Méliuz agora inclui **Temu** (em 11/11/2026 o Méliuz não tinha nenhum cupom da Temu com código). As categorias dos cupons foram refinadas: Computadores, Games, Informática, Loja toda, Produtos selecionados, Geral (não cita produto) e Outros produtos.
 
+**A pesquisa (⟳) busca só o card selecionado:** em **Computadores**, só as lojas de computadores; em **Games / Acessórios / Controles de PS5**, só a coleta de games. Os cupons também são buscados só nas lojas daquela categoria. As outras categorias ficam como estavam. No servidor: `POST /api/atualizar?categoria=computadores|games` (sem categoria = todas), intervalo mínimo de 5 min **por categoria**, uma coleta por vez (a outra espera "na fila") e `GET /api/status?categoria=…` com o andamento. Cada categoria tem a sua data (`atualizacaoPorSecao`); ao juntar a cópia embutida, a guardada no aparelho e a do servidor, a página usa, **categoria por categoria**, a mais recente. Loja que falha mantém o preço anterior (marcado "preço da coleta anterior").
+
 ## Versões e aviso de atualização
 
 Ao tocar em **⟳**, a página consulta o servidor (`/api/versao`) para saber se há versão nova:

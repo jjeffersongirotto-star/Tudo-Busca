@@ -209,9 +209,11 @@ async def _pagina(http, site, url, loja):
     return site, loja, list(cupons.values())
 
 
-async def coletar(http):
-    """Retorna (lista de cupons encontrados agora, resumo por site) ou (None, msg) se nenhum site respondeu."""
-    tarefas = [_pagina(http, site, mod.format(s=slug), loja) for site, mod in SITES.items() for loja, slug in LOJAS.items()]
+async def coletar(http, lojas=None):
+    """Retorna (lista de cupons encontrados agora, resumo por site) ou (None, msg) se nenhum site respondeu.
+    lojas: só as lojas que interessam à categoria pesquisada (None = todas)."""
+    alvo = {l: s for l, s in LOJAS.items() if lojas is None or l in lojas}
+    tarefas = [_pagina(http, site, mod.format(s=slug), loja) for site, mod in SITES.items() for loja, slug in alvo.items()]
     res = await asyncio.gather(*tarefas)
     por_site, achados = {}, {}
     for site, loja, cups in res:
@@ -236,8 +238,9 @@ async def coletar(http):
     return list(achados.values()), por_site
 
 
-def juntar(antigos, novos, hoje_txt):
-    """Junta os cupons coletados agora com os que já existiam (sem apagar nada)."""
+def juntar(antigos, novos, hoje_txt, lojas=None):
+    """Junta os cupons coletados agora com os que já existiam (sem apagar nada).
+    lojas: lojas consultadas nesta coleta; cupons de outras lojas ficam como estavam."""
     por_chave = {}
     for c in antigos:
         por_chave[(c.get('loja') or 'Dell.com', c.get('codigo'))] = dict(c)
@@ -275,7 +278,7 @@ def juntar(antigos, novos, hoje_txt):
         c['ativo'] = True
         c['coletado'] = hoje_txt
     for chave, c in por_chave.items():
-        if chave not in vistos and c.get('coletado'):  # cupom de coleta automática que sumiu das fontes
+        if chave not in vistos and c.get('coletado') and (lojas is None or chave[0] in lojas):  # sumiu das fontes consultadas
             c['ativo'] = False
             c['status'] = f'Não apareceu na última coleta ({hoje_txt}); provavelmente expirou'
     return list(por_chave.values())

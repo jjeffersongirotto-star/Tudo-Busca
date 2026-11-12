@@ -1,5 +1,5 @@
 /* Service worker do Tudo-Busca: deixa o app abrir sem internet com os últimos dados vistos. */
-const VERSAO = '2026.11.12.0733-ac92814';
+const VERSAO = '2026.11.12.0750-bdd62fb';
 const CACHE = 'tudo-busca-' + VERSAO;   // versão nova = cache novo (o app troca sozinho de cópia)
 const BASE = ['/', '/manifest.webmanifest', '/icones/icon-192.png', '/icones/icon-512.png'];
 
