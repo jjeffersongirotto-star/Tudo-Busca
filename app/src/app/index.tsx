@@ -58,7 +58,7 @@ export default function Inicio() {
       <DicaVersao margem={margem} />
       <Secoes margem={margem} />
       {larga ? colunas : null}
-      {!larga ? <View style={{marginHorizontal: margem, marginTop: 12}}><Coluna testID="colCupons"><ColunaCupons larga={false} aberta /></Coluna></View> : null}
+      {!larga ? <View style={{marginHorizontal: margem, marginTop: 12}}><Coluna testID="colCupons" style={cuponsAbertos ? undefined : {minHeight: 0}}><ColunaCupons larga={false} aberta={cuponsAbertos} /></Coluna></View> : null}
       {!larga ? <View style={{marginHorizontal: margem, marginTop: 12}} onLayout={e => setLarguraMeio(e.nativeEvent.layout.width)}><Coluna testID="colLista"><ColunaLista largura={larguraMeio} aoSelecionar={aoSelecionar} /></Coluna></View> : null}
       {!larga ? <View ref={refDetalhes} style={{marginHorizontal: margem, marginTop: 12, scrollMarginTop: 80} as object} onLayout={e => { yDetalhes.current = e.nativeEvent.layout.y; }}><Coluna titulo="📋 Especificações" testID="colDetalhes"><PainelDetalhes /></Coluna></View> : null}
       <Rodape />
