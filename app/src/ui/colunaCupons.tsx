@@ -54,14 +54,15 @@ export function ColunaCupons({ larga, aberta }: { larga: boolean; aberta: boolea
   const visiveis = r.visiveis.slice(0, limiteCupons);
   const cats = Object.entries(ctxCupons.pesos).sort((a, b) => b[1] - a[1]).map(([k]) => k);
   const rotulo = (c: Cupom) => f.todos ? '' : ({item: 'vale para ' + ctxCupons.nome, geral: 'geral da loja', selecao: 'itens selecionados'} as Record<string, string>)[r.escopo(c).tipo] || '';
-  const mostrar = aberta || !larga;
+  const mostrar = aberta;  // no celular também começa recolhida, para as ofertas aparecerem logo
   return (
     <View style={{flex: 1, minHeight: 0}}>
       <View style={st.h2}>
         <T peso="extra" style={{fontSize: 16, flexShrink: 1}}>🏷️ Cupons <T peso="semi" style={{fontSize: 12, color: C.sub}} testID="contCupons">
           {`${r.ativos} ativos ${f.todos ? 'no total' : 'p/ ' + ctxCupons.nome}` + (r.visiveis.length !== r.ativos ? ` · ${r.visiveis.length} exibidos` : '')}</T></T>
-        {larga ? <Pressable onPress={() => setCuponsAbertos(!aberta)} style={st.toggle} accessibilityRole="button" accessibilityState={{expanded: aberta}} testID="btnCupons">
-          <T peso="negrito" style={{color: C.dellEsc, fontSize: 11.8}}>{aberta ? '◂ Recolher' : 'Expandir ▸'}</T></Pressable> : null}
+        <Pressable onPress={() => setCuponsAbertos(!aberta)} style={st.toggle} accessibilityRole="button" accessibilityState={{expanded: aberta}} testID="btnCupons"
+          hitSlop={8} accessibilityLabel={aberta ? 'Esconder cupons' : 'Ver cupons'}>
+          <T peso="negrito" style={{color: C.dellEsc, fontSize: 11.8}}>{larga ? (aberta ? '◂ Recolher' : 'Expandir ▸') : (aberta ? 'Esconder ▴' : 'Ver cupons ▾')}</T></Pressable>
       </View>
       {mostrar ? (
         <>
