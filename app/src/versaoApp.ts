@@ -1,2 +1,2 @@
 /** Versão do app web (carimbada por scripts/carimbar.mjs ao exportar). */
-export const VERSAO_WEB = '2026.11.21.1727-e42dfc3';
+export const VERSAO_WEB = '2026.11.21.1733-7229591';
