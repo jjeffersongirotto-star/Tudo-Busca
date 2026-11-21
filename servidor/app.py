@@ -14,6 +14,7 @@ import logging
 import os
 import re
 import time
+from datetime import datetime
 from pathlib import Path
 
 from fastapi import FastAPI, Query
@@ -32,6 +33,7 @@ logging.getLogger('httpx').setLevel(logging.WARNING)
 log = logging.getLogger('servidor')
 
 RAIZ = Path(__file__).resolve().parent.parent
+REPO = 'jjeffersongirotto-star/Tudo-Busca'
 SEMENTE = RAIZ / 'dados' / 'dados.json'
 PASTA = Path(os.environ.get('PASTA_DADOS', '/tmp/tudo-busca'))
 ATUAL = PASTA / 'dados.json'
@@ -67,11 +69,55 @@ def salvar(d):
     tmp.replace(ATUAL)
 
 
+# ---- Coleta agendada no GitHub (ramo dados-coleta): o servidor puxa ao ligar e antes de cada ⟳ ----
+COLETA_GITHUB = f'https://raw.githubusercontent.com/{REPO}/dados-coleta'
+_sinc = {'em': 0.0}
+
+
+def _quando(d):
+    try:
+        return datetime.fromisoformat(str((d or {}).get('ultimaAtualizacao') or ''))
+    except ValueError:
+        return None
+
+
+async def sincronizar_github(forcar=False):
+    """Se a coleta agendada do GitHub for mais nova que os dados do servidor, passa a usá-la (é dela que vêm KaBuM! e
+    Amazon, que recusam o Render); o banco de dados do GitHub é juntado ao do servidor. No máximo a cada 10 min."""
+    if not forcar and time.time() - _sinc['em'] < 600:
+        return
+    _sinc['em'] = time.time()
+    try:
+        async with httpx.AsyncClient(timeout=20, headers={'User-Agent': 'tudo-busca'}) as c:
+            t = f'?t={int(time.time() // 300)}'
+            rd, rb = await asyncio.gather(c.get(f'{COLETA_GITHUB}/dados.json{t}'), c.get(f'{COLETA_GITHUB}/banco.json{t}'))
+        if rb.status_code == 200:
+            n = BANCO.mesclar(rb.json())
+            if n:
+                BANCO.salvar()
+            log.info('banco do GitHub juntado: %d produtos novos/atualizados (%s)', n, BANCO.resumo())
+        if rd.status_code != 200:
+            log.info('coleta do GitHub ainda não publicada (HTTP %s)', rd.status_code)
+            return
+        gh = rd.json()
+        try:
+            atual = carregar()
+        except RuntimeError:
+            atual = None
+        qg, qa = _quando(gh), _quando(atual)
+        if gh.get('produtos') and qg and (qa is None or qg > qa):
+            salvar(gh)
+            log.info('dados da coleta do GitHub adotados (%s; os do servidor eram de %s)', qg, qa)
+    except Exception as e:  # sem GitHub, segue com o que tem
+        log.warning('sincronização com a coleta do GitHub falhou: %s', e)
+
+
 async def coletar(categoria='todas'):
     estado = estados[categoria]
     estado.update(estado='rodando', fila=_trava.locked(), inicio=time.time(), fim=None, resumo=None, erro=None, fontes={})
     async with _trava:
         estado.update(fila=False, inicio=time.time())
+        await sincronizar_github()  # parte da coleta agendada mais recente (KaBuM!/Amazon vêm dela)
         try:
             novo, resumo = await orquestrador.executar(carregar(), estado, banco=BANCO, categoria=categoria)
             salvar(novo)
@@ -149,7 +195,6 @@ def app_novo(caminho: str = ''):
     return FileResponse(indice, media_type='text/html; charset=utf-8', headers={'Cache-Control': 'no-cache'})
 
 
-REPO = 'jjeffersongirotto-star/Tudo-Busca'
 RELEASES = f'https://github.com/{REPO}/releases/latest'
 _release = {'em': 0.0, 'dados': None}
 
@@ -307,5 +352,6 @@ def saude():
 @app.on_event('startup')
 async def iniciar():
     keepalive.iniciar()  # ping na URL pública a cada ~10 min, para o Render não dormir
+    asyncio.get_running_loop().create_task(sincronizar_github(forcar=True))  # recupera dados e banco da coleta do GitHub
     if os.environ.get('COLETAR_AO_INICIAR') == '1':
         asyncio.get_running_loop().create_task(coletar())
