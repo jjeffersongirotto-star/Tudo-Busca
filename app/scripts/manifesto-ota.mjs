@@ -17,6 +17,9 @@ const md5 = buf => createHash('md5').update(buf).digest('hex');
 const url = p => base.replace(/\/$/, '') + '/' + p;
 
 const bundle = readFileSync(join(pasta, meta.bundle));
+const tamanhos = {[md5(bundle)]: bundle.length};
+// versão que o usuário vê (carimbada por scripts/carimbar.mjs antes do export)
+const versao = readFileSync(new URL('../src/versaoApp.ts', import.meta.url), 'utf8').match(/VERSAO_APP = '([^']*)'/)?.[1];
 // id do update: UUID derivado do conteúdo (o mesmo código gera o mesmo id; o app não baixa de novo)
 const h = createHash('sha256').update(bundle);
 for (const a of meta.assets) h.update(a.path);
@@ -31,13 +34,15 @@ const manifesto = {
   // a "key" de cada arquivo precisa ser o nome que o código usa para achá-lo (o hash md5 que o export põe no nome)
   assets: meta.assets.map(a => {
     const buf = readFileSync(join(pasta, a.path));
+    tamanhos[basename(a.path)] = buf.length;
     return {hash: b64url(buf), key: basename(a.path), contentType: tipo(a.ext), fileExtension: '.' + a.ext, url: url(a.path)};
   }),
   metadata: {},
-  extra: {},
+  // o app mostra a versão nova e o tamanho do download (src/logica/ota.ts)
+  extra: {tudoBusca: {versao, tamanhos}},
 };
 writeFileSync(join(pasta, 'manifest.json'), JSON.stringify(manifesto, null, 1));
-console.log(`manifesto OTA: id ${id}, runtime ${runtimeVersion}, ${manifesto.assets.length} arquivos`);
+console.log(`manifesto OTA: id ${id}, versão ${versao}, runtime ${runtimeVersion}, ${manifesto.assets.length} arquivos, código ${(bundle.length / 1048576).toFixed(1)} MB`);
 
 function tipo(ext) {
   return {png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', gif: 'image/gif', webp: 'image/webp', ttf: 'font/ttf', otf: 'font/otf',

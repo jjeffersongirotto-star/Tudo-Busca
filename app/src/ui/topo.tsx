@@ -1,5 +1,5 @@
 /** Topo (logo, data, ⟳, instalar), aviso, dica de versão nova e cards de seleção. */
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Animated, Easing, Pressable, View, StyleSheet, useWindowDimensions } from 'react-native';
 import { T, Grad, Icone, Link, abrir } from './base';
 import { C, RAIO, RAIO_P, ehWeb, sombra } from './tema';
@@ -7,6 +7,7 @@ import { useApp, NATIVO, VERSAO_NATIVA, type Aviso } from './estado';
 import { SECOES, secaoAtual, subAtual, itemAtual, contar } from '@/logica/secoes';
 import * as Updates from 'expo-updates';
 import { versaoCurta } from '@/logica/versao';
+import { infoOta, progressoOta, fmtBytes } from '@/logica/ota';
 import { SERVIDOR_PUBLICO } from '@/dados/api';
 import { VERSAO_APP } from '@/versaoApp';
 
@@ -116,20 +117,38 @@ export function AvisoOta({ margem }: { margem: number }) {
   return NATIVO ? <AvisoOtaNativo margem={margem} /> : null;
 }
 function AvisoOtaNativo({ margem }: { margem: number }) {
-  const {isUpdateAvailable, isUpdatePending, isDownloading, downloadProgress} = Updates.useUpdates();
+  const {isUpdateAvailable, isUpdatePending, isDownloading, downloadProgress, availableUpdate, downloadedUpdate, downloadError} = Updates.useUpdates();
+  const [pediu, setPediu] = useState(false);   // tocou em "Atualizar": reinicia sozinho quando terminar de baixar
+  const manifesto = (availableUpdate ?? downloadedUpdate)?.manifest;
+  const info = useMemo(() => infoOta(manifesto, Updates.manifest), [manifesto]);
   useEffect(() => {
-    if (Updates.isEnabled && isUpdateAvailable && !isUpdatePending && !isDownloading) Updates.fetchUpdateAsync().catch(() => {});
-  }, [isUpdateAvailable, isUpdatePending, isDownloading]);
-  if (isDownloading) return (
-    <View style={[st.dica, {marginHorizontal: margem}]} testID="avisoOta">
-      <T style={{color: '#ddd6fe', fontSize: 12.8}}>🆕 Atualização nova disponível — baixando…{downloadProgress ? ` ${Math.round(downloadProgress * 100)}%` : ''}</T>
-    </View>
-  );
-  if (!isUpdatePending) return null;
+    if (pediu && isUpdatePending) Updates.reloadAsync().catch(() => setPediu(false));
+  }, [pediu, isUpdatePending]);
+  const atualizar = () => {
+    setPediu(true);
+    if (isUpdatePending) Updates.reloadAsync().catch(() => setPediu(false));
+    else Updates.fetchUpdateAsync().catch(() => setPediu(false));
+  };
+  const nome = info?.versao ? ` v${info.versao}` : '';
+  if (isDownloading || (pediu && !isUpdatePending && !downloadError)) {
+    const pr = progressoOta(downloadProgress, info);
+    return (
+      <View style={[st.dica, st.ota, {marginHorizontal: margem}]} testID="avisoOta">
+        <T peso="negrito" style={{color: '#ede9fe', fontSize: 13.2}}>⬇️ Baixando a atualização{nome}</T>
+        <View style={st.barraOta}><View style={[st.barraOtaCheia, {width: `${pr.pct}%`}]} /></View>
+        <T style={{color: '#ddd6fe', fontSize: 12.3}} testID="progressoOta">
+          {info?.baixar ? `${fmtBytes(pr.bytes)} de ${fmtBytes(info.baixar)} · ` : ''}{pr.pct}%</T>
+      </View>
+    );
+  }
+  if (!isUpdateAvailable && !isUpdatePending) return null;
   return (
-    <View style={[st.dica, {marginHorizontal: margem}]} testID="avisoOta">
-      <T style={{color: '#ddd6fe', fontSize: 12.8, flexShrink: 1}}>🆕 Atualização nova disponível. </T>
-      <Pressable onPress={() => { Updates.reloadAsync().catch(() => {}); }} accessibilityRole="button" style={st.btnVersao}>
+    <View style={[st.dica, st.ota, {marginHorizontal: margem}]} testID="avisoOta">
+      <T style={{color: '#ddd6fe', fontSize: 12.8}}>
+        🆕 Atualização nova disponível{nome}{info?.baixar && !isUpdatePending ? ` · ${fmtBytes(info.baixar)}` : ''}{isUpdatePending ? ' · já baixada' : ''}
+      </T>
+      {downloadError ? <T style={{color: '#fed7aa', fontSize: 12}}>Não consegui baixar agora. Tente de novo.</T> : null}
+      <Pressable onPress={atualizar} accessibilityRole="button" style={[st.btnVersao, {alignSelf: 'flex-start'}]} testID="btnOta">
         <T peso="negrito" style={{color: '#fff', fontSize: 13.5}}>Atualizar</T></Pressable>
     </View>
   );
@@ -238,6 +257,9 @@ const st = StyleSheet.create({
   refresh: {width: 46, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center'},
   instalar: {height: 46, paddingHorizontal: 16, borderRadius: 999, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8},
   aviso: {marginTop: 14, paddingVertical: 11, paddingHorizontal: 16, borderRadius: RAIO_P, borderWidth: 1},
+  ota: {flexDirection: 'column', alignItems: 'stretch', gap: 6, paddingVertical: 9},
+  barraOta: {height: 8, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.10)', overflow: 'hidden'},
+  barraOtaCheia: {height: 8, borderRadius: 4, backgroundColor: '#8b5cf6'},
   btnVersao: {backgroundColor: '#7c3aed', borderRadius: 10, paddingVertical: 9, paddingHorizontal: 14, alignItems: 'center', justifyContent: 'center'},
   dica: {marginTop: 8, paddingVertical: 6, paddingLeft: 12, paddingRight: 10, borderRadius: RAIO_P, borderWidth: 1, borderStyle: 'dashed', borderColor: 'rgba(139,92,246,0.35)',
     backgroundColor: 'rgba(139,92,246,0.08)', flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 6},
