@@ -156,6 +156,13 @@ export function descontoCupom(c: Cupom): Desconto | null {
   return null;
 }
 
+/** Texto do desconto do cupom: "10% OFF", "R$ 50 OFF", "10% OFF (até R$ 100)". */
+export function rotuloDesconto(d: Desconto | null | undefined): string {
+  if (!d) return '';
+  const r = (v: number) => reais(v).replace(/,00$/, '');
+  return d.tipo === 'R$' ? `${r(d.v)} OFF` : `${d.v}% OFF${d.teto ? ` (até ${r(d.teto)})` : ''}`;
+}
+
 export interface Avaliacao { min: number | null; d?: Desconto | null; atinge: boolean | null; estimado: number | null; aviso: string; condicoes?: string[] }
 export function avaliarCupom(c: Cupom, n: Produto): Avaliacao {
   const preco = n.precoNum, min = minimoCupom(c), d = descontoCupom(c);

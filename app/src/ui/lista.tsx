@@ -9,7 +9,7 @@ import { RegrasPC, RegrasG } from './regras';
 import type { Produto } from '@/logica/tipos';
 import { FILTROS, OPCOES_NUM, POR_PAGINA, ICONE_TIPO, opcoesFiltros, filtrados, montarLista, valorNota } from '@/logica/filtros';
 import { FILTROS_G, OPCOES_G, opcoesFiltrosG, filtradosG, type NotaG } from '@/logica/ofertas';
-import { cuponsDaLoja, precoComCupom, precoFinal, type PrecoComCupom } from '@/logica/cupons';
+import { cuponsDaLoja, precoComCupom, precoFinal, rotuloDesconto, descontoCupom, type PrecoComCupom } from '@/logica/cupons';
 import { secaoAtual, subAtual, itemAtual, nomeSel } from '@/logica/secoes';
 import type { Pontuacao } from '@/logica/nota';
 import { fmt1, fmtPol, reais, ni } from '@/logica/formato';
@@ -49,7 +49,7 @@ function Cartao({ n, fav, aberto, sel, novo, foraFiltro, aoSelecionar, aoFav, ao
 /** Preço da loja e, ao lado, o preço com o cupom (confirmado em verde; "se participar" em azul). */
 const Preco = ({ n, pc }: { n: Produto; pc?: PrecoComCupom }) => {
   const m = pc?.melhor, tz = pc?.talvez;
-  const comCupom = m ? {v: m.a.estimado!, cod: m.c.codigo, ok: true} : tz ? {v: tz.estimado, cod: tz.c.codigo, ok: false} : null;
+  const comCupom = m ? {v: m.a.estimado!, cod: m.c.codigo, ok: true, bonus: rotuloDesconto(m.a.d)} : tz ? {v: tz.estimado, cod: tz.c.codigo, ok: false, bonus: rotuloDesconto(descontoCupom(tz.c))} : null;
   if (!comCupom) return (
     <View style={st.preco}>
       <T peso="extra" style={{fontSize: 17.9}}>{n.preco || 'Preço não informado'}</T>
@@ -69,6 +69,7 @@ const Preco = ({ n, pc }: { n: Produto; pc?: PrecoComCupom }) => {
       <View style={[st.precoCol, st.precoCupom, comCupom.ok ? null : st.precoCupomTalvez]}>
         <T style={[st.precoRot, {color: comCupom.ok ? '#86efac' : '#7dd3fc'}]}>{comCupom.ok ? 'Com cupom' : 'Com cupom (se valer)'}</T>
         <T peso="extra" style={{fontSize: 17.9, color: comCupom.ok ? '#4ade80' : '#7dd3fc'}}>~{reais(comCupom.v)}</T>
+        {comCupom.bonus ? <T peso="negrito" style={{color: comCupom.ok ? '#86efac' : '#7dd3fc', fontSize: 13}}>🏷️ {comCupom.bonus}</T> : null}
         <T peso="extra" style={st.codigoMini}>{comCupom.cod}</T>
       </View>
     </View>
@@ -84,7 +85,7 @@ function VocePaga({ n, pc }: { n: Produto; pc?: PrecoComCupom }) {
     <View style={st.vocePaga} testID="vocePaga">
       {m ? (
         <>
-          <T style={{color: '#bbf7d0', fontSize: 13.2}}>💰 Use o cupom <T peso="extra" style={st.codigoMini}>{m.c.codigo}</T> e economize <T peso="extra" style={{color: '#fff'}}>{reais((n.precoNum || 0) - (m.a.estimado || 0))}</T></T>
+          <T style={{color: '#bbf7d0', fontSize: 13.2}}>💰 Use o cupom <T peso="extra" style={st.codigoMini}>{m.c.codigo}</T> ({rotuloDesconto(m.a.d)}) e economize <T peso="extra" style={{color: '#fff'}}>{reais((n.precoNum || 0) - (m.a.estimado || 0))}</T></T>
           <T style={{color: '#86efac', fontSize: 11.8}}>vale para este item{m.a.min ? ` · compra mínima ${reais(m.a.min)} ✔` : ''}{m.a.aviso ? ` · ${m.a.aviso}` : ''}</T>
           {m.a.condicoes?.length ? <T style={{color: '#fde68a', fontSize: 11.8}}>⚠ {m.a.condicoes.join(' · ')}{pc.semCondicao ? ` — sem essa condição: ~${reais(pc.semCondicao.a.estimado)} com ${pc.semCondicao.c.codigo}` : ''}</T> : null}
         </>
@@ -92,9 +93,9 @@ function VocePaga({ n, pc }: { n: Produto; pc?: PrecoComCupom }) {
       {pc.talvez ? (
         <>
           {m ? <T style={{color: '#a5f3fc', fontSize: 13.2}}>🔎 Pode ficar ainda mais barato: <T peso="extra" style={{color: '#fff'}}>~{reais(pc.talvez.estimado)}</T> com <T peso="extra" style={st.codigoMini}>{pc.talvez.c.codigo}</T></T>
-            : <T style={{color: '#a5f3fc', fontSize: 13.2}}>🔎 Teste o cupom <T peso="extra" style={st.codigoMini}>{pc.talvez.c.codigo}</T> no carrinho</T>}
+            : <T style={{color: '#a5f3fc', fontSize: 13.2}}>🔎 Teste o cupom <T peso="extra" style={st.codigoMini}>{pc.talvez.c.codigo}</T> no carrinho ({rotuloDesconto(descontoCupom(pc.talvez.c))})</T>}
           <T style={{color: '#7dd3fc', fontSize: 11.8}}>economia de {reais((n.precoNum || 0) - pc.talvez.estimado)} · vale só para itens selecionados{pc.talvez.provavel ? ', e o código cita este tipo de produto' : ''}</T>
-          {pc.talvezOutros.length ? <T style={{color: '#7dd3fc', fontSize: 11.8}}>outros para testar: {pc.talvezOutros.map(x => `${x.c.codigo} (~${reais(x.estimado)})`).join(' · ')}</T> : null}
+          {pc.talvezOutros.length ? <T style={{color: '#7dd3fc', fontSize: 11.8}}>outros para testar: {pc.talvezOutros.map(x => `${x.c.codigo} (${rotuloDesconto(descontoCupom(x.c))} → ~${reais(x.estimado)})`).join(' · ')}</T> : null}
         </>
       ) : null}
     </View>
