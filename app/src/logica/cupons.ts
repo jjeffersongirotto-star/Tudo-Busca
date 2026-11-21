@@ -38,7 +38,7 @@ const CAT_TXT: [string, RegExp][] = [
   ['Informática', /monitor|placa|mem[oó]ria|\bssd\b|\bhd\b|impressora|multifuncional|mouse|teclado|headset|\bfones?\b|webcam|roteador|perif[eé]ric|processador|tablet|inform[aá]tica|tecnologia|eletr[oô]nicos?|\btvs?\b|smartphone|celular|iphone|scanner|microfone|starlink|antena/],
   ['Outros produtos', PALAVRAS_OUTRAS],
 ];
-const SELECAO = /selecionad|participantes|sele[cç][aã]o|da lista|na lista|do link|no link|listad|eleg[ií]ve|da campanha|indicad|com a tag|da promo[cç][aã]o/;
+const SELECAO = /selecionad|participantes|espec[ií]fic|sele[cç][aã]o|da lista|na lista|do link|no link|listad|eleg[ií]ve|da campanha|indicad|com a tag|da promo[cç][aã]o/;
 const GENERICAS = new Set(('compra compras pedido pedidos carrinho site app aplicativo todo toda todos todas tudo seu sua seus suas loja lojas primeira primeiro qualquer esquenta black oferta ofertas '
   + 'página pagina link cupom cupons voucher vouchers código codigo valor dia hoje diversas várias varias nossa nossos produto produtos item itens mercadorias artigos categorias seleção selecao lista '
   + 'campanha promoção promocao semana período periodo tempo estoque checkout finalização pagamento pix boleto cartão cartao frete entrega entregas novo novos nova novas cliente clientes usuário usuários '
@@ -61,7 +61,7 @@ export function especifico(bruto: string): string {
 }
 
 /** Código que traz a marca/categoria (ex.: PHILCO50, LUUNA200, MOVEIS8) indica cupom de outro produto. */
-const CODIGO_OUTRO = /philco|brit[aâ]nia|britania|midea|elux|electrolux|jbl|luuna|positivo|samsung|^lg|^wap|asics|mantecorp|forever|tcl|elgin|starlink|^star\d|apple|iphone|xiaomi|motorola|^moto|lenovo|^dell|acer|asus|^rog|husky|kingston|brother|epson|razer|anycubic|signature|^grow|^west|^pet\d|moveis|clima|nintendo|xbox|^tv\d|^note|^nb\d|impressora|scanner|^ssd|^mou\d|^mb\d|^ar\w*\d|cafe|^edge|kids|lacta|elma|gulo|baby|instala|madesa|toy|^sono|biscoito|^super\d|brinquedo|^eletro|^moto\d|^hello|^quero\d{3}|moda|beleza|pneu|bike|suplement|creatina|^cpu|placa|monitor|tablet|ideatab|avell|^cama|cozinha|limpeza|^buds/i;
+const CODIGO_OUTRO = /philco|brit[aâ]nia|britania|midea|elux|electrolux|jbl|luuna|positivo|samsung|^lg|^wap|asics|mantecorp|forever|tcl|elgin|starlink|^star\d|apple|iphone|xiaomi|motorola|^moto|lenovo|^dell|acer|asus|^rog|husky|kingston|brother|epson|razer|anycubic|signature|^grow|^west|^pet\d|moveis|clima|nintendo|xbox|^tv\d|^note|^nb\d|impressora|scanner|^ssd|^mou\d|^mb\d|^ar\w*\d|cafe|^edge|kids|lacta|elma|gulo|baby|instala|madesa|toy|^sono|biscoito|^super\d|brinquedo|eletro|^moto\d|^hello|^quero\d{3}|moda|beleza|pneu|bike|suplement|creatina|^cpu|placa|monitor|tablet|ideatab|avell|^cama|cozinha|limpeza|^buds/i;
 
 export function restricaoCupom(c: Cupom, sec: string): string {
   const t = TEXTO_CUPOM(c).toLowerCase(), propria = PALAVRAS_SECAO[sec] || /$^/;
@@ -78,10 +78,39 @@ export interface Escopo { tipo: TipoEscopo; motivo?: string }
 /** Escopo do cupom para um produto (ou só {secao, item}, na coluna de cupons):
  *  item → cita o próprio item · geral → não cita produto/categoria/marca · selecao → "itens selecionados" (confira)
  *  outro → cita outra categoria, produto ou marca · fora → as regras restringem a outra categoria. */
-export function escopoCupom(c: Cupom, n: {secao?: string; item?: string}): Escopo {
+const MARCAS_CUPOM = /\b(alienware|lenovo|ideapad|legion|\bloq\b|asus|vivobook|zenbook|\brog\b|acer|nitro|predator|aspire|samsung|galaxy|dell|inspiron|latitude|\bhp\b|victus|omen|apple|macbook|positivo|vaio|\bmsi\b|avell|multilaser|sony|xbox|nintendo|gigabyte|husky|redragon|iphone|ipad|motorola|moto\s?g\d*|xiaomi|redmi|poco)\b/g;
+/** Cupom que cita uma marca/linha ou um código de modelo que o produto não tem (ex.: "citado para Notebook Alienware 15
+ *  DA15-C5210H-A30" não vale para um Lenovo). Só quando conhecemos o nome do produto. */
+export function citaOutroModelo(bruto: string, nome?: string, loja?: string): string {
+  if (!nome) return '';
+  const t = semExclusoes(bruto), tl = t.toLowerCase(), nl = nome.toLowerCase(), nu = nome.toUpperCase().replace(/\s+/g, '');
+  const lj = (loja || '').toLowerCase();   // a marca da própria loja (ex.: "Dell" na Dell.com) não conta
+  const marcas = [...new Set([...tl.matchAll(MARCAS_CUPOM)].map(m => m[1]))].filter(m => !lj.includes(m));
+  if (marcas.length && !marcas.some(m => nl.includes(m))) return marcas[0];
+  for (const m of t.matchAll(/\b([A-Z0-9]{2,}(?:-[A-Z0-9]{2,}){1,3})\b/g)) {
+    const cod = m[1];
+    if (/\d/.test(cod) && /[A-Z]/.test(cod) && cod.length >= 8 && !nu.includes(cod)) return cod;
+  }
+  return '';
+}
+
+/** Condições que podem impedir o uso (mostradas junto do preço com cupom). */
+export function condicoesCupom(c: Cupom): string[] {
+  const t = TEXTO_CUPOM(c).toLowerCase(), out: string[] = [];
+  if (/primeira\s+compra|primeiro\s+pedido|novos?\s+clientes?|nunca\s+(?:comprou|compraram)|1[ªa]\s+compra/.test(t)) out.push('só na 1ª compra na loja');
+  if (/(?:exclusiv\w*|somente|apenas|s[oó])\s+(?:no|pelo|para\s+o)\s+(?:app|aplicativo)|\bno\s+app\b|pelo\s+app|baixe\s+o\s+app/.test(t)) out.push('só no app da loja');
+  if (/\bpix\b/.test(t) && /(?:pagamento|pagando|pagar|via|no)\s+(?:via\s+)?pix|somente\s+pix|exclusivo\s+pix/.test(t)) out.push('só pagando no Pix');
+  if (/\bprime\b|assinantes?|membros?\s+(?:do\s+)?clube|\bmeli\+|clube\s+\w+/.test(t)) out.push('só para assinantes/clube');
+  if (/primeira\s+compra\s+no\s+app|primeira\s+compra\s+pelo\s+app/.test(t) && !out.includes('só no app da loja')) out.push('só no app da loja');
+  return out;
+}
+
+export function escopoCupom(c: Cupom, n: {secao?: string; item?: string; nome?: string; loja?: string; vendedor?: string}): Escopo {
   const sec = secaoDe(n), bruto = TEXTO_CUPOM(c), t = semExclusoes(bruto).toLowerCase();
   const r = restricaoCupom(c, sec);
   if (r) return {tipo: 'fora', motivo: r};
+  const outro = citaOutroModelo(bruto, n.nome, n.nome ? lojaCupomDe(n as Produto) : '');
+  if (outro) return {tipo: 'outro', motivo: `cupom de outra marca ou modelo (${outro})`};
   const it = itemCfg(n);
   if (it && it.cupomItem && it.cupomItem.test(t)) return {tipo: 'item'};
   const cat = (CAT_TXT.find(([, re]) => re.test(t)) || [null])[0];
@@ -127,10 +156,10 @@ export function descontoCupom(c: Cupom): Desconto | null {
   return null;
 }
 
-export interface Avaliacao { min: number | null; d?: Desconto | null; atinge: boolean | null; estimado: number | null; aviso: string }
+export interface Avaliacao { min: number | null; d?: Desconto | null; atinge: boolean | null; estimado: number | null; aviso: string; condicoes?: string[] }
 export function avaliarCupom(c: Cupom, n: Produto): Avaliacao {
   const preco = n.precoNum, min = minimoCupom(c), d = descontoCupom(c);
-  const r: Avaliacao = {min, d, atinge: min == null || !preco ? null : preco >= min, estimado: null, aviso: ''};
+  const r: Avaliacao = {min, d, atinge: min == null || !preco ? null : preco >= min, estimado: null, aviso: '', condicoes: condicoesCupom(c)};
   if (!preco || !d || r.atinge === false) return r;
   if (d.tipo === 'R$' && min == null && d.v > preco * 0.3) { r.aviso = 'desconto alto e mínimo não informado: deve exigir compra maior'; return r; }
   const abat = d.tipo === 'R$' ? d.v : Math.min(preco * d.v / 100, d.teto ?? Infinity);
@@ -159,8 +188,35 @@ export function cuponsForaDaLoja(cupons: Cupom[], n: Produto): number {
 }
 /** Melhor preço estimado com algum cupom da loja (para o card). */
 export function melhorComCupom(cupons: Cupom[], n: Produto): CupomDoProduto | null {
-  return cuponsDaLoja(cupons, n).filter(x => x.a.estimado != null && x.a.estimado < (n.precoNum as number)).sort((a, b) => a.a.estimado! - b.a.estimado!)[0] || null;
+  return precoComCupom(cupons, n).melhor;
 }
+
+export interface PrecoComCupom {
+  /** menor preço com um cupom que vale para o item e atinge a compra mínima */
+  melhor: CupomDoProduto | null;
+  /** se o melhor tem condição (1ª compra, app, Pix, clube): o melhor SEM condição, quando existe e é diferente */
+  semCondicao: CupomDoProduto | null;
+  /** cupom de "itens selecionados" que, se o item participar, daria preço menor (estimado) */
+  talvez: (CupomDoProduto & {estimado: number}) | null;
+}
+/** Preço final que o usuário paga: aplica cada cupom da loja que vale para o item (categoria, modelo e compra mínima). */
+export function precoComCupom(cupons: Cupom[], n: Produto): PrecoComCupom {
+  const preco = n.precoNum as number;
+  const l = cuponsDaLoja(cupons, n);
+  const ok = l.filter(x => x.e.tipo !== 'selecao' && x.a.estimado != null && x.a.estimado < preco)
+    .sort((a, b) => a.a.estimado! - b.a.estimado! || (a.a.condicoes?.length || 0) - (b.a.condicoes?.length || 0));
+  const melhor = ok[0] || null;
+  const semCondicao = melhor && melhor.a.condicoes?.length ? ok.find(x => !x.a.condicoes?.length) || null : null;
+  const ref = melhor ? melhor.a.estimado! : preco;
+  const talvez = l.filter(x => x.e.tipo === 'selecao' && x.a.atinge !== false)
+    .map(x => ({...x, estimado: avaliarCupom(x.c, n).estimado}))
+    .filter((x): x is CupomDoProduto & {estimado: number} => x.estimado != null && x.estimado < ref - 0.5)
+    .sort((a, b) => a.estimado - b.estimado)[0] || null;
+  return {melhor, semCondicao, talvez};
+}
+
+/** Preço para ordenar "Menor preço com cupom": o menor preço com cupom que vale (ou o preço normal). */
+export const precoFinal = (pc: PrecoComCupom | undefined, n: Produto) => pc?.melhor?.a.estimado ?? n.precoNum ?? 1e12;
 
 /** Coluna de cupons: os relevantes para o card selecionado, ordenados (item → categoria do card → loja toda). */
 export function contextoCupons(secao: SecaoCfg, nome: string, produtosSelecionados: Produto[], cupomItem: RegExp | null | undefined): ContextoCupons {

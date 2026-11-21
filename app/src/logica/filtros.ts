@@ -26,7 +26,7 @@ export const OPCOES_NUM = {
   fPeso: [['', 'Qualquer'], ['1.4', '1,4 kg'], ['1.7', '1,7 kg'], ['2', '2,0 kg'], ['2.5', '2,5 kg']],
   fPreco: [['', 'Qualquer'], ['2000', 'até R$ 2.000'], ['3000', 'até R$ 3.000'], ['4000', 'até R$ 4.000'], ['5000', 'até R$ 5.000'], ['6000', 'até R$ 6.000'], ['8000', 'até R$ 8.000'], ['10000', 'até R$ 10.000'], ['15000', 'até R$ 15.000'], ['20000', 'até R$ 20.000']],
   fDescMin: [['', 'Qualquer'], ['1', 'Com desconto'], ['5', '5% ou mais'], ['10', '10% ou mais'], ['15', '15% ou mais'], ['20', '20% ou mais'], ['30', '30% ou mais']],
-  fOrdem: [['nota', 'Melhor nota (padrão)'], ['desc', 'Maior desconto'], ['asc', 'Menor preço'], ['pdesc', 'Maior preço']],
+  fOrdem: [['nota', 'Melhor nota (padrão)'], ['cupom', 'Menor preço com cupom'], ['desc', 'Maior desconto'], ['asc', 'Menor preço'], ['pdesc', 'Maior preço']],
 } as const;
 
 export const ORDEM_PERFIL = ['Econômico (bateria)','Eficiência (bateria)','Eficiência (ARM)','Eficiência (Apple)','Intermediário','Desktop econômico','Desempenho','Desempenho (Apple Pro)','Desktop','Alto desempenho','Alto desempenho (Apple Max)','Desktop alto desempenho','Não informado'];
@@ -40,7 +40,7 @@ const ordemNum = (v: string) => parseFloat(String(v).replace(',', '.').replace(/
 export interface EstadoFiltros {
   sel: Partial<Record<FiltroId, string>>;
   fRam: string; fArm: string; fPeso: string; fPreco: string; fDescMin: string; fGpuDed: string;
-  fOrdem: 'nota' | 'desc' | 'asc' | 'pdesc';
+  fOrdem: 'nota' | 'cupom' | 'desc' | 'asc' | 'pdesc';
   fPromo20: boolean; fCB: boolean;
 }
 export const FILTROS_PADRAO: EstadoFiltros = {sel: {}, fRam: '', fArm: '', fPeso: '', fPreco: '', fDescMin: '', fGpuDed: '', fOrdem: 'nota', fPromo20: false, fCB: false};
@@ -65,7 +65,8 @@ export const valorNota = (n: Produto, notas: Map<string, Pontuacao>, usaPreco: b
   const r = notas.get(n.id); return usaPreco ? (r?.cbFinal ?? -1) : (r?.total ?? -1);
 };
 
-export function filtrados(pcs: Produto[], notas: Map<string, Pontuacao>, e: EstadoFiltros): Produto[] {
+/** precoCupom: preço final com o melhor cupom que vale (para "Menor preço com cupom"); sem ele, usa o preço normal. */
+export function filtrados(pcs: Produto[], notas: Map<string, Pontuacao>, e: EstadoFiltros, precoCupom?: (n: Produto) => number): Produto[] {
   let l = pcs.filter(n => FILTROS.every(f => !e.sel[f.id] || f.fn(n, notas) === e.sel[f.id]));
   const num = (v: string) => +v || 0;
   if (num(e.fRam)) l = l.filter(n => n.ramGB && n.ramGB >= num(e.fRam));
@@ -81,6 +82,7 @@ export function filtrados(pcs: Produto[], notas: Map<string, Pontuacao>, e: Esta
   const cmp = {
     nota: (a: Produto, b: Produto) => vn(b) - vn(a) || (T(b) - T(a)),
     desc: (a: Produto, b: Produto) => (b.descontoPct ?? -1) - (a.descontoPct ?? -1) || vn(b) - vn(a),
+    cupom: (a: Produto, b: Produto) => (precoCupom ? precoCupom(a) - precoCupom(b) : (a.precoNum ?? 1e12) - (b.precoNum ?? 1e12)) || vn(b) - vn(a),
     asc: (a: Produto, b: Produto) => (a.precoNum ?? 1e12) - (b.precoNum ?? 1e12),
     pdesc: (a: Produto, b: Produto) => (b.precoNum ?? -1) - (a.precoNum ?? -1),
   }[e.fOrdem || 'nota'];
