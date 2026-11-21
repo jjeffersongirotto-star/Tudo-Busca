@@ -196,9 +196,12 @@ export interface PrecoComCupom {
   melhor: CupomDoProduto | null;
   /** se o melhor tem condição (1ª compra, app, Pix, clube): o melhor SEM condição, quando existe e é diferente */
   semCondicao: CupomDoProduto | null;
-  /** cupom de "itens selecionados" que, se o item participar, daria preço menor (estimado) */
-  talvez: (CupomDoProduto & {estimado: number}) | null;
+  /** cupom de "itens selecionados" que, se o item participar, daria preço menor (estimado); primeiro o que o código cita o item */
+  talvez: Talvez | null;
+  /** outros cupons de seleção que também podem valer (até 2) */
+  talvezOutros: Talvez[];
 }
+export type Talvez = CupomDoProduto & {estimado: number; provavel: boolean};
 /** Preço final que o usuário paga: aplica cada cupom da loja que vale para o item (categoria, modelo e compra mínima). */
 export function precoComCupom(cupons: Cupom[], n: Produto): PrecoComCupom {
   const preco = n.precoNum as number;
@@ -208,11 +211,12 @@ export function precoComCupom(cupons: Cupom[], n: Produto): PrecoComCupom {
   const melhor = ok[0] || null;
   const semCondicao = melhor && melhor.a.condicoes?.length ? ok.find(x => !x.a.condicoes?.length) || null : null;
   const ref = melhor ? melhor.a.estimado! : preco;
-  const talvez = l.filter(x => x.e.tipo === 'selecao' && x.a.atinge !== false)
-    .map(x => ({...x, estimado: avaliarCupom(x.c, n).estimado}))
-    .filter((x): x is CupomDoProduto & {estimado: number} => x.estimado != null && x.estimado < ref - 0.5)
-    .sort((a, b) => a.estimado - b.estimado)[0] || null;
-  return {melhor, semCondicao, talvez};
+  const it = itemCfg(n);
+  const lista = l.filter(x => x.e.tipo === 'selecao' && x.a.atinge !== false)
+    .map(x => ({...x, estimado: avaliarCupom(x.c, n).estimado, provavel: !!(it?.cupom && it.cupom.test(x.c.codigo || ''))}))
+    .filter((x): x is Talvez => x.estimado != null && x.estimado < ref - 0.5)
+    .sort((a, b) => (+b.provavel - +a.provavel) || a.estimado - b.estimado);
+  return {melhor, semCondicao, talvez: lista[0] || null, talvezOutros: lista.slice(1, 3)};
 }
 
 /** Preço para ordenar "Menor preço com cupom": o menor preço com cupom que vale (ou o preço normal). */
