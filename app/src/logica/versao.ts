@@ -12,18 +12,24 @@ export interface RespostaVersao {
   versao?: string;
   /** versão do app novo (Expo web), quando o servidor a conhece */
   novo?: string | null;
-  /** último APK nativo publicado (Release nativo-v2.0.N) */
-  nativo?: {versao?: string; android?: string; pagina?: string} | null;
+  /** versão MÍNIMA do APK: abaixo dela a busca fica pausada até atualizar */
+  nativo?: {versao?: string; android?: string | null; pagina?: string} | null;
+  /** último APK publicado (Release nativo-v2.0.N): só sugestão, a busca continua normalmente */
+  nativoNovo?: {versao?: string; android?: string | null; pagina?: string} | null;
   app?: {versao?: string; android?: string; windows?: string; pagina?: string; nativo?: {versao?: string; android?: string; pagina?: string}} | null;
 }
-export type ResultadoVersao = {tipo: 'app'; versao: string; link?: string; pagina?: string} | {tipo: 'pagina'; versao: string} | null;
+export type ResultadoVersao = {tipo: 'app' | 'sugestao'; versao: string; link?: string; pagina?: string} | {tipo: 'pagina'; versao: string} | null;
 
-/** App nativo baixado: bloqueia a busca se houver APK mais novo. Web: só dica (nunca bloqueia). */
+/** App baixado: abaixo da versão MÍNIMA ('app') pausa a busca; havendo APK mais novo ('sugestao') só sugere baixar.
+ *  Web: só dica (nunca bloqueia). */
 export function decidirVersao(v: RespostaVersao | null, ctx: {nativo: boolean; versaoNativa?: string | null; versaoWeb: string}): ResultadoVersao {
   if (!v || typeof v !== 'object') return null;
-  const nat = v.nativo ?? v.app?.nativo;
+  const nat = v.nativo ?? v.app?.nativo, novo = v.nativoNovo;
   if (ctx.nativo && nat?.versao && ctx.versaoNativa && appMaisNovo(nat.versao, ctx.versaoNativa))
-    return {tipo: 'app', versao: nat.versao, link: nat.android, pagina: nat.pagina};
+    return {tipo: 'app', versao: novo?.versao && appMaisNovo(novo.versao, nat.versao) ? novo.versao : nat.versao,
+      link: (novo?.android || nat.android) ?? undefined, pagina: novo?.pagina || nat.pagina};
+  if (ctx.nativo && novo?.versao && ctx.versaoNativa && appMaisNovo(novo.versao, ctx.versaoNativa))
+    return {tipo: 'sugestao', versao: novo.versao, link: novo.android ?? undefined, pagina: novo.pagina};
   if (!ctx.nativo && paginaMaisNova(v.novo, ctx.versaoWeb)) return {tipo: 'pagina', versao: v.novo!};
   return null;
 }

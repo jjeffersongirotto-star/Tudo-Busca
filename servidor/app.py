@@ -190,6 +190,17 @@ async def _tag_latest_sem_api():
 
 
 NATIVO_JSON = RAIZ / 'dados' / 'nativo.json'
+NATIVO_MINIMO = RAIZ / 'dados' / 'nativo-minimo.json'
+
+
+def nativo_minimo():
+    """Versão mínima do APK (dados/nativo-minimo.json): abaixo dela o app pausa a busca. Os apps até 2.0.4 leem
+    o campo "nativo" como "trava", então ele recebe a mínima; a mais nova vai em "nativoNovo" (só sugestão)."""
+    try:
+        v = str(json.loads(NATIVO_MINIMO.read_text(encoding='utf-8')).get('versao', ''))
+    except (OSError, ValueError):
+        return None
+    return {'versao': v, 'android': None, 'pagina': f'https://github.com/{REPO}/releases'} if re.fullmatch(r'\d+\.\d+\.\d+', v) else None
 NATIVO_RAW = f'https://raw.githubusercontent.com/{REPO}/main/dados/nativo.json'
 
 
@@ -243,8 +254,11 @@ async def _nativo_mais_novo():
 
 @app.get('/api/versao')
 async def versao():
+    novo, minimo = await _nativo_mais_novo(), nativo_minimo()
+    if minimo and novo:  # quem estiver abaixo da mínima baixa direto a mais nova
+        minimo.update(android=novo.get('android'), pagina=novo.get('pagina'))
     return JSONResponse({'versao': versao_app.gravada(PAGINA.read_text(encoding='utf-8')), 'app': await _app_mais_novo(),
-                         'novo': _versao_novo(), 'nativo': await _nativo_mais_novo(), 'baixar': '/baixar'},
+                         'novo': _versao_novo(), 'nativo': minimo, 'nativoNovo': novo, 'baixar': '/baixar'},
                         headers={'Cache-Control': 'no-store'})
 
 

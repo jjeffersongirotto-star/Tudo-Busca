@@ -91,19 +91,19 @@ function useEstadoApp() {
   const copiar = useCallback(async (t?: string) => { if (!t) return false; try { await Clipboard.setStringAsync(t); return true; } catch { return false; } }, []);
 
   const mostrarDica = useCallback(async (v: ResultadoVersao) => {
-    if (!v || v.tipo !== 'pagina') return;
+    if (!v || (v.tipo !== 'pagina' && v.tipo !== 'sugestao')) return;
     if (await lerTexto(CHAVES.dicaFechada) === v.versao) return;
     setDica(v);
   }, []);
-  const fecharDica = useCallback(() => { if (dica?.tipo === 'pagina') gravarTexto(CHAVES.dicaFechada, dica.versao); setDica(null); }, [dica]);
+  const fecharDica = useCallback(() => { if (dica?.tipo === 'pagina' || dica?.tipo === 'sugestao') gravarTexto(CHAVES.dicaFechada, dica.versao); setDica(null); }, [dica]);
 
   const verificarVersao = useCallback(async () => {
     let v: RespostaVersao | null = null;
     try { v = await lerVersao(); } catch { v = null; }
-    // App baixado: se o servidor não souber do APK mais novo (ou não responder), confere direto no repositório
-    if (NATIVO && !(v?.nativo ?? v?.app?.nativo)?.versao) {
+    // App baixado: se o servidor não souber do APK mais novo (ou não responder), confere direto no repositório (só sugestão)
+    if (NATIVO && !v?.nativoNovo?.versao) {
       const nat = await lerNativoDireto();
-      if (nat) v = {...(v || {}), nativo: nat};
+      if (nat) v = {...(v || {}), nativoNovo: nat};
     }
     return decidirVersao(v, {nativo: NATIVO, versaoNativa: VERSAO_NATIVA, versaoWeb: VERSAO_WEB});
   }, []);
@@ -122,6 +122,7 @@ function useEstadoApp() {
             versao: {link: nova.link, pagina: nova.pagina, nova: nova.versao, atual: VERSAO_NATIVA || '?'}});
           return;
         }
+        mostrarDica(nova);   // APK mais novo publicado: só sugere (a busca segue abaixo)
       } else verificarVersao().then(mostrarDica);
       const cat = categoriaBusca(sel), nomeCat = nomeCategoriaBusca(sel);
       const r = await buscarCategoria(cat, p => {

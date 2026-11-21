@@ -1,0 +1,4 @@
+{
+  "versao": "2.0.3",
+  "nota": "Versão MÍNIMA do APK: abaixo dela o app pausa a busca e pede para atualizar. Só aumente quando o app antigo deixar de funcionar com o servidor. A versão MAIS NOVA (só sugestão) fica em dados/nativo.json, gravada pelo workflow."
+}
