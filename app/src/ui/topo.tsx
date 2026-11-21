@@ -117,24 +117,25 @@ function AvisoOtaNativo({ margem }: { margem: number }) {
   }, [isUpdateAvailable, isUpdatePending, isDownloading]);
   if (isDownloading) return (
     <View style={[st.dica, {marginHorizontal: margem}]} testID="avisoOta">
-      <T style={{color: '#ddd6fe', fontSize: 12.8}}>⬇️ Baixando atualização do app…{downloadProgress ? ` ${Math.round(downloadProgress * 100)}%` : ''}</T>
+      <T style={{color: '#ddd6fe', fontSize: 12.8}}>🆕 Atualização nova disponível — baixando…{downloadProgress ? ` ${Math.round(downloadProgress * 100)}%` : ''}</T>
     </View>
   );
   if (!isUpdatePending) return null;
   return (
     <View style={[st.dica, {marginHorizontal: margem}]} testID="avisoOta">
-      <T style={{color: '#ddd6fe', fontSize: 12.8, flexShrink: 1}}>🆕 Atualização do app pronta (não precisa baixar o APK). </T>
+      <T style={{color: '#ddd6fe', fontSize: 12.8, flexShrink: 1}}>🆕 Atualização nova disponível. </T>
       <Pressable onPress={() => { Updates.reloadAsync().catch(() => {}); }} accessibilityRole="button" style={st.btnVersao}>
-        <T peso="negrito" style={{color: '#fff', fontSize: 13.5}}>Aplicar agora</T></Pressable>
+        <T peso="negrito" style={{color: '#fff', fontSize: 13.5}}>Atualizar</T></Pressable>
     </View>
   );
 }
 
 export function DicaVersao({ margem }: { margem: number }) {
   const {dica, fecharDica} = useApp();
-  if (dica?.tipo === 'sugestao') return (
+  // app que recebe atualização automática (OTA): não sugere baixar APK; o aviso é "Atualização nova disponível" (AvisoOta)
+  if (dica?.tipo === 'sugestao' && !(NATIVO && Updates.isEnabled)) return (
     <View style={[st.dica, {marginHorizontal: margem}]} testID="dicaVersao">
-      <T style={{color: '#ddd6fe', fontSize: 12.8, flexShrink: 1}}>🆕 App novo disponível ({dica.versao}) — o seu é {VERSAO_NATIVA || '?'}. Os preços já foram atualizados; baixar é opcional. </T>
+      <T style={{color: '#ddd6fe', fontSize: 12.8, flexShrink: 1}}>🆕 Atualização nova disponível ({dica.versao}) — a sua é {VERSAO_NATIVA || '?'}. Os preços já foram atualizados. </T>
       <T style={{color: C.dellEsc, fontSize: 12.8, textDecorationLine: 'underline'}} onPress={() => abrir(dica.link || dica.pagina)}>⬇️ Baixar</T>
       <Pressable onPress={fecharDica} accessibilityLabel="Fechar" style={{marginLeft: 'auto', paddingHorizontal: 4}}><T style={{color: C.dell, fontSize: 16}}>✕</T></Pressable>
     </View>
