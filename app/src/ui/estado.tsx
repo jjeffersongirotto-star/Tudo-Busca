@@ -3,6 +3,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { Platform } from 'react-native';
 import * as Application from 'expo-application';
 import * as Clipboard from 'expo-clipboard';
+import * as Updates from 'expo-updates';
 import type { Dados, Produto } from '@/logica/tipos';
 import { separarSecoes, produtosSel as produtosSelL, mudarSelecao, secaoAtual, itemAtual, nomeSel, categoriaBusca, nomeCategoriaBusca, SELECAO_PADRAO, type Selecao } from '@/logica/secoes';
 import { calcularNotas } from '@/logica/nota';
@@ -112,6 +113,8 @@ function useEstadoApp() {
   const atualizar = useCallback(async () => {
     if (atualizando) return;
     setAtualizando(true);
+    // no app instalado, o ⟳ também procura código novo (OTA); o aviso em topo.tsx baixa e oferece aplicar
+    if (NATIVO && Updates.isEnabled) Updates.checkForUpdateAsync().catch(() => {});
     try {
       setAviso({tipo: 'info', texto: '🔄 Conectando ao servidor…'});
       if (NATIVO) {

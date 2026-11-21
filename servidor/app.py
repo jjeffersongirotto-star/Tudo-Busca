@@ -17,9 +17,9 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 
 import httpx
 
@@ -295,6 +295,40 @@ async def _nativo_mais_novo():
             except (OSError, ValueError):
                 pass
     return _nativo['dados']
+
+
+# ---- Atualizações OTA do app Android (protocolo expo-updates): só o código novo, sem baixar o APK inteiro ----
+OTA_RAW = f'https://raw.githubusercontent.com/{REPO}/app-ota/manifest.json'
+_ota = {'em': 0.0, 'manifesto': None}
+
+
+async def _manifesto_ota():
+    """Manifesto publicado pelo workflow app-ota.yml no ramo app-ota (guardado por 2 min)."""
+    if _ota['manifesto'] is not None and time.time() - _ota['em'] < 120:
+        return _ota['manifesto']
+    try:
+        async with httpx.AsyncClient(timeout=10, headers={'User-Agent': 'tudo-busca'}) as c:
+            r = await c.get(OTA_RAW, params={'t': int(time.time() // 120)})
+        if r.status_code == 200:
+            _ota['manifesto'] = r.json()
+        _ota['em'] = time.time()
+    except Exception as e:
+        log.warning('manifesto OTA indisponível: %s', e)
+        _ota['em'] = time.time() - 60
+    return _ota['manifesto']
+
+
+@app.get('/api/ota/manifest')
+async def ota_manifesto(request: Request):
+    """O app pergunta (ao abrir) se há código novo para a sua versão nativa (runtime). 204 = nada novo."""
+    cab = {'expo-protocol-version': '1', 'expo-sfv-version': '0', 'cache-control': 'private, max-age=0'}
+    if request.headers.get('expo-platform', 'android') != 'android':
+        return Response(status_code=204, headers=cab)
+    m = await _manifesto_ota()
+    runtime = request.headers.get('expo-runtime-version')
+    if not m or (runtime and str(m.get('runtimeVersion')) != runtime) or request.headers.get('expo-current-update-id') == m.get('id'):
+        return Response(status_code=204, headers=cab)
+    return JSONResponse(m, headers=cab)
 
 
 @app.get('/api/versao')
