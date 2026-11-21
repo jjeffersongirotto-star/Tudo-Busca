@@ -8,8 +8,10 @@ import Svg, { Path, Rect, Circle } from 'react-native-svg';
 import { C, F, GRAD, GRAD_QUENTE, RAIO_P, ehWeb } from './tema';
 
 /** Texto com a fonte do app. */
+// includeFontPadding: no Android a fonte ganha um espaço extra em cima, que deixa o texto abaixo do centro dos botões
+const SEM_PAD = { includeFontPadding: false, textAlignVertical: 'center' } as const;
 export function T({ style, peso = 'normal', ...p }: TextProps & { peso?: keyof typeof F }) {
-  return <Text {...p} style={[{ color: C.txt, fontFamily: F[peso], fontSize: 14 }, style]} />;
+  return <Text {...p} style={[{ color: C.txt, fontFamily: F[peso], fontSize: 14 }, SEM_PAD, style]} />;
 }
 export const Meta = (p: TextProps) => <T {...p} style={[s.meta, p.style]} />;
 
@@ -59,7 +61,7 @@ export function Select({ rotulo, valor, opcoes, aoMudar, style, compacto }: { ro
 export function Check({ rotulo, valor, aoMudar, style }: { rotulo: string; valor: boolean; aoMudar: (v: boolean) => void; style?: StyleProp<ViewStyle> }) {
   return (
     <Pressable onPress={() => aoMudar(!valor)} accessibilityRole="checkbox" accessibilityState={{ checked: valor }} style={[{ flexDirection: 'row', alignItems: 'center', gap: 8 }, style]}>
-      <View style={[s.caixa, valor && { backgroundColor: C.roxo, borderColor: C.roxo }]}>{valor ? <T peso="extra" style={{ color: '#fff', fontSize: 11, lineHeight: 13 }}>✓</T> : null}</View>
+      <View style={[s.caixa, valor && { backgroundColor: C.roxo, borderColor: C.roxo }]}>{valor ? <Svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round"><Path d="M5 12.5l4.5 4.5L19 7.5" /></Svg> : null}</View>
       <T style={{ fontSize: 13, flexShrink: 1 }}>{rotulo}</T>
     </Pressable>
   );
@@ -70,8 +72,9 @@ export function Recolhivel({ titulo, children, style, inicial = false }: { titul
   const [aberto, setAberto] = useState(inicial);
   return (
     <View style={[s.regras, style]}>
-      <Pressable onPress={() => setAberto(!aberto)} accessibilityRole="button" accessibilityState={{ expanded: aberto }}>
-        <T peso="negrito" style={{ color: C.dellEsc, fontSize: 12.8 }}>{aberto ? '▾' : '▸'} {titulo}</T>
+      <Pressable onPress={() => setAberto(!aberto)} accessibilityRole="button" accessibilityState={{ expanded: aberto }} style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+        {Icone.seta(aberto ? 'baixo' : 'dir', C.dellEsc, 11)}
+        <T peso="negrito" style={{ color: C.dellEsc, fontSize: 12.8, flexShrink: 1 }}>{titulo}</T>
       </Pressable>
       {aberto ? <View style={{ marginTop: 6, gap: 6 }}>{children}</View> : null}
     </View>
@@ -132,7 +135,7 @@ export function Barra({ rotulo, valor, texto, extra }: { rotulo: string; valor: 
 const PICKER_WEB = { borderWidth: 0, paddingVertical: 8, paddingHorizontal: 10, fontFamily: 'PlusJakartaSans_500Medium', outlineStyle: 'none', cursor: 'pointer' };
 export const s = StyleSheet.create({
   meta: { fontSize: 12.3, color: C.sub, lineHeight: 18.5 },
-  tag: { paddingHorizontal: 9, paddingVertical: 3, borderRadius: 999, borderWidth: 1, borderColor: 'transparent', alignSelf: 'flex-start' },
+  tag: { paddingHorizontal: 9, paddingVertical: 3, borderRadius: 999, borderWidth: 1, borderColor: 'transparent', alignSelf: 'flex-start', alignItems: 'center', justifyContent: 'center' },
   botao: { borderRadius: 999, paddingVertical: 9, paddingHorizontal: 16, alignItems: 'center', justifyContent: 'center' },
   rotulo: { fontSize: 11.5, color: C.sub, textTransform: 'uppercase', letterSpacing: 0.5 },
   select: { borderWidth: 1, borderColor: C.bordaForte, borderRadius: 10, backgroundColor: C.bgAlt, overflow: 'hidden', justifyContent: 'center' },

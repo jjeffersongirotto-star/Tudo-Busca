@@ -163,8 +163,8 @@ function FiltrosPC({ colunas }: { colunas: number }) {
       {caixa(<Select rotulo="Preço até (R$)" valor={f.fPreco} opcoes={OPCOES_NUM.fPreco} aoMudar={v => setFiltros({fPreco: v})} />, 'fPreco')}
       {caixa(<Select rotulo="Desconto mínimo" valor={f.fDescMin} opcoes={OPCOES_NUM.fDescMin} aoMudar={v => setFiltros({fDescMin: v})} />, 'fDescMin')}
       {caixa(<Select rotulo="Ordenar" valor={f.fOrdem} opcoes={OPCOES_NUM.fOrdem} aoMudar={v => setFiltros({fOrdem: v as typeof f.fOrdem})} />, 'fOrdem')}
-      {caixa(<Check rotulo="Custo-benefício (considerar o preço)" valor={f.fCB} aoMudar={v => setFiltros({fCB: v})} style={{paddingTop: 18}} />, 'fCB', true)}
-      {caixa(<Check rotulo="Só promoções acima de 20%" valor={f.fPromo20} aoMudar={v => setFiltros({fPromo20: v})} style={{paddingTop: 18}} />, 'fPromo20', true)}
+      {caixa(<Check rotulo="Custo-benefício (considerar o preço)" valor={f.fCB} aoMudar={v => setFiltros({fCB: v})} style={colunas > 2 ? {paddingTop: 18} : {paddingVertical: 3}} />, 'fCB', true)}
+      {caixa(<Check rotulo="Só promoções acima de 20%" valor={f.fPromo20} aoMudar={v => setFiltros({fPromo20: v})} style={colunas > 2 ? {paddingTop: 18} : {paddingVertical: 3}} />, 'fPromo20', true)}
       {caixa(<Botao tipo="contorno" titulo="Limpar filtros" onPress={limparFiltros} style={{marginTop: 14}} />, 'limpar', true)}
     </View>
   );
@@ -181,8 +181,8 @@ function FiltrosG({ colunas, base }: { colunas: number; base: Produto[] }) {
         opcoes={[['', x.todos], ...op[x.id].map(o => [o.v, `${o.v} (${o.n})`] as const)]} />, x.id))}
       {caixa(<Select rotulo="Preço até (R$)" valor={f.gPreco} opcoes={OPCOES_G.gPreco} aoMudar={v => setFiltrosG({gPreco: v})} />, 'gPreco')}
       {caixa(<Select rotulo="Ordenar" valor={f.gOrdem} opcoes={OPCOES_G.gOrdem} aoMudar={v => setFiltrosG({gOrdem: v as typeof f.gOrdem})} />, 'gOrdem')}
-      {caixa(<Check rotulo="Só originais (Sony)" valor={f.gOriginal} aoMudar={v => setFiltrosG({gOriginal: v})} style={{paddingTop: 18}} />, 'gOriginal', true)}
-      {caixa(<Check rotulo="Esconder kits (controle + jogo/base)" valor={f.gSemKit} aoMudar={v => setFiltrosG({gSemKit: v})} style={{paddingTop: 18}} />, 'gSemKit', true)}
+      {caixa(<Check rotulo="Só originais (Sony)" valor={f.gOriginal} aoMudar={v => setFiltrosG({gOriginal: v})} style={colunas > 2 ? {paddingTop: 18} : {paddingVertical: 3}} />, 'gOriginal', true)}
+      {caixa(<Check rotulo="Esconder kits (controle + jogo/base)" valor={f.gSemKit} aoMudar={v => setFiltrosG({gSemKit: v})} style={colunas > 2 ? {paddingTop: 18} : {paddingVertical: 3}} />, 'gSemKit', true)}
       {caixa(<Botao tipo="contorno" titulo="Limpar filtros" onPress={limparFiltrosG} style={{marginTop: 14}} />, 'limpar', true)}
     </View>
   );
