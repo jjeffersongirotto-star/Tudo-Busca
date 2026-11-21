@@ -73,7 +73,8 @@ export function Topo() {
           </T>
         </View>
       </View>
-      <View style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
+      {/* flex-start: os dois botões redondos (46px) ficam na mesma linha; a versão fica embaixo do ⟳ */}
+      <View style={{flexDirection: 'row', alignItems: 'flex-start', gap: 10}}>
         <BotaoInstalar estreito={estreito} />
         <View style={{alignItems: 'center', gap: 2}}>
           <BotaoAtualizar />
@@ -237,13 +238,14 @@ const st = StyleSheet.create({
   refresh: {width: 46, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center'},
   instalar: {height: 46, paddingHorizontal: 16, borderRadius: 999, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8},
   aviso: {marginTop: 14, paddingVertical: 11, paddingHorizontal: 16, borderRadius: RAIO_P, borderWidth: 1},
-  btnVersao: {backgroundColor: '#7c3aed', borderRadius: 10, paddingVertical: 9, paddingHorizontal: 14},
+  btnVersao: {backgroundColor: '#7c3aed', borderRadius: 10, paddingVertical: 9, paddingHorizontal: 14, alignItems: 'center', justifyContent: 'center'},
   dica: {marginTop: 8, paddingVertical: 6, paddingLeft: 12, paddingRight: 10, borderRadius: RAIO_P, borderWidth: 1, borderStyle: 'dashed', borderColor: 'rgba(139,92,246,0.35)',
     backgroundColor: 'rgba(139,92,246,0.08)', flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 6},
-  cardSecao: {borderRadius: RAIO, ...sombra},
-  cardInterno: {borderRadius: RAIO - 1.5, paddingVertical: 12, paddingHorizontal: 16, backgroundColor: 'rgba(20,20,38,0.97)'},
+  // os dois cards ficam da mesma altura: o conteúdo fica no meio da altura
+  cardSecao: {borderRadius: RAIO, flexGrow: 1, ...sombra},
+  cardInterno: {borderRadius: RAIO - 1.5, paddingVertical: 12, paddingHorizontal: 16, backgroundColor: 'rgba(20,20,38,0.97)', flexGrow: 1, justifyContent: 'center'},
   chips: {flexDirection: 'row', flexWrap: 'wrap', gap: 8, alignItems: 'center'},
-  chip: {borderRadius: 999, borderWidth: 1, borderColor: C.bordaForte, backgroundColor: 'rgba(255,255,255,0.04)'},
+  chip: {borderRadius: 999, borderWidth: 1, borderColor: C.bordaForte, backgroundColor: 'rgba(255,255,255,0.04)', alignItems: 'center', justifyContent: 'center'},
   rot: {fontSize: 11.5, color: C.sub, textTransform: 'uppercase', letterSpacing: 0.6, marginRight: 2},
   rodape: {textAlign: 'center', fontSize: 12.2, lineHeight: 19.5, color: C.fraco},
 });

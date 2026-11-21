@@ -197,6 +197,6 @@ export const st = StyleSheet.create({
   td: {flex: 1, padding: 8},
   tdTxt: {padding: 8, fontSize: 13.3},
   mini: {marginVertical: 10, borderWidth: 1, borderStyle: 'dashed', borderColor: C.bordaForte, borderRadius: RAIO_P, paddingVertical: 9, paddingHorizontal: 12, backgroundColor: 'rgba(255,255,255,0.02)'},
-  codigo: {backgroundColor: 'rgba(34,211,238,0.10)', borderWidth: 1, borderStyle: 'dashed', borderColor: 'rgba(34,211,238,0.5)', borderRadius: 9, paddingVertical: 2, paddingHorizontal: 7},
+  codigo: {backgroundColor: 'rgba(34,211,238,0.10)', borderWidth: 1, borderStyle: 'dashed', borderColor: 'rgba(34,211,238,0.5)', borderRadius: 9, paddingVertical: 2, paddingHorizontal: 7, alignItems: 'center', justifyContent: 'center'},
   vazio: {color: C.sub, textAlign: 'center', paddingVertical: 34, paddingHorizontal: 16, fontSize: 14.4},
 });
