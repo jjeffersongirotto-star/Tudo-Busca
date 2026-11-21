@@ -12,6 +12,7 @@ import asyncio
 import json
 import logging
 import os
+import re
 import time
 from pathlib import Path
 
@@ -158,11 +159,14 @@ async def _app_mais_novo():
     if _release['dados'] is not None and time.time() - _release['em'] < 900:
         return _release['dados']
     try:
-        async with httpx.AsyncClient(timeout=8, headers={'Accept': 'application/vnd.github+json', 'User-Agent': 'tudo-busca'}) as c:
-            r = await c.get(f'https://api.github.com/repos/{REPO}/releases/latest')
-            r.raise_for_status()
-            j = r.json()
-        tag = j.get('tag_name', '')
+        tag, pagina = await _tag_latest_sem_api()
+        j = {'html_url': pagina}
+        if not tag:  # plano B: API (limite de 60 consultas/hora por endereço)
+            async with httpx.AsyncClient(timeout=8, headers={'Accept': 'application/vnd.github+json', 'User-Agent': 'tudo-busca'}) as c:
+                r = await c.get(f'https://api.github.com/repos/{REPO}/releases/latest')
+                r.raise_for_status()
+                j = r.json()
+            tag = j.get('tag_name', '')
         _release.update(em=time.time(), dados={
             'versao': tag.split('-v', 1)[-1] if '-v' in tag else tag.lstrip('v'), 'tag': tag, 'pagina': j.get('html_url') or RELEASES,
             'android': f'{RELEASES}/download/Tudo-Busca-Android.apk', 'windows': f'{RELEASES}/download/Tudo-Busca-Instalador-Windows.exe'})
@@ -172,13 +176,50 @@ async def _app_mais_novo():
     return _release['dados']
 
 
+async def _tag_latest_sem_api():
+    """Tag do Release "latest" pelo redirecionamento de github.com/.../releases/latest (não conta no limite da API)."""
+    try:
+        async with httpx.AsyncClient(timeout=8, follow_redirects=False, headers={'User-Agent': 'tudo-busca'}) as c:
+            r = await c.get(RELEASES)
+        destino = r.headers.get('location', '')
+        m = re.search(r'/releases/tag/([^/?#]+)$', destino)
+        return (m.group(1), destino) if m else ('', '')
+    except Exception as e:
+        log.warning('redirecionamento do release latest indisponível: %s', e)
+        return '', ''
+
+
+NATIVO_JSON = RAIZ / 'dados' / 'nativo.json'
+NATIVO_RAW = f'https://raw.githubusercontent.com/{REPO}/main/dados/nativo.json'
+
+
+def ler_nativo_json(j):
+    """Valida o conteúdo de dados/nativo.json ({versao, tag, android, pagina}); None se inválido."""
+    if not isinstance(j, dict) or not re.fullmatch(r'\d+\.\d+\.\d+', str(j.get('versao', ''))):
+        return None
+    return {'versao': j['versao'], 'tag': j.get('tag') or f"nativo-v{j['versao']}", 'android': j.get('android'),
+            'pagina': j.get('pagina') or f'https://github.com/{REPO}/releases'}
+
+
 _nativo = {'em': 0.0, 'dados': None}
 
 
 async def _nativo_mais_novo():
-    """Último APK do app novo (Releases com tag nativo-v2.0.N; não são o 'latest', que segue sendo o app antigo). Cache de 15 min."""
+    """Último APK do app novo (Releases com tag nativo-v2.0.N; não são o 'latest', que segue sendo o app antigo). Cache de 15 min.
+    1º dados/nativo.json pelo raw.githubusercontent.com (gravado pelo workflow do APK; sem o limite da API, que o Render
+    estoura por usar endereço compartilhado); 2º API de Releases; 3º a cópia de dados/nativo.json publicada com o servidor."""
     if _nativo['dados'] is not None and time.time() - _nativo['em'] < 900:
         return _nativo['dados']
+    try:
+        async with httpx.AsyncClient(timeout=8, headers={'User-Agent': 'tudo-busca', 'Cache-Control': 'no-cache'}) as c:
+            r = await c.get(NATIVO_RAW, params={'t': int(time.time() // 300)})
+            r.raise_for_status()
+        d = ler_nativo_json(r.json())
+        if d:
+            _nativo.update(em=time.time(), dados=d)
+            return d
+    except Exception as e:
+        log.warning('dados/nativo.json (raw) indisponível: %s', e)
     try:
         async with httpx.AsyncClient(timeout=8, headers={'Accept': 'application/vnd.github+json', 'User-Agent': 'tudo-busca'}) as c:
             r = await c.get(f'https://api.github.com/repos/{REPO}/releases', params={'per_page': 30})
@@ -192,6 +233,11 @@ async def _nativo_mais_novo():
     except Exception as e:
         log.warning('releases do app nativo indisponíveis: %s', e)
         _nativo['em'] = time.time() - 600
+        if _nativo['dados'] is None:
+            try:
+                _nativo['dados'] = ler_nativo_json(json.loads(NATIVO_JSON.read_text(encoding='utf-8')))
+            except (OSError, ValueError):
+                pass
     return _nativo['dados']
 
 
