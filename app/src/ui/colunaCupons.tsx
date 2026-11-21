@@ -1,7 +1,7 @@
 /** Coluna de cupons: segue o card selecionado (lojas e categorias), com filtros, copiar código e "mostrar mais". */
 import { useMemo, useState } from 'react';
 import { Pressable, View, StyleSheet } from 'react-native';
-import { T, Meta, Tag, Botao, Select, Check, Link, Grad, abrir } from './base';
+import { T, Meta, Tag, Botao, Select, Check, Link, Grad, Icone, abrir } from './base';
 import { C, F, RAIO_P } from './tema';
 import { useApp } from './estado';
 import { listaCupons, lojasSemCupom, catCupom, minimoCupom, lojaDoCupom, OPCOES_CAT_CUPOM } from '@/logica/cupons';
@@ -62,7 +62,9 @@ export function ColunaCupons({ larga, aberta }: { larga: boolean; aberta: boolea
           {`${r.ativos} ativos ${f.todos ? 'no total' : 'p/ ' + ctxCupons.nome}` + (r.visiveis.length !== r.ativos ? ` · ${r.visiveis.length} exibidos` : '')}</T></T>
         <Pressable onPress={() => setCuponsAbertos(!aberta)} style={st.toggle} accessibilityRole="button" accessibilityState={{expanded: aberta}} testID="btnCupons"
           hitSlop={8} accessibilityLabel={aberta ? 'Esconder cupons' : 'Ver cupons'}>
-          <T peso="negrito" style={{color: C.dellEsc, fontSize: 11.8}}>{larga ? (aberta ? '◂ Recolher' : 'Expandir ▸') : (aberta ? 'Esconder ▴' : 'Ver cupons ▾')}</T></Pressable>
+          {larga && aberta ? Icone.seta('esq', C.dellEsc) : null}
+          <T peso="negrito" style={st.toggleTxt}>{larga ? (aberta ? 'Recolher' : 'Expandir') : (aberta ? 'Esconder' : 'Ver cupons')}</T>
+          {larga ? (aberta ? null : Icone.seta('dir', C.dellEsc)) : Icone.seta(aberta ? 'cima' : 'baixo', C.dellEsc)}</Pressable>
       </View>
       {mostrar ? (
         <>
@@ -97,7 +99,9 @@ export function ColunaCupons({ larga, aberta }: { larga: boolean; aberta: boolea
 
 export const st = StyleSheet.create({
   h2: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8, paddingVertical: 15, paddingHorizontal: 18, borderBottomWidth: 1, borderColor: C.borda},
-  toggle: {backgroundColor: 'rgba(139,92,246,0.14)', borderWidth: 1, borderColor: 'rgba(139,92,246,0.4)', borderRadius: 999, paddingVertical: 5, paddingHorizontal: 11},
+  toggle: {flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, backgroundColor: 'rgba(139,92,246,0.14)', borderWidth: 1, borderColor: 'rgba(139,92,246,0.4)', borderRadius: 999, paddingVertical: 6, paddingHorizontal: 12},
+  // includeFontPadding: no Android a fonte tem um espaço extra em cima que deixa o texto mais baixo que o centro
+  toggleTxt: {color: C.dellEsc, fontSize: 11.8, lineHeight: 15, includeFontPadding: false, textAlignVertical: 'center'},
   contexto: {marginTop: 10, marginHorizontal: 14, borderWidth: 1, borderColor: 'rgba(34,211,238,0.25)', backgroundColor: 'rgba(34,211,238,0.06)', borderRadius: 10, paddingVertical: 8, paddingHorizontal: 11},
   txtContexto: {fontSize: 12.5, lineHeight: 18.7, color: C.sub},
   txtContexto2: {fontSize: 12.5, color: C.txt},

@@ -95,6 +95,8 @@ export const Icone = {
   atualizar: (cor = C.txt) => <Svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke={cor} strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round"><Path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" /><Path d="M21 3v5h-5" /></Svg>,
   lupa: () => <Svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round"><Circle cx={11} cy={11} r={7} /><Path d="m20 20-3.5-3.5" /></Svg>,
   baixar: () => <Svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round"><Path d="M12 3v12" /><Path d="m7 10 5 5 5-5" /><Path d="M5 21h14" /></Svg>,
+  /** seta (a fonte do app não tem ▾ ▴ ◂ ▸ no Android) */
+  seta: (dir: 'baixo' | 'cima' | 'esq' | 'dir', cor = C.txt, tam = 12) => <Svg width={tam} height={tam} viewBox="0 0 24 24" fill="none" stroke={cor} strokeWidth={3.2} strokeLinecap="round" strokeLinejoin="round"><Path d={{baixo: 'm6 9 6 6 6-6', cima: 'm6 15 6-6 6 6', esq: 'm15 6-6 6 6 6', dir: 'm9 6 6 6-6 6'}[dir]} /></Svg>,
   note: (cor = '#b8b8c8') => <Svg width="42%" height="42%" viewBox="0 0 24 24" fill="none" stroke={cor} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round"><Rect x={4} y={5} width={16} height={11} rx={1.5} /><Path d="M2 19h20" /></Svg>,
 };
 
