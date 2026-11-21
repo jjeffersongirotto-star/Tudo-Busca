@@ -77,4 +77,14 @@ describe('preço com cupom', () => {
     expect(r.melhor!.c.codigo).toBe('GERAL30');
     expect(r.melhor!.a.estimado).toBe(341);
   });
+  it('cupom de itens selecionados mostra o preço possível, primeiro o que o código cita o item', () => {
+    const c = [cup('ENDGAME40', '40% de desconto em eletrônicos, válido para itens selecionados.'),
+      cup('CONTROLE10', 'Cupom KaBuM! com 10% OFF', 'Desconto em produtos selecionados: insira o código no carrinho para validar.')];
+    const r = precoComCupom(c, {...base, item: 'controle-ps5'} as Produto);
+    expect(r.melhor).toBeNull();
+    expect(r.talvez!.c.codigo).toBe('CONTROLE10');
+    expect(r.talvez!.provavel).toBe(true);
+    expect(r.talvez!.estimado).toBeCloseTo(333.9, 1);
+    expect(r.talvezOutros.map(x => x.c.codigo)).toEqual(['ENDGAME40']);
+  });
 });

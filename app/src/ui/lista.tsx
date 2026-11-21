@@ -68,7 +68,13 @@ function VocePaga({ n, pc }: { n: Produto; pc?: PrecoComCupom }) {
           {m.a.condicoes?.length ? <T style={{color: '#fde68a', fontSize: 11.8}}>⚠ {m.a.condicoes.join(' · ')}{pc.semCondicao ? ` — sem essa condição: ~${reais(pc.semCondicao.a.estimado)} com ${pc.semCondicao.c.codigo}` : ''}</T> : null}
         </>
       ) : null}
-      {pc.talvez ? <T style={{color: '#a5f3fc', fontSize: 11.8}}>🔎 Confira também: <T peso="extra" style={st.codigoMini}>{pc.talvez.c.codigo}</T> — vale só para itens selecionados pela loja</T> : null}
+      {pc.talvez ? (
+        <>
+          <T style={{color: '#a5f3fc', fontSize: 13.2}}>🔎 {m ? 'Pode ficar ainda mais barato:' : 'Se este item participar:'} <T peso="extra" style={{color: '#fff', fontSize: m ? 14 : 16.5}}>~{reais(pc.talvez.estimado)}</T> com <T peso="extra" style={st.codigoMini}>{pc.talvez.c.codigo}</T></T>
+          <T style={{color: '#7dd3fc', fontSize: 11.8}}>{pc.talvez.provavel ? 'o código do cupom cita este tipo de produto · ' : ''}vale só para itens selecionados: teste no carrinho (economia de {reais((n.precoNum || 0) - pc.talvez.estimado)})</T>
+          {pc.talvezOutros.length ? <T style={{color: '#7dd3fc', fontSize: 11.8}}>outros para testar: {pc.talvezOutros.map(x => `${x.c.codigo} (~${reais(x.estimado)})`).join(' · ')}</T> : null}
+        </>
+      ) : null}
     </View>
   );
 }
