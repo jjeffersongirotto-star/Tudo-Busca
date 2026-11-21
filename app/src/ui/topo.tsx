@@ -8,6 +8,7 @@ import { SECOES, secaoAtual, subAtual, itemAtual, contar } from '@/logica/secoes
 import * as Updates from 'expo-updates';
 import { versaoCurta } from '@/logica/versao';
 import { SERVIDOR_PUBLICO } from '@/dados/api';
+import { VERSAO_APP } from '@/versaoApp';
 
 const RELEASES = 'https://github.com/jjeffersongirotto-star/Tudo-Busca/releases/latest';
 
@@ -74,7 +75,10 @@ export function Topo() {
       </View>
       <View style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
         <BotaoInstalar estreito={estreito} />
-        <BotaoAtualizar />
+        <View style={{alignItems: 'center', gap: 2}}>
+          <BotaoAtualizar />
+          <T peso="semi" style={{fontSize: 10.5, color: C.sub}} testID="versaoApp">v{VERSAO_APP}</T>
+        </View>
       </View>
     </View>
   );
@@ -221,7 +225,7 @@ export function Rodape() {
         Cupons vieram de sites e canais de cupons (termos não oficiais da loja; muitos são por tempo limitado ou já esgotados).{' '}
         <T peso="negrito" style={[st.rodape, {color: C.sub}]}>Cupons podem expirar ou não se aplicar a todos os produtos: teste no carrinho.</T>
       </T>
-      <T style={[st.rodape, {marginTop: 6}]}>{NATIVO ? 'App Android' : 'Site'} · servidor {SERVIDOR_PUBLICO.replace('https://', '')}</T>
+      <T style={[st.rodape, {marginTop: 6}]}>{NATIVO ? 'App Android' : 'Site'} · versão {VERSAO_APP} · servidor {SERVIDOR_PUBLICO.replace('https://', '')}</T>
     </View>
   );
 }
