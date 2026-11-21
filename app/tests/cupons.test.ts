@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { DADOS, ESPERADO } from './fixture';
-import { catCupom, minimoCupom, descontoCupom, escopoCupom, cuponsDaLoja, melhorComCupom, cuponsForaDaLoja, avaliarCupom, contextoCupons, listaCupons } from '../src/logica/cupons';
+import { catCupom, minimoCupom, descontoCupom, escopoCupom, cuponsDaLoja, melhorComCupom, cuponsForaDaLoja, avaliarCupom, contextoCupons, listaCupons, precoComCupom } from '../src/logica/cupons';
+import type { Cupom, Produto } from '../src/logica/tipos';
 import { separarSecoes, secaoAtual, itemAtual, nomeSel, produtosSel, type Selecao } from '../src/logica/secoes';
 
 const {pcs, jogos} = separarSecoes(DADOS.produtos);
@@ -50,5 +51,30 @@ describe('avaliação de cupom (casos)', () => {
   it('R$ alto sem mínimo gera aviso', () => {
     const a = avaliarCupom({id: 'c', descricao: 'R$ 200 OFF'}, n);
     expect(a.estimado).toBeNull(); expect(a.aviso).toMatch(/mínimo não informado/);
+  });
+});
+
+describe('preço com cupom', () => {
+  const base = {id: 'x', loja: 'KaBuM!', secao: 'games', precoNum: 371, nome: 'Controle Sony DualSense PS5 Sem Fio'} as Produto;
+  const cup = (codigo: string, descricao: string, regras = '', minimo?: number) => ({id: codigo, codigo, loja: 'KaBuM!', descricao, regras, minimo, ativo: true}) as unknown as Cupom;
+  it('compra mínima acima do preço não vale; abaixo vale e desconta', () => {
+    const c = [cup('TONO', 'Cupom KaBuM! 5% OFF na primeira compra', 'Válido na primeira compra acima de R$499', 499)];
+    expect(precoComCupom(c, base).melhor).toBeNull();
+    const r = precoComCupom(c, {...base, precoNum: 557} as Produto).melhor!;
+    expect(r.a.estimado).toBeCloseTo(529.15, 1);
+    expect(r.a.condicoes).toContain('só na 1ª compra na loja');
+  });
+  it('cupom de TV/eletro/móveis ou de outro modelo não vale', () => {
+    const c = [cup('TV100', 'R$100 OFF em Smart TV'), cup('150ELETRO', 'Economia de R$50', 'Promoção aplicada a produtos específicos'),
+      cup('ESQ10', 'Cupom citado para Notebook Alienware 15 DA15-C5210H-A30')];
+    expect(precoComCupom(c, base).melhor).toBeNull();
+    const nb = {...base, secao: 'computadores', nome: 'Notebook Lenovo IdeaPad Slim 3', precoNum: 3749} as Produto;
+    expect(cuponsDaLoja(c, nb).some(x => x.c.codigo === 'ESQ10')).toBe(false);
+  });
+  it('cupom geral da loja vale e escolhe o menor preço', () => {
+    const c = [cup('GERAL5', '5% OFF em todo o site'), cup('GERAL30', 'R$30 OFF em todo o site')];
+    const r = precoComCupom(c, base);
+    expect(r.melhor!.c.codigo).toBe('GERAL30');
+    expect(r.melhor!.a.estimado).toBe(341);
   });
 });

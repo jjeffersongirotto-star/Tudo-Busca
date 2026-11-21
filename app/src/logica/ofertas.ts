@@ -36,10 +36,10 @@ export const FILTROS_G: {id: FiltroGId; rotulo: string; fn: (n: Produto) => stri
 ];
 export const OPCOES_G = {
   gPreco: [['', 'Qualquer'], ['150', 'até R$ 150'], ['250', 'até R$ 250'], ['350', 'até R$ 350'], ['400', 'até R$ 400'], ['450', 'até R$ 450'], ['500', 'até R$ 500'], ['700', 'até R$ 700'], ['1000', 'até R$ 1.000'], ['1500', 'até R$ 1.500']],
-  gOrdem: [['oferta', 'Melhor oferta (padrão)'], ['asc', 'Menor preço'], ['desc', 'Maior desconto'], ['pdesc', 'Maior preço']],
+  gOrdem: [['oferta', 'Melhor oferta (padrão)'], ['cupom', 'Menor preço com cupom'], ['asc', 'Menor preço'], ['desc', 'Maior desconto'], ['pdesc', 'Maior preço']],
 } as const;
 
-export interface EstadoFiltrosG { sel: Partial<Record<FiltroGId, string>>; gPreco: string; gOrdem: 'oferta' | 'asc' | 'desc' | 'pdesc'; gOriginal: boolean; gSemKit: boolean }
+export interface EstadoFiltrosG { sel: Partial<Record<FiltroGId, string>>; gPreco: string; gOrdem: 'oferta' | 'cupom' | 'asc' | 'desc' | 'pdesc'; gOriginal: boolean; gSemKit: boolean }
 export const FILTROS_G_PADRAO: EstadoFiltrosG = {sel: {}, gPreco: '', gOrdem: 'oferta', gOriginal: true, gSemKit: false};
 
 export function opcoesFiltrosG(base: Produto[]): Record<FiltroGId, {v: string; n: number}[]> {
@@ -51,7 +51,7 @@ export function opcoesFiltrosG(base: Produto[]): Record<FiltroGId, {v: string; n
   return out;
 }
 
-export function filtradosG(produtos: Produto[], notas: Map<string, NotaG>, e: EstadoFiltrosG): Produto[] {
+export function filtradosG(produtos: Produto[], notas: Map<string, NotaG>, e: EstadoFiltrosG, precoCupom?: (n: Produto) => number): Produto[] {
   let l = produtos.filter(n => FILTROS_G.every(f => !e.sel[f.id] || f.fn(n) === e.sel[f.id]));
   const preco = +e.gPreco || 0;
   if (preco) l = l.filter(n => n.precoNum != null && n.precoNum <= preco);
@@ -60,6 +60,7 @@ export function filtradosG(produtos: Produto[], notas: Map<string, NotaG>, e: Es
   const nota = (n: Produto) => notas.get(n.id)?.nota ?? -1;
   const cmp = {
     oferta: (a: Produto, b: Produto) => nota(b) - nota(a) || (a.precoNum ?? 1e12) - (b.precoNum ?? 1e12),
+    cupom: (a: Produto, b: Produto) => precoCupom ? precoCupom(a) - precoCupom(b) : (a.precoNum ?? 1e12) - (b.precoNum ?? 1e12),
     asc: (a: Produto, b: Produto) => (a.precoNum ?? 1e12) - (b.precoNum ?? 1e12),
     desc: (a: Produto, b: Produto) => (b.descontoPct ?? -1) - (a.descontoPct ?? -1) || (a.precoNum ?? 1e12) - (b.precoNum ?? 1e12),
     pdesc: (a: Produto, b: Produto) => (b.precoNum ?? -1) - (a.precoNum ?? -1),

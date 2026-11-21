@@ -55,7 +55,7 @@ function LinhaCupom({ x, n }: { x: CupomDoProduto; n: Produto }) {
       <Meta style={{width: '100%'}}>
         {a.min == null ? 'Compra mínima: não informada' : a.atinge ? `✔ atinge a compra mínima de ${reais(a.min)}` : `✖ compra mínima de ${reais(a.min)} — faltam ${reais(a.min - (n.precoNum || 0))}`}
         {a.estimado != null ? <T peso="extra" style={{fontSize: 12.3}}> · preço estimado com o cupom: {reais(a.estimado)}</T> : null}
-        {a.aviso ? ' · ' + a.aviso : ''}{e.tipo === 'selecao' ? ' · ' + e.motivo : ''}{c.regras ? '\nRegras: ' + c.regras : ''}
+        {a.aviso ? ' · ' + a.aviso : ''}{a.condicoes?.length ? ' · ⚠ ' + a.condicoes.join(', ') : ''}{e.tipo === 'selecao' ? ' · ' + e.motivo : ''}{c.regras ? '\nRegras: ' + c.regras : ''}
       </Meta>
     </View>
   );

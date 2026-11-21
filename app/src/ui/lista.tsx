@@ -2,14 +2,14 @@
 import { memo, useMemo } from 'react';
 import { Pressable, View, StyleSheet, useWindowDimensions } from 'react-native';
 import { T, Meta, Tag, Botao, Select, Check, Foto, Barra, Recolhivel, Icone } from './base';
-import { C, RAIO } from './tema';
+import { C, F, RAIO } from './tema';
 import { useApp } from './estado';
 import { InfoPC, InfoG, TagCat, TagPerfil, BadgeDesc } from './detalhes';
 import { RegrasPC, RegrasG } from './regras';
 import type { Produto } from '@/logica/tipos';
 import { FILTROS, OPCOES_NUM, POR_PAGINA, ICONE_TIPO, opcoesFiltros, filtrados, montarLista, valorNota } from '@/logica/filtros';
 import { FILTROS_G, OPCOES_G, opcoesFiltrosG, filtradosG, type NotaG } from '@/logica/ofertas';
-import { cuponsDaLoja, melhorComCupom } from '@/logica/cupons';
+import { cuponsDaLoja, precoComCupom, precoFinal, type PrecoComCupom } from '@/logica/cupons';
 import { secaoAtual, subAtual, itemAtual, nomeSel } from '@/logica/secoes';
 import type { Pontuacao } from '@/logica/nota';
 import { fmt1, fmtPol, reais, ni } from '@/logica/formato';
@@ -55,7 +55,25 @@ const Preco = ({ n }: { n: Produto }) => (
 );
 const TagVelho = ({ n }: { n: Produto }) => n.precoAntigo ? <Tag fundo="rgba(251,146,60,0.14)" cor="#fdba74">⚠ preço de coleta anterior</Tag> : null;
 
-const CardPC = memo(function CardPC({ n, r, usaPreco, ...p }: { n: Produto; r?: Pontuacao; usaPreco: boolean; fav: boolean; aberto: boolean; sel: boolean; novo: boolean; foraFiltro: boolean; aoSelecionar: () => void; aoFav: () => void; aoExp: () => void }) {
+/** Preço final com o melhor cupom que vale para o item (categoria, modelo e compra mínima conferidos). */
+function VocePaga({ n, pc }: { n: Produto; pc?: PrecoComCupom }) {
+  if (!pc || (!pc.melhor && !pc.talvez)) return null;
+  const m = pc.melhor;
+  return (
+    <View style={st.vocePaga} testID="vocePaga">
+      {m ? (
+        <>
+          <T style={{color: '#bbf7d0', fontSize: 13.2}}>💰 Você paga <T peso="extra" style={{color: '#fff', fontSize: 16.5}}>~{reais(m.a.estimado)}</T> com o cupom <T peso="extra" style={st.codigoMini}>{m.c.codigo}</T></T>
+          <T style={{color: '#86efac', fontSize: 11.8}}>economia de {reais((n.precoNum || 0) - (m.a.estimado || 0))}{m.a.min ? ` · compra mínima ${reais(m.a.min)} ✔` : ''}{m.a.aviso ? ` · ${m.a.aviso}` : ''}</T>
+          {m.a.condicoes?.length ? <T style={{color: '#fde68a', fontSize: 11.8}}>⚠ {m.a.condicoes.join(' · ')}{pc.semCondicao ? ` — sem essa condição: ~${reais(pc.semCondicao.a.estimado)} com ${pc.semCondicao.c.codigo}` : ''}</T> : null}
+        </>
+      ) : null}
+      {pc.talvez ? <T style={{color: '#a5f3fc', fontSize: 11.8}}>🔎 Confira também: <T peso="extra" style={st.codigoMini}>{pc.talvez.c.codigo}</T> — vale só para itens selecionados pela loja</T> : null}
+    </View>
+  );
+}
+
+const CardPC = memo(function CardPC({ n, r, usaPreco, pcc, ...p }: { n: Produto; r?: Pontuacao; usaPreco: boolean; pcc?: PrecoComCupom; fav: boolean; aberto: boolean; sel: boolean; novo: boolean; foraFiltro: boolean; aoSelecionar: () => void; aoFav: () => void; aoExp: () => void }) {
   const topo = `${ICONE_TIPO[n.tipo || ''] || '💻'} ${n.marca && n.linha && !String(n.linha).includes(n.marca) && n.linha !== n.marca ? n.marca + ' · ' + n.linha : (n.linha || n.marca || '')}`;
   const corpo = (
     <>
@@ -68,6 +86,7 @@ const CardPC = memo(function CardPC({ n, r, usaPreco, ...p }: { n: Produto; r?: 
       </View>
       <T style={st.resumo}>{ni(n.cpuModelo || n.procFamilia)} · {n.ramGB ? n.ramGB + ' GB RAM' : 'RAM não informada'} · {ni(n.armazenamento)} SSD · {fmtPol(n.telaPol)}</T>
       <Preco n={n} />
+      <VocePaga n={n} pc={pcc} />
       {!r ? null : !usaPreco ? <Barra rotulo="Desempenho" valor={r.total} texto={`${fmt1(r.total)}/100`} />
         : r.cbFinal == null ? <Barra rotulo="Custo-benefício" valor={0} texto="sem preço" /> : <Barra rotulo="Custo-benefício" valor={r.cbFinal} texto={`${fmt1(r.cbFinal)}/100`} />}
       {r && r.rotulosEst.length ? <View style={st.tags}><Tag fundo="rgba(250,204,21,0.12)" cor="#fde68a" borda="rgba(250,204,21,0.35)">estimado: {r.rotulosEst.join(', ')}</Tag></View> : null}
@@ -76,7 +95,7 @@ const CardPC = memo(function CardPC({ n, r, usaPreco, ...p }: { n: Produto; r?: 
   return <Cartao n={n} {...p} topo={topo} corpo={corpo}><InfoPC n={n} noCard /></Cartao>;
 });
 
-const CardG = memo(function CardG({ n, r, nc, mc, ...p }: { n: Produto; r?: NotaG; nc: number; mc: ReturnType<typeof melhorComCupom>; fav: boolean; aberto: boolean; sel: boolean; novo: boolean; foraFiltro: boolean; aoSelecionar: () => void; aoFav: () => void; aoExp: () => void }) {
+const CardG = memo(function CardG({ n, r, nc, pcc, ...p }: { n: Produto; r?: NotaG; nc: number; pcc?: PrecoComCupom; fav: boolean; aberto: boolean; sel: boolean; novo: boolean; foraFiltro: boolean; aoSelecionar: () => void; aoFav: () => void; aoExp: () => void }) {
   const topo = `🎮 ${n.original ? 'Sony · ' + n.modelo : (n.marca && n.marca !== 'Sem marca conhecida' ? n.marca : 'outra marca')}`;
   const corpo = (
     <>
@@ -89,7 +108,7 @@ const CardG = memo(function CardG({ n, r, nc, mc, ...p }: { n: Produto; r?: Nota
         <TagVelho n={n} />
       </View>
       <Preco n={n} />
-      {mc ? <Meta>🏷️ com cupom <T peso="extra" style={{fontSize: 12.3}}>{mc.c.codigo}</T>: ~{reais(mc.a.estimado)} ({mc.e.tipo === 'item' ? 'cupom do item' : 'cupom geral da loja'}{mc.a.min ? ', mínimo ' + reais(mc.a.min) + ' ✔' : ''})</Meta> : null}
+      <VocePaga n={n} pc={pcc} />
       {!r || r.nota == null || r.pct == null ? <Barra rotulo="Oferta" valor={0} texto="—" />
         : <Barra rotulo="Oferta" valor={r.nota} texto={`${fmt1(r.nota)}/100`} extra={r.pct >= 0 ? `${fmt1(r.pct)}% abaixo do típico` : `${fmt1(-r.pct)}% acima do típico`} />}
     </>
@@ -149,15 +168,22 @@ export function ColunaLista({ largura, aoSelecionar }: { largura: number; aoSele
   const colFiltros = width <= 500 ? 2 : Math.max(2, Math.min(6, Math.floor(largura / 165)));
   const grade = width > 700 ? 2 : 1;
 
+  // preço com o melhor cupom que vale, para todos os produtos da seleção (card e ordenação "Menor preço com cupom")
+  const cupomPor = useMemo(() => {
+    const m = new Map<string, PrecoComCupom>();
+    for (const n of (pc ? pcs : prodSel)) if (n.precoNum) m.set(n.id, precoComCupom(dados.cupons, n));
+    return m;
+  }, [pc, pcs, prodSel, dados.cupons]);
   const lista = useMemo(() => {
     if (sb.emBreve) return null;
+    const pf = (n: Produto) => precoFinal(cupomPor.get(n.id), n);
     if (pc) {
-      const l = filtrados(pcs, notas, filtros);
+      const l = filtrados(pcs, notas, filtros, pf);
       return {l, total: pcs, ...montarLista(pcs, l, favs, limite, (a, b) => valorNota(b, notas, filtros.fCB) - valorNota(a, notas, filtros.fCB))};
     }
-    const l = filtradosG(prodSel, ofertas.notas, filtrosG);
+    const l = filtradosG(prodSel, ofertas.notas, filtrosG, pf);
     return {l, total: prodSel, ...montarLista(prodSel, l, favs, limite)};
-  }, [sb.emBreve, pc, pcs, notas, filtros, favs, limite, prodSel, ofertas, filtrosG]);
+  }, [sb.emBreve, pc, pcs, notas, filtros, favs, limite, prodSel, ofertas, filtrosG, cupomPor]);
   const baseG = prodSel.length || sel.secao !== 'games' ? prodSel : jogos;
 
   const titulo = `${it ? it.icone : sb.emBreve ? sb.icone : s.icone} ${nomeSel(sel)}`;
@@ -179,8 +205,8 @@ export function ColunaLista({ largura, aoSelecionar }: { largura: number; aoSele
             : `Nenhuma oferta com esses filtros${lista!.total.length ? '. Clique em "Limpar filtros" (ou desmarque "Só originais").' : ' ainda. Toque em ⟳ para buscar nas lojas.'}`}</T>
           : itens.map(n => (
             <View key={n.id} style={{width: grade === 2 && !expandidos.has(n.id) ? '50%' : '100%', paddingHorizontal: 6}}>
-              {pc ? <CardPC n={n} r={notas.get(n.id)} usaPreco={filtros.fCB} {...props(n)} />
-                : <CardG n={n} r={ofertas.notas.get(n.id)} nc={cuponsDaLoja(dados.cupons, n).length} mc={melhorComCupom(dados.cupons, n)} {...props(n)} />}
+              {pc ? <CardPC n={n} r={notas.get(n.id)} usaPreco={filtros.fCB} pcc={cupomPor.get(n.id)} {...props(n)} />
+                : <CardG n={n} r={ofertas.notas.get(n.id)} nc={cuponsDaLoja(dados.cupons, n).length} pcc={cupomPor.get(n.id)} {...props(n)} />}
             </View>
           ))}
         {lista && lista.faltam > 0 ? (
@@ -195,6 +221,8 @@ export function ColunaLista({ largura, aoSelecionar }: { largura: number; aoSele
 }
 
 const st = StyleSheet.create({
+  vocePaga: {marginTop: 8, borderWidth: 1, borderColor: 'rgba(34,197,94,0.35)', backgroundColor: 'rgba(34,197,94,0.08)', borderRadius: 10, paddingVertical: 7, paddingHorizontal: 10, gap: 2},
+  codigoMini: {fontFamily: F.mono, fontSize: 12.5, color: '#a5f3fc'},
   h2: {paddingVertical: 15, paddingHorizontal: 18, borderBottomWidth: 1, borderColor: C.borda},
   filtros: {paddingVertical: 9, paddingHorizontal: 11, borderBottomWidth: 1, borderColor: C.borda, flexDirection: 'row', flexWrap: 'wrap', backgroundColor: 'rgba(0,0,0,0.18)'},
   regras: {marginTop: 12, marginHorizontal: 14},
