@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { DADOS, ESPERADO } from './fixture';
-import { catCupom, minimoCupom, descontoCupom, escopoCupom, cuponsDaLoja, melhorComCupom, cuponsForaDaLoja, avaliarCupom, contextoCupons, listaCupons, precoComCupom } from '../src/logica/cupons';
+import { catCupom, minimoCupom, descontoCupom, escopoCupom, cuponsDaLoja, melhorComCupom, cuponsForaDaLoja, avaliarCupom, contextoCupons, listaCupons, precoComCupom, rotuloDesconto } from '../src/logica/cupons';
 import type { Cupom, Produto } from '../src/logica/tipos';
 import { separarSecoes, secaoAtual, itemAtual, nomeSel, produtosSel, type Selecao } from '../src/logica/secoes';
 
@@ -86,5 +86,13 @@ describe('preço com cupom', () => {
     expect(r.talvez!.provavel).toBe(true);
     expect(r.talvez!.estimado).toBeCloseTo(333.9, 1);
     expect(r.talvezOutros.map(x => x.c.codigo)).toEqual(['ENDGAME40']);
+  });
+});
+
+describe('rótulo do desconto', () => {
+  it('mostra % ou valor fixo', () => {
+    expect(rotuloDesconto({tipo: '%', v: 10, teto: null})).toBe('10% OFF');
+    expect(rotuloDesconto({tipo: 'R$', v: 50})).toMatch(/^R\$\s50 OFF$/);
+    expect(rotuloDesconto({tipo: '%', v: 15, teto: 100})).toMatch(/^15% OFF \(até R\$\s100\)$/);
   });
 });
