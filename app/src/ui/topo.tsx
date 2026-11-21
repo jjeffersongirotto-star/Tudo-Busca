@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Animated, Easing, Pressable, View, StyleSheet, useWindowDimensions } from 'react-native';
 import { T, Grad, Icone, Link, abrir } from './base';
 import { C, RAIO, RAIO_P, ehWeb, sombra } from './tema';
-import { useApp, NATIVO, type Aviso } from './estado';
+import { useApp, NATIVO, VERSAO_NATIVA, type Aviso } from './estado';
 import { SECOES, secaoAtual, subAtual, itemAtual, contar } from '@/logica/secoes';
 import { versaoCurta } from '@/logica/versao';
 import { SERVIDOR_PUBLICO } from '@/dados/api';
@@ -107,6 +107,13 @@ export function AvisoTopo({ margem }: { margem: number }) {
 
 export function DicaVersao({ margem }: { margem: number }) {
   const {dica, fecharDica} = useApp();
+  if (dica?.tipo === 'sugestao') return (
+    <View style={[st.dica, {marginHorizontal: margem}]} testID="dicaVersao">
+      <T style={{color: '#ddd6fe', fontSize: 12.8, flexShrink: 1}}>🆕 App novo disponível ({dica.versao}) — o seu é {VERSAO_NATIVA || '?'}. Os preços já foram atualizados; baixar é opcional. </T>
+      <T style={{color: C.dellEsc, fontSize: 12.8, textDecorationLine: 'underline'}} onPress={() => abrir(dica.link || dica.pagina)}>⬇️ Baixar</T>
+      <Pressable onPress={fecharDica} accessibilityLabel="Fechar" style={{marginLeft: 'auto', paddingHorizontal: 4}}><T style={{color: C.dell, fontSize: 16}}>✕</T></Pressable>
+    </View>
+  );
   if (!dica || dica.tipo !== 'pagina') return null;
   const recarregar = () => { if (ehWeb && typeof location !== 'undefined') location.reload(); };
   return (

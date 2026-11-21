@@ -52,6 +52,17 @@ describe('versões', () => {
     expect(decidirVersao(s, {nativo: true, versaoNativa: '2.0.7', versaoWeb: ''})).toBeNull();
     expect(decidirVersao(s, {nativo: false, versaoWeb: ''})).toBeNull();
   });
+  it('APK mais novo só sugere; abaixo da mínima pausa a busca', () => {
+    const r = {nativo: {versao: '2.0.3'}, nativoNovo: {versao: '2.0.5', android: 'apk5', pagina: 'p5'}};
+    // instalado 2.0.3 = mínima: não trava, só sugere a 2.0.5
+    expect(decidirVersao(r, {nativo: true, versaoNativa: '2.0.3', versaoWeb: ''})).toEqual({tipo: 'sugestao', versao: '2.0.5', link: 'apk5', pagina: 'p5'});
+    // já está na mais nova: nada
+    expect(decidirVersao(r, {nativo: true, versaoNativa: '2.0.5', versaoWeb: ''})).toBeNull();
+    // abaixo da mínima: trava e aponta para a mais nova
+    expect(decidirVersao(r, {nativo: true, versaoNativa: '2.0.2', versaoWeb: ''})).toEqual({tipo: 'app', versao: '2.0.5', link: 'apk5', pagina: 'p5'});
+    // site: nunca usa as versões do APK
+    expect(decidirVersao(r, {nativo: false, versaoWeb: ''})).toBeNull();
+  });
 });
 
 describe('formatação pt-BR (igual a toLocaleString)', () => {
