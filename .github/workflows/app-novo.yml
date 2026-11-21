@@ -24,6 +24,8 @@ jobs:
         working-directory: app
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # histórico completo: a versão do app (0.50, 0.51…) conta os commits
       - uses: actions/setup-node@v4
         with:
           node-version: 24
