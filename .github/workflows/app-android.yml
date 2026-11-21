@@ -4,9 +4,12 @@ name: App novo — APK Android
 # NÃO marca o Release como "latest": o "latest" continua sendo o do app antigo (apps.yml), cujo aviso de
 # atualização lê releases/latest. O servidor informa o APK novo em /api/versao -> "nativo".
 on:
+  # Só quando muda a parte nativa (bibliotecas, ícones, app.json). Mudanças só de código chegam aos apps
+  # instalados pela atualização OTA (app-ota.yml), sem APK novo e sem o aviso "App novo disponível".
+  # Ao trocar biblioteca nativa, aumente "runtimeVersion" em app/app.json (os APKs antigos deixam de receber OTA).
   push:
     branches: [main]
-    paths: ['app/**', '!app/src/versaoApp.ts', '.github/workflows/app-android.yml']
+    paths: ['app/app.json', 'app/package.json', 'app/package-lock.json', 'app/assets/**', '.github/workflows/app-android.yml']
   pull_request:
     paths: ['app/app.json', 'app/package.json', 'app/package-lock.json', '.github/workflows/app-android.yml']
   workflow_dispatch:
