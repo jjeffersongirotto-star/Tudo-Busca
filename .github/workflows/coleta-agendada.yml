@@ -1,0 +1,51 @@
+name: Coleta agendada (a cada 3 horas)
+
+# Coleta completa no GitHub (aqui KaBuM! e Amazon respondem; no Render elas recusam) e publica o resultado no ramo
+# "dados-coleta" (só a versão mais recente, sem histórico, para o repositório não crescer). O servidor puxa esses
+# arquivos pelo raw.githubusercontent.com ao ligar e antes de cada ⟳: assim KaBuM!/Amazon ficam com no máximo ~3 h
+# de atraso e o banco de dados não se perde quando o Render reinicia. Gratuito (repositório público).
+on:
+  schedule:
+    - cron: '17 */3 * * *'   # a cada 3 h (minuto 17 para fugir do horário cheio do GitHub)
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: coleta-agendada
+  cancel-in-progress: false
+jobs:
+  coleta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r servidor/requirements.txt
+      - name: Base = última coleta publicada (ou os dados do repositório)
+        run: |
+          mkdir -p /tmp/base
+          if git fetch -q --depth 1 origin dados-coleta; then
+            git show FETCH_HEAD:dados.json > /tmp/base/dados.json
+            git show FETCH_HEAD:banco.json > /tmp/base/banco.json || cp dados/banco.json /tmp/base/banco.json
+          else
+            cp dados/dados.json dados/banco.json /tmp/base/
+          fi
+          ls -l /tmp/base
+      - name: Coletar (todas as lojas e categorias)
+        working-directory: servidor
+        run: python -m coleta.orquestrador /tmp/base/dados.json /tmp/base/novo.json
+      - name: Publicar no ramo dados-coleta
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -q --orphan publicar
+          git rm -rfq .
+          cp /tmp/base/novo.json dados.json
+          cp /tmp/base/banco.json banco.json
+          python -c "import json,datetime; d=json.load(open('dados.json')); json.dump({'ultimaAtualizacao': d.get('ultimaAtualizacao'), 'produtos': len(d.get('produtos', [])), 'cupons': len(d.get('cupons', [])), 'run': '${{ github.run_id }}'}, open('info.json','w'), ensure_ascii=False, indent=1)"
+          cat info.json
+          git add dados.json banco.json info.json
+          git commit -qm "Coleta agendada $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push -qf origin HEAD:dados-coleta

@@ -101,6 +101,40 @@ class Banco:
             if n['id'] not in mod['ids']:
                 mod['ids'].append(n['id'])
 
+    def mesclar(self, outro):
+        """Junta outro banco (ex.: o da coleta agendada no GitHub): o que foi visto por último vale; nada é apagado.
+        Retorna quantos produtos foram acrescentados ou atualizados."""
+        if not isinstance(outro, dict):
+            return 0
+        n = 0
+        for chave in ('produtos', 'modelos'):
+            meu = self.d.setdefault(chave, {})
+            for k, reg in (outro.get(chave) or {}).items():
+                if not isinstance(reg, dict):
+                    continue
+                atual = meu.get(k)
+                if atual is None:
+                    meu[k] = reg
+                    n += chave == 'produtos'
+                    continue
+                novo_mais_recente = str(reg.get('vistoUltimo', '')) >= str(atual.get('vistoUltimo', ''))
+                base = dict(atual)
+                for c, v in reg.items():
+                    if c in ('precos', 'ids') or v in (None, ''):
+                        continue
+                    # o registro mais recente vale; o mais antigo só preenche o que falta
+                    if novo_mais_recente or c not in base or base[c] in (None, ''):
+                        base[c] = v
+                hist = {tuple(x) for x in (atual.get('precos') or []) + (reg.get('precos') or []) if isinstance(x, list) and len(x) == 2}
+                if hist:
+                    base['precos'] = [list(x) for x in sorted(hist)][-30:]
+                if 'ids' in atual or 'ids' in reg:
+                    base['ids'] = sorted(set(atual.get('ids', [])) | set(reg.get('ids', [])))
+                if base != atual:
+                    meu[k] = base
+                    n += chave == 'produtos'
+        return n
+
     def salvar(self):
         self.caminho.parent.mkdir(parents=True, exist_ok=True)
         tmp = self.caminho.with_suffix('.tmp')
