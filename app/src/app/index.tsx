@@ -2,7 +2,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { ScrollView, View, StyleSheet, useWindowDimensions, type LayoutChangeEvent } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Topo, AvisoTopo, DicaVersao, Secoes, Rodape } from '@/ui/topo';
+import { Topo, AvisoTopo, AvisoOta, DicaVersao, Secoes, Rodape } from '@/ui/topo';
 import { ColunaCupons } from '@/ui/colunaCupons';
 import { ColunaLista } from '@/ui/lista';
 import { PainelDetalhes } from '@/ui/detalhes';
@@ -55,6 +55,7 @@ export default function Inicio() {
       stickyHeaderIndices={[0]} keyboardShouldPersistTaps="handled">
       <Topo />
       <AvisoTopo margem={margem} />
+      <AvisoOta margem={margem} />
       <DicaVersao margem={margem} />
       <Secoes margem={margem} />
       {larga ? colunas : null}

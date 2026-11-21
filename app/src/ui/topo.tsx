@@ -5,6 +5,7 @@ import { T, Grad, Icone, Link, abrir } from './base';
 import { C, RAIO, RAIO_P, ehWeb, sombra } from './tema';
 import { useApp, NATIVO, VERSAO_NATIVA, type Aviso } from './estado';
 import { SECOES, secaoAtual, subAtual, itemAtual, contar } from '@/logica/secoes';
+import * as Updates from 'expo-updates';
 import { versaoCurta } from '@/logica/versao';
 import { SERVIDOR_PUBLICO } from '@/dados/api';
 
@@ -101,6 +102,30 @@ export function AvisoTopo({ margem }: { margem: number }) {
       ) : null}
       {aviso.detalhe ? (ehLink ? <Link url={aviso.detalhe} style={{marginTop: 4, fontSize: 12.5}}>Downloads</Link>
         : <T style={{color: cor, fontSize: 12, opacity: 0.85, lineHeight: 20, marginTop: 2}}>{aviso.detalhe}</T>) : null}
+    </View>
+  );
+}
+
+/** Atualização OTA (só o código novo, sem baixar o APK): baixa sozinha ao abrir ou no ⟳ e pede para aplicar. */
+export function AvisoOta({ margem }: { margem: number }) {
+  return NATIVO ? <AvisoOtaNativo margem={margem} /> : null;
+}
+function AvisoOtaNativo({ margem }: { margem: number }) {
+  const {isUpdateAvailable, isUpdatePending, isDownloading, downloadProgress} = Updates.useUpdates();
+  useEffect(() => {
+    if (Updates.isEnabled && isUpdateAvailable && !isUpdatePending && !isDownloading) Updates.fetchUpdateAsync().catch(() => {});
+  }, [isUpdateAvailable, isUpdatePending, isDownloading]);
+  if (isDownloading) return (
+    <View style={[st.dica, {marginHorizontal: margem}]} testID="avisoOta">
+      <T style={{color: '#ddd6fe', fontSize: 12.8}}>⬇️ Baixando atualização do app…{downloadProgress ? ` ${Math.round(downloadProgress * 100)}%` : ''}</T>
+    </View>
+  );
+  if (!isUpdatePending) return null;
+  return (
+    <View style={[st.dica, {marginHorizontal: margem}]} testID="avisoOta">
+      <T style={{color: '#ddd6fe', fontSize: 12.8, flexShrink: 1}}>🆕 Atualização do app pronta (não precisa baixar o APK). </T>
+      <Pressable onPress={() => { Updates.reloadAsync().catch(() => {}); }} accessibilityRole="button" style={st.btnVersao}>
+        <T peso="negrito" style={{color: '#fff', fontSize: 13.5}}>Aplicar agora</T></Pressable>
     </View>
   );
 }

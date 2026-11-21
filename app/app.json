@@ -33,6 +33,13 @@
       "expo-status-bar",
       "expo-image",
       "expo-font"
-    ]
+    ],
+    "runtimeVersion": "1",
+    "updates": {
+      "url": "https://tudo-busca.onrender.com/api/ota/manifest",
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0
+    }
   }
 }
