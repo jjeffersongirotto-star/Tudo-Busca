@@ -10,9 +10,9 @@ import { calcularOfertas } from '@/logica/ofertas';
 import { contextoCupons } from '@/logica/cupons';
 import { FILTROS_PADRAO, POR_PAGINA, type EstadoFiltros } from '@/logica/filtros';
 import { FILTROS_G_PADRAO, type EstadoFiltrosG } from '@/logica/ofertas';
-import { decidirVersao, type ResultadoVersao } from '@/logica/versao';
+import { decidirVersao, type ResultadoVersao, type RespostaVersao } from '@/logica/versao';
 import { carregarLocal, aplicarDados, DADOS_VAZIOS } from '@/dados/repositorio';
-import { buscarDados, lerVersao } from '@/dados/api';
+import { buscarDados, lerVersao, lerNativoDireto } from '@/dados/api';
 import { buscarCategoria, resumoBusca } from '@/dados/busca';
 import { lerFavoritos, guardarFavoritos, lerSelecao, guardarSelecao, lerTexto, gravarTexto, CHAVES } from '@/dados/armazenamento';
 import { VERSAO_WEB } from '@/versaoApp';
@@ -98,7 +98,14 @@ function useEstadoApp() {
   const fecharDica = useCallback(() => { if (dica?.tipo === 'pagina') gravarTexto(CHAVES.dicaFechada, dica.versao); setDica(null); }, [dica]);
 
   const verificarVersao = useCallback(async () => {
-    try { return decidirVersao(await lerVersao(), {nativo: NATIVO, versaoNativa: VERSAO_NATIVA, versaoWeb: VERSAO_WEB}); } catch { return null; }
+    let v: RespostaVersao | null = null;
+    try { v = await lerVersao(); } catch { v = null; }
+    // App baixado: se o servidor não souber do APK mais novo (ou não responder), confere direto no repositório
+    if (NATIVO && !(v?.nativo ?? v?.app?.nativo)?.versao) {
+      const nat = await lerNativoDireto();
+      if (nat) v = {...(v || {}), nativo: nat};
+    }
+    return decidirVersao(v, {nativo: NATIVO, versaoNativa: VERSAO_NATIVA, versaoWeb: VERSAO_WEB});
   }, []);
 
   /** ⟳: pesquisa só o card selecionado. App nativo desatualizado: avisa e só pesquisa depois de atualizar. Web nunca trava. */

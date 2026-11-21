@@ -48,3 +48,17 @@ export const buscarDados = (limiteMs = 90000) => api<Dados>('/api/dados', {}, li
 export const pedirAtualizacao = (c: Categoria) => api<Status>('/api/atualizar?categoria=' + c, {method: 'POST'}, 90000);
 export const lerStatus = (c: Categoria) => api<Status>('/api/status?categoria=' + c);
 export const lerVersao = () => api<RespostaVersao>('/api/versao', {}, 30000);
+
+/** Último APK publicado, lido direto do repositório (dados/nativo.json, gravado pelo workflow do APK).
+ *  Plano B quando o servidor não sabe (ex.: GitHub limitou as consultas dele). */
+export const NATIVO_RAW = 'https://raw.githubusercontent.com/jjeffersongirotto-star/Tudo-Busca/main/dados/nativo.json';
+export async function lerNativoDireto(limiteMs = 15000): Promise<RespostaVersao['nativo']> {
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), limiteMs);
+  try {
+    const r = await fetch(NATIVO_RAW + '?t=' + Math.floor(Date.now() / 300000), {cache: 'no-store', signal: ctl.signal});
+    if (!r.ok) return null;
+    const j = await r.json() as {versao?: string; android?: string; pagina?: string};
+    return j && /^\d+\.\d+\.\d+$/.test(String(j.versao || '')) ? {versao: j.versao, android: j.android, pagina: j.pagina} : null;
+  } catch { return null; } finally { clearTimeout(t); }
+}

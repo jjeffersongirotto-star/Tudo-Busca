@@ -72,3 +72,23 @@ jobs:
           body: |
             App novo do Tudo-Busca para Android (mesmo código do site /novo).
             Baixe **Tudo-Busca-Nativo.apk** abaixo e instale (permita "instalar apps desconhecidos" se o Android pedir).
+      - name: Gravar a versão publicada em dados/nativo.json
+        # O servidor e o app leem este arquivo pelo raw.githubusercontent.com (sem o limite de 60 consultas/hora da API do GitHub,
+        # que o Render estoura por usar endereço compartilhado) para avisar que há APK novo.
+        if: github.event_name != 'pull_request'
+        working-directory: .
+        env:
+          N: ${{ github.run_number }}
+          REPO: ${{ github.repository }}
+        run: |
+          for i in 1 2 3; do
+            git fetch -q origin main && git reset -q --hard origin/main
+            printf '{\n  "versao": "2.0.%s",\n  "tag": "nativo-v2.0.%s",\n  "android": "https://github.com/%s/releases/download/nativo-v2.0.%s/Tudo-Busca-Nativo.apk",\n  "pagina": "https://github.com/%s/releases/tag/nativo-v2.0.%s"\n}\n' "$N" "$N" "$REPO" "$N" "$REPO" "$N" > dados/nativo.json
+            git add dados/nativo.json
+            git diff --cached --quiet && break
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -qm "App novo: versão publicada 2.0.$N (dados/nativo.json)"
+            git push -q origin HEAD:main && break
+            sleep 5
+          done
