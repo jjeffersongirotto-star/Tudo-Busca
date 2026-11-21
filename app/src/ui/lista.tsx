@@ -46,13 +46,34 @@ function Cartao({ n, fav, aberto, sel, novo, foraFiltro, aoSelecionar, aoFav, ao
   );
 }
 
-const Preco = ({ n }: { n: Produto }) => (
-  <View style={st.preco}>
-    <T peso="extra" style={{fontSize: 17.9}}>{n.preco || 'Preço não informado'}</T>
-    {n.precoDe ? <T style={{color: C.fraco, fontSize: 12.5, textDecorationLine: 'line-through'}}>{n.precoDe}</T> : null}
-    <BadgeDesc n={n} />
-  </View>
-);
+/** Preço da loja e, ao lado, o preço com o cupom (confirmado em verde; "se participar" em azul). */
+const Preco = ({ n, pc }: { n: Produto; pc?: PrecoComCupom }) => {
+  const m = pc?.melhor, tz = pc?.talvez;
+  const comCupom = m ? {v: m.a.estimado!, cod: m.c.codigo, ok: true} : tz ? {v: tz.estimado, cod: tz.c.codigo, ok: false} : null;
+  if (!comCupom) return (
+    <View style={st.preco}>
+      <T peso="extra" style={{fontSize: 17.9}}>{n.preco || 'Preço não informado'}</T>
+      {n.precoDe ? <T style={{color: C.fraco, fontSize: 12.5, textDecorationLine: 'line-through'}}>{n.precoDe}</T> : null}
+      <BadgeDesc n={n} />
+    </View>
+  );
+  return (
+    <View style={st.precoDuplo} testID="precoDuplo">
+      <View style={st.precoCol}>
+        <T style={st.precoRot}>Preço na loja</T>
+        <T peso="extra" style={{fontSize: 17.9}}>{n.precoNum ? reais(n.precoNum) : n.preco}</T>
+        {/à vista/i.test(n.preco || '') ? <T style={{color: C.fraco, fontSize: 11.5}}>à vista</T> : null}
+        {n.precoDe ? <T style={{color: C.fraco, fontSize: 12, textDecorationLine: 'line-through'}}>{n.precoDe}</T> : null}
+      </View>
+      <T style={{color: C.fraco, fontSize: 18, alignSelf: 'center'}}>→</T>
+      <View style={[st.precoCol, st.precoCupom, comCupom.ok ? null : st.precoCupomTalvez]}>
+        <T style={[st.precoRot, {color: comCupom.ok ? '#86efac' : '#7dd3fc'}]}>{comCupom.ok ? 'Com cupom' : 'Com cupom (se valer)'}</T>
+        <T peso="extra" style={{fontSize: 17.9, color: comCupom.ok ? '#4ade80' : '#7dd3fc'}}>~{reais(comCupom.v)}</T>
+        <T peso="extra" style={st.codigoMini}>{comCupom.cod}</T>
+      </View>
+    </View>
+  );
+};
 const TagVelho = ({ n }: { n: Produto }) => n.precoAntigo ? <Tag fundo="rgba(251,146,60,0.14)" cor="#fdba74">⚠ preço de coleta anterior</Tag> : null;
 
 /** Preço final com o melhor cupom que vale para o item (categoria, modelo e compra mínima conferidos). */
@@ -63,15 +84,16 @@ function VocePaga({ n, pc }: { n: Produto; pc?: PrecoComCupom }) {
     <View style={st.vocePaga} testID="vocePaga">
       {m ? (
         <>
-          <T style={{color: '#bbf7d0', fontSize: 13.2}}>💰 Você paga <T peso="extra" style={{color: '#fff', fontSize: 16.5}}>~{reais(m.a.estimado)}</T> com o cupom <T peso="extra" style={st.codigoMini}>{m.c.codigo}</T></T>
-          <T style={{color: '#86efac', fontSize: 11.8}}>economia de {reais((n.precoNum || 0) - (m.a.estimado || 0))}{m.a.min ? ` · compra mínima ${reais(m.a.min)} ✔` : ''}{m.a.aviso ? ` · ${m.a.aviso}` : ''}</T>
+          <T style={{color: '#bbf7d0', fontSize: 13.2}}>💰 Use o cupom <T peso="extra" style={st.codigoMini}>{m.c.codigo}</T> e economize <T peso="extra" style={{color: '#fff'}}>{reais((n.precoNum || 0) - (m.a.estimado || 0))}</T></T>
+          <T style={{color: '#86efac', fontSize: 11.8}}>vale para este item{m.a.min ? ` · compra mínima ${reais(m.a.min)} ✔` : ''}{m.a.aviso ? ` · ${m.a.aviso}` : ''}</T>
           {m.a.condicoes?.length ? <T style={{color: '#fde68a', fontSize: 11.8}}>⚠ {m.a.condicoes.join(' · ')}{pc.semCondicao ? ` — sem essa condição: ~${reais(pc.semCondicao.a.estimado)} com ${pc.semCondicao.c.codigo}` : ''}</T> : null}
         </>
       ) : null}
       {pc.talvez ? (
         <>
-          <T style={{color: '#a5f3fc', fontSize: 13.2}}>🔎 {m ? 'Pode ficar ainda mais barato:' : 'Se este item participar:'} <T peso="extra" style={{color: '#fff', fontSize: m ? 14 : 16.5}}>~{reais(pc.talvez.estimado)}</T> com <T peso="extra" style={st.codigoMini}>{pc.talvez.c.codigo}</T></T>
-          <T style={{color: '#7dd3fc', fontSize: 11.8}}>{pc.talvez.provavel ? 'o código do cupom cita este tipo de produto · ' : ''}vale só para itens selecionados: teste no carrinho (economia de {reais((n.precoNum || 0) - pc.talvez.estimado)})</T>
+          {m ? <T style={{color: '#a5f3fc', fontSize: 13.2}}>🔎 Pode ficar ainda mais barato: <T peso="extra" style={{color: '#fff'}}>~{reais(pc.talvez.estimado)}</T> com <T peso="extra" style={st.codigoMini}>{pc.talvez.c.codigo}</T></T>
+            : <T style={{color: '#a5f3fc', fontSize: 13.2}}>🔎 Teste o cupom <T peso="extra" style={st.codigoMini}>{pc.talvez.c.codigo}</T> no carrinho</T>}
+          <T style={{color: '#7dd3fc', fontSize: 11.8}}>economia de {reais((n.precoNum || 0) - pc.talvez.estimado)} · vale só para itens selecionados{pc.talvez.provavel ? ', e o código cita este tipo de produto' : ''}</T>
           {pc.talvezOutros.length ? <T style={{color: '#7dd3fc', fontSize: 11.8}}>outros para testar: {pc.talvezOutros.map(x => `${x.c.codigo} (~${reais(x.estimado)})`).join(' · ')}</T> : null}
         </>
       ) : null}
@@ -91,7 +113,7 @@ const CardPC = memo(function CardPC({ n, r, usaPreco, pcc, ...p }: { n: Produto;
         <TagVelho n={n} />
       </View>
       <T style={st.resumo}>{ni(n.cpuModelo || n.procFamilia)} · {n.ramGB ? n.ramGB + ' GB RAM' : 'RAM não informada'} · {ni(n.armazenamento)} SSD · {fmtPol(n.telaPol)}</T>
-      <Preco n={n} />
+      <Preco n={n} pc={pcc} />
       <VocePaga n={n} pc={pcc} />
       {!r ? null : !usaPreco ? <Barra rotulo="Desempenho" valor={r.total} texto={`${fmt1(r.total)}/100`} />
         : r.cbFinal == null ? <Barra rotulo="Custo-benefício" valor={0} texto="sem preço" /> : <Barra rotulo="Custo-benefício" valor={r.cbFinal} texto={`${fmt1(r.cbFinal)}/100`} />}
@@ -113,7 +135,7 @@ const CardG = memo(function CardG({ n, r, nc, pcc, ...p }: { n: Produto; r?: Not
         {nc ? <Tag fundo="rgba(34,211,238,0.12)" cor="#a5f3fc">🏷️ {nc} cupom(ns) da loja</Tag> : null}
         <TagVelho n={n} />
       </View>
-      <Preco n={n} />
+      <Preco n={n} pc={pcc} />
       <VocePaga n={n} pc={pcc} />
       {!r || r.nota == null || r.pct == null ? <Barra rotulo="Oferta" valor={0} texto="—" />
         : <Barra rotulo="Oferta" valor={r.nota} texto={`${fmt1(r.nota)}/100`} extra={r.pct >= 0 ? `${fmt1(r.pct)}% abaixo do típico` : `${fmt1(-r.pct)}% acima do típico`} />}
@@ -241,6 +263,11 @@ const st = StyleSheet.create({
   h3: {fontSize: 15.2, lineHeight: 20.5, marginTop: 4, marginBottom: 6},
   resumo: {fontSize: 12.6, color: C.sub, lineHeight: 18.3},
   preco: {flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 8, marginTop: 8},
+  precoDuplo: {flexDirection: 'row', alignItems: 'stretch', gap: 6, marginTop: 8},
+  precoCol: {flex: 1, gap: 1, paddingVertical: 6, paddingHorizontal: 10, borderRadius: 10, borderWidth: 1, borderColor: C.borda},
+  precoRot: {color: C.fraco, fontSize: 11.5},
+  precoCupom: {borderColor: 'rgba(34,197,94,0.45)', backgroundColor: 'rgba(34,197,94,0.10)'},
+  precoCupomTalvez: {borderColor: 'rgba(56,189,248,0.45)', backgroundColor: 'rgba(56,189,248,0.08)', borderStyle: 'dashed'},
   expandido: {marginTop: 12, borderTopWidth: 1, borderStyle: 'dashed', borderColor: C.bordaForte, paddingTop: 12},
   vazio: {color: C.sub, textAlign: 'center', paddingVertical: 34, paddingHorizontal: 16, fontSize: 14.4, width: '100%'},
   mais: {width: '100%', alignItems: 'center', gap: 8, paddingTop: 10, paddingBottom: 16},
