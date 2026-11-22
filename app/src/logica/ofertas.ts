@@ -38,13 +38,13 @@ export const OPCOES_G = {
   gPreco: [['', 'Qualquer'], ['150', 'até R$ 150'], ['250', 'até R$ 250'], ['350', 'até R$ 350'], ['400', 'até R$ 400'], ['450', 'até R$ 450'], ['500', 'até R$ 500'], ['700', 'até R$ 700'], ['1000', 'até R$ 1.000'], ['1500', 'até R$ 1.500'], ['2000', 'até R$ 2.000'], ['2500', 'até R$ 2.500'], ['3000', 'até R$ 3.000'],
     ['3500', 'até R$ 3.500'], ['4000', 'até R$ 4.000'], ['5000', 'até R$ 5.000']],
   // games: sem nota de oferta (o aparelho é igual em toda loja; só o preço muda) → padrão = menor preço
-  gOrdem: [['asc', 'Menor preço (padrão)'], ['cupom', 'Menor preço com cupom'], ['desc', 'Maior desconto'], ['pdesc', 'Maior preço']],
+  gOrdem: [['cupom', 'Menor preço com cupom (padrão)'], ['asc', 'Menor preço (sem cupom)'], ['desc', 'Maior desconto'], ['pdesc', 'Maior preço']],
 } as const;
 
 export interface EstadoFiltrosG { sel: Partial<Record<FiltroGId, string>>; gPreco: string; gOrdem: 'oferta' | 'cupom' | 'asc' | 'desc' | 'pdesc'; gOriginal: boolean; gSemKit: boolean }
-export const FILTROS_G_PADRAO: EstadoFiltrosG = {sel: {}, gPreco: '', gOrdem: 'asc', gOriginal: true, gSemKit: false};
+export const FILTROS_G_PADRAO: EstadoFiltrosG = {sel: {}, gPreco: '', gOrdem: 'cupom', gOriginal: true, gSemKit: false};
 /** ordem válida (quem tinha "Melhor oferta" guardado passa para "Menor preço") */
-export const ordemG = (e: EstadoFiltrosG): EstadoFiltrosG['gOrdem'] => (OPCOES_G.gOrdem.some(([v]) => v === e.gOrdem) ? e.gOrdem : 'asc');
+export const ordemG = (e: EstadoFiltrosG): EstadoFiltrosG['gOrdem'] => (OPCOES_G.gOrdem.some(([v]) => v === e.gOrdem) ? e.gOrdem : 'cupom');
 
 export function opcoesFiltrosG(base: Produto[]): Record<FiltroGId, {v: string; n: number}[]> {
   const out = {} as Record<FiltroGId, {v: string; n: number}[]>;
@@ -64,10 +64,10 @@ export function filtradosG(produtos: Produto[], notas: Map<string, NotaG>, e: Es
   const nota = (n: Produto) => notas.get(n.id)?.nota ?? -1;
   const cmp = {
     oferta: (a: Produto, b: Produto) => nota(b) - nota(a) || (a.precoNum ?? 1e12) - (b.precoNum ?? 1e12),
-    cupom: (a: Produto, b: Produto) => precoCupom ? precoCupom(a) - precoCupom(b) : (a.precoNum ?? 1e12) - (b.precoNum ?? 1e12),
+    cupom: (a: Produto, b: Produto) => (precoCupom ? precoCupom(a) - precoCupom(b) : 0) || (a.precoNum ?? 1e12) - (b.precoNum ?? 1e12),
     asc: (a: Produto, b: Produto) => (a.precoNum ?? 1e12) - (b.precoNum ?? 1e12),
     desc: (a: Produto, b: Produto) => (b.descontoPct ?? -1) - (a.descontoPct ?? -1) || (a.precoNum ?? 1e12) - (b.precoNum ?? 1e12),
     pdesc: (a: Produto, b: Produto) => (b.precoNum ?? -1) - (a.precoNum ?? -1),
-  }[e.gOrdem || 'asc'];
+  }[e.gOrdem || 'cupom'];
   return [...l].sort(cmp);
 }
