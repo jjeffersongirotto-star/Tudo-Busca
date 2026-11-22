@@ -10,7 +10,7 @@ import type { Produto } from '@/logica/tipos';
 import { FILTROS, OPCOES_NUM, POR_PAGINA, ICONE_TIPO, opcoesFiltros, filtrados, montarLista, valorNota } from '@/logica/filtros';
 import { FILTROS_G, OPCOES_G, opcoesFiltrosG, filtradosG, ordemG } from '@/logica/ofertas';
 import { cuponsDaLoja, precoComCupom, precoFinal, rotuloDesconto, descontoCupom, type PrecoComCupom } from '@/logica/cupons';
-import { secaoAtual, subAtual, itemAtual, nomeSel } from '@/logica/secoes';
+import { secaoAtual, subAtual, itemAtual, nomeSel, itemCfg } from '@/logica/secoes';
 import type { Pontuacao } from '@/logica/nota';
 import { fmt1, fmtPol, reais, ni } from '@/logica/formato';
 
@@ -140,7 +140,7 @@ const CardPC = memo(function CardPC({ n, r, usaPreco, pcc, ...p }: { n: Produto;
 const CardG = memo(function CardG({ n, nc, pcc, ...p }: { n: Produto; nc: number; pcc?: PrecoComCupom; fav: boolean; aberto: boolean; sel: boolean; novo: boolean; foraFiltro: boolean; aoSelecionar: () => void; aoFav: () => void; aoExp: () => void }) {
   const marca = n.marca && n.marca !== 'Sem marca conhecida' ? n.marca : '';
   const fabricante = ['Sony', 'Microsoft', 'Nintendo', 'Valve'].includes(marca);
-  const topo = `${n.sub === 'consoles' ? '🕹️' : '🎮'} ${n.original ? [marca, n.modelo].filter(Boolean).join(' · ') : (marca || 'outra marca') + (n.grupo ? ' · ' + n.modelo : '')}`;
+  const topo = `${n.secao === 'pecas' ? (itemCfg(n)?.icone || '🖥️') : n.sub === 'consoles' ? '🕹️' : '🎮'} ${n.original ? [marca, n.modelo].filter(Boolean).join(' · ') : (marca || 'outra marca') + (n.grupo ? ' · ' + n.modelo : '')}`;
   const corpo = (
     <>
       <View style={st.tags}>
@@ -206,7 +206,7 @@ export function ColunaLista({ largura, aoSelecionar }: { largura: number; aoSele
   const {sel, pcs, jogos, notas, ofertas, prodSel, favs, expandidos, selecionadoId, novos, limite, setLimite, filtros, filtrosG, dados, alternarFav, alternarExp} = app;
   const {width} = useWindowDimensions();
   const s = secaoAtual(sel), sb = subAtual(sel), it = itemAtual(sel);
-  const pc = s.id === 'computadores' && !sb.emBreve;
+  const pc = s.id === 'computadores' && sb.id === 'todos';
   const colFiltros = width <= 500 ? 2 : Math.max(2, Math.min(6, Math.floor(largura / 165)));
   const grade = width > 700 ? 2 : 1;
 
@@ -226,7 +226,7 @@ export function ColunaLista({ largura, aoSelecionar }: { largura: number; aoSele
     const l = filtradosG(prodSel, ofertas.notas, {...filtrosG, gOrdem: ordemG(filtrosG)}, pf);
     return {l, total: prodSel, ...montarLista(prodSel, l, favs, limite)};
   }, [sb.emBreve, pc, pcs, notas, filtros, favs, limite, prodSel, ofertas, filtrosG, cupomPor]);
-  const baseG = prodSel.length || sel.secao !== 'games' ? prodSel : jogos;
+  const baseG = prodSel.length || sel.secao !== 'games' ? prodSel : jogos.filter(n => n.secao === 'games');
 
   const titulo = `${it ? it.icone : sb.emBreve ? sb.icone : s.icone} ${nomeSel(sel)}`;
   const cont = !lista ? '' : `${lista.l.length} de ${lista.total.length}` + (lista.favoritos.length ? ` · ★ ${lista.favoritos.length}` + (pc && lista.foraFiltro ? ` (${lista.foraFiltro} fora dos filtros)` : '') : '');

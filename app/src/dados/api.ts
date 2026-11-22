@@ -32,7 +32,7 @@ export async function api<T>(caminho: string, opcoes: RequestInit = {}, limiteMs
   } finally { clearTimeout(t); }
 }
 
-export type Categoria = 'computadores' | 'games' | 'todas';
+export type Categoria = 'computadores' | 'games' | 'pecas' | 'todas';
 export interface Status {
   estado: 'parado' | 'rodando' | 'concluido' | 'erro';
   categoria?: Categoria;

@@ -196,7 +196,7 @@ export function Secoes({ margem }: { margem: number }) {
     <View style={{paddingHorizontal: margem, paddingTop: 14, gap: 10}} accessibilityLabel="Escolha o que buscar">
       <View style={{flexDirection: 'row', flexWrap: 'wrap', gap: 12}} accessibilityRole="tablist">
         {SECOES.map(x => {
-          const ativo = x.id === s.id, tot = x.id === 'computadores' ? pcs.length : jogos.length;
+          const ativo = x.id === s.id, tot = x.id === 'computadores' ? pcs.length + jogos.filter(n => n.secao === 'pecas').length : jogos.filter(n => n.secao === 'games').length;
           const corpo = (
             <View style={{flexDirection: 'row', alignItems: 'center', gap: width <= 500 ? 9 : 12}}>
               <T style={{fontSize: width <= 500 ? 21 : 27}}>{x.icone}</T>

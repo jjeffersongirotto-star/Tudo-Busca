@@ -257,18 +257,20 @@ def _cortar(lista):
     return (orig[:MAX_POR_LOJA - min(k, len(comp))] + comp[:k])[:MAX_POR_LOJA]
 
 
-async def coletar(http, anteriores, status, hoje_txt, data_ant):
-    """anteriores: produtos não-computador da coleta anterior. Retorna (produtos, resumo por loja)."""
+async def coletar(http, anteriores, status, hoje_txt, data_ant, secoes=('games', 'pecas'), rotulo='Games'):
+    """anteriores: produtos das seções pedidas da coleta anterior. secoes: quais itens buscar (games e/ou pecas).
+    Retorna (produtos, resumo por loja)."""
+    itens = {k: c for k, c in ITENS.items() if c['secao'] in secoes}
     resumo = {}
     final = []
 
     async def uma(nome, fn, prefixo):
         st = status.setdefault('fontes', {})
-        st[f'Games: {nome}'] = {'estado': 'buscando'}
+        st[f'{rotulo}: {nome}'] = {'estado': 'buscando'}
         t0 = time.time()
         achados, respondeu = {}, False
         try:
-            for item, cfg in ITENS.items():
+            for item, cfg in itens.items():
                 for termo in cfg['termos']:
                     r = await asyncio.wait_for(fn(http, termo), LIMITE_LOJA)
                     if r is None:
@@ -291,7 +293,7 @@ async def coletar(http, anteriores, status, hoje_txt, data_ant):
                 por_item.setdefault(n['item'], []).append(n)
             lista = [n for l in por_item.values() for n in _cortar(l)]
         msg = (f'{len(lista)} anúncios' if lista else 'respondeu, mas sem anúncios do item') if respondeu else 'loja recusou a busca (proteção anti-robô) ou não respondeu'
-        st[f'Games: {nome}'] = {'estado': 'ok' if respondeu else 'falhou', 'msg': msg, 'itens': len(lista or []), 'segundos': round(time.time() - t0)}
+        st[f'{rotulo}: {nome}'] = {'estado': 'ok' if respondeu else 'falhou', 'msg': msg, 'itens': len(lista or []), 'segundos': round(time.time() - t0)}
         log.info('games %-24s %s (%s) em %ds', nome, 'ok' if respondeu else 'falhou', msg, time.time() - t0)
         return nome, prefixo, lista
 
