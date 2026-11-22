@@ -126,7 +126,7 @@ const CardPC = memo(function CardPC({ n, r, usaPreco, pcc, ...p }: { n: Produto;
 
 const CardG = memo(function CardG({ n, r, nc, pcc, ...p }: { n: Produto; r?: NotaG; nc: number; pcc?: PrecoComCupom; fav: boolean; aberto: boolean; sel: boolean; novo: boolean; foraFiltro: boolean; aoSelecionar: () => void; aoFav: () => void; aoExp: () => void }) {
   const marca = n.marca && n.marca !== 'Sem marca conhecida' ? n.marca : '';
-  const fabricante = ['Sony', 'Microsoft', 'Nintendo'].includes(marca);
+  const fabricante = ['Sony', 'Microsoft', 'Nintendo', 'Valve'].includes(marca);
   const topo = `${n.sub === 'consoles' ? '🕹️' : '🎮'} ${n.original ? [marca, n.modelo].filter(Boolean).join(' · ') : (marca || 'outra marca') + (n.grupo ? ' · ' + n.modelo : '')}`;
   const corpo = (
     <>
