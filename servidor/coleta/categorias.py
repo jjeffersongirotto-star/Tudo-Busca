@@ -165,6 +165,10 @@ def classificar_console_xbox(nome):
         modelo = 'Xbox Series X' + (' Digital' if re.search(r'digital', n, re.I) else '') + (' ' + a if a == '2TB' else '')
     elif re.search(r'series\s+s', n, re.I):
         modelo = 'Xbox Series S' + (' 1TB' if a == '1TB' else ' 512GB')
+    elif re.search(r'one\s+x\b|one\s+x\s|\bxbox\s+one\s*x$|scorpio', n, re.I):
+        modelo = 'Xbox One X'    # o "Pro" da geração do PS4
+    elif re.search(r'one\s+s\b', n, re.I):
+        modelo = 'Xbox One S' + (' Digital' if re.search(r'all[\s-]*digital|digital', n, re.I) else '')
     else:
         modelo = 'Xbox One'
     return {'modelo': modelo, 'marca': 'Microsoft', 'original': True, 'kit': _kit(n), 'edicao': ''}
@@ -292,8 +296,8 @@ ITENS = {
                     'termos': ['console playstation 4'],
                     'classificar': classificar_console_ps4, 'preco_min': 1000, 'preco_max': 6000},
     'console-xbox': {'secao': 'games', 'sub': 'consoles', 'nome': 'Xbox', 'grupo': 'modelo',
-                     'termos': ['console xbox series x', 'console xbox series s'],
-                     'classificar': classificar_console_xbox, 'preco_min': 1300, 'preco_max': 12000},
+                     'termos': ['console xbox series x', 'console xbox series s', 'console xbox one x', 'console xbox one s'],
+                     'classificar': classificar_console_xbox, 'preco_min': 900, 'preco_max': 12000},
     'console-switch': {'secao': 'games', 'sub': 'consoles', 'nome': 'Nintendo Switch', 'grupo': 'modelo',
                        'termos': ['console nintendo switch', 'nintendo switch oled', 'nintendo switch lite'],
                        'classificar': classificar_console_switch, 'preco_min': 800, 'preco_max': 6000},
