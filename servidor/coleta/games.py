@@ -22,7 +22,7 @@ from .util import aplicar_preco, imagem_ok, next_data, num
 
 log = logging.getLogger('coleta')
 LIMITE_LOJA = 120        # segundos por loja
-MAX_POR_LOJA = 60        # anúncios por loja e por item (os mais baratos dos originais + os mais baratos dos compatíveis)
+MAX_POR_LOJA = 60        # anúncios por loja E POR ITEM (os mais baratos dos originais + os mais baratos dos compatíveis)
 
 
 def _slug(t):
@@ -284,7 +284,12 @@ async def coletar(http, anteriores, status, hoje_txt, data_ant):
             log.warning('games %s: demorou demais', nome)
         except Exception:
             log.exception('games %s', nome)
-        lista = _cortar(list(achados.values())) if respondeu else None
+        lista = None
+        if respondeu:  # o limite vale para cada item (senão os acessórios baratos tiram os consoles da lista)
+            por_item = {}
+            for n in achados.values():
+                por_item.setdefault(n['item'], []).append(n)
+            lista = [n for l in por_item.values() for n in _cortar(l)]
         msg = (f'{len(lista)} anúncios' if lista else 'respondeu, mas sem anúncios do item') if respondeu else 'loja recusou a busca (proteção anti-robô) ou não respondeu'
         st[f'Games: {nome}'] = {'estado': 'ok' if respondeu else 'falhou', 'msg': msg, 'itens': len(lista or []), 'segundos': round(time.time() - t0)}
         log.info('games %-24s %s (%s) em %ds', nome, 'ok' if respondeu else 'falhou', msg, time.time() - t0)
