@@ -239,8 +239,9 @@ export function precoComCupom(cupons: Cupom[], n: Produto): PrecoComCupom {
   return {melhor, semCondicao, talvez: lista[0] || null, talvezOutros: lista.slice(1, 3)};
 }
 
-/** Preço para ordenar "Menor preço com cupom": o menor preço com cupom que vale (ou o preço normal). */
-export const precoFinal = (pc: PrecoComCupom | undefined, n: Produto) => pc?.melhor?.a.estimado ?? n.precoNum ?? 1e12;
+/** Preço para ordenar "Menor preço com cupom": o mesmo valor do quadro "Com cupom" do card (verde = vale; azul = "se valer"),
+ *  ou o preço da loja quando não há cupom. Assim a lista fica na ordem do que aparece na tela. */
+export const precoFinal = (pc: PrecoComCupom | undefined, n: Produto) => pc?.melhor?.a.estimado ?? pc?.talvez?.estimado ?? n.precoNum ?? 1e12;
 
 /** Coluna de cupons: os relevantes para o card selecionado, ordenados (item → categoria do card → loja toda). */
 export function contextoCupons(secao: SecaoCfg, nome: string, produtosSelecionados: Produto[], cupomItem: RegExp | null | undefined): ContextoCupons {
