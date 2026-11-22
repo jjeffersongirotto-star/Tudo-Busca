@@ -33,7 +33,7 @@ describe('games = página original', () => {
   const {notas: ng} = calcularOfertas(jogos);
   it('nota de oferta', () => { for (const n of jogos) expect([n.id, ng.get(n.id)!.nota]).toEqual([n.id, ESPERADO.ofertas[n.id]]); });
   const sel = {secao: 'games', sub: 'acessorios', item: 'controle-ps5'};
-  const combos: Record<string, Partial<EstadoFiltrosG>> = {padrao: {}, todos: {gOriginal: false}, asc: {gOriginal: false, gOrdem: 'asc', gSemKit: true}, preco: {gOriginal: false, gPreco: '350', gOrdem: 'desc'}};
+  const combos: Record<string, Partial<EstadoFiltrosG>> = {padrao: {gOrdem: 'oferta'}, todos: {gOrdem: 'oferta', gOriginal: false}, asc: {gOriginal: false, gOrdem: 'asc', gSemKit: true}, preco: {gOriginal: false, gPreco: '350', gOrdem: 'desc'}};
   for (const [k, c] of Object.entries(combos)) it('filtro ' + k, () => {
     expect(filtradosG(produtosSel(sel, pcs, jogos), ng, {...FILTROS_G_PADRAO, ...c}).map(n => n.id)).toEqual(ESPERADO.filtradosG[k]);
   });

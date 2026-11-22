@@ -96,3 +96,14 @@ describe('rótulo do desconto', () => {
     expect(rotuloDesconto({tipo: '%', v: 15, teto: 100})).toMatch(/^15% OFF \(até R\$\s100\)$/);
   });
 });
+
+describe('cupom de outro tipo de produto', () => {
+  const ps5 = {id: 'p', loja: 'KaBuM!', secao: 'games', sub: 'consoles', item: 'console-ps5', precoNum: 4184, nome: 'Console PlayStation 5 Slim Digital'} as Produto;
+  const cup = (codigo: string, descricao: string, regras = '') => ({id: codigo, codigo, loja: 'KaBuM!', descricao, regras, ativo: true}) as unknown as Cupom;
+  it('microfone gamer não vale para console', () => {
+    expect(escopoCupom(cup('MIC12OFF', 'Código KaBuM! garante 12% OFF em microfone gamer', '12% OFF em Microfone selecionado'), ps5).tipo).toBe('outro');
+  });
+  it('cupom de itens selecionados genérico continua como "teste no carrinho"', () => {
+    expect(escopoCupom(cup('ENDGAME40', 'Pague 40% a menos', '40% de desconto em eletrônicos, válido para itens selecionados.'), ps5).tipo).toBe('selecao');
+  });
+});

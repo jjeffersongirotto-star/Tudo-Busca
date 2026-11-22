@@ -105,6 +105,7 @@ export function condicoesCupom(c: Cupom): string[] {
   return out;
 }
 
+const TIPO_PRODUTO = /\b(?:microfones?|mouses?|teclados?|cadeiras?|monitor(?:es)?|webcams?|mesas?|placas?\s+de\s+v[ií]deo|placas?-m[aã]e|processador(?:es)?|mem[oó]rias?|ssds?|impressoras?|roteador(?:es)?|smart\s?tvs?|notebooks?|caixas?\s+de\s+som|soundbars?)\b/;
 export function escopoCupom(c: Cupom, n: {secao?: string; item?: string; nome?: string; loja?: string; vendedor?: string}): Escopo {
   const sec = secaoDe(n), bruto = TEXTO_CUPOM(c), t = semExclusoes(bruto).toLowerCase();
   const r = restricaoCupom(c, sec);
@@ -113,12 +114,17 @@ export function escopoCupom(c: Cupom, n: {secao?: string; item?: string; nome?: 
   if (outro) return {tipo: 'outro', motivo: `cupom de outra marca ou modelo (${outro})`};
   const it = itemCfg(n);
   if (it && it.cupomItem && it.cupomItem.test(t)) return {tipo: 'item'};
+  // cupom que cita outro tipo de produto (microfone, mouse, cadeira…) não vale para console/controle, mesmo dizendo "gamer"
+  const tipoOutro = t.match(TIPO_PRODUTO);
+  const outroTipo: Escopo | null = sec === 'games' && tipoOutro && !(it?.cupom && it.cupom.test(tipoOutro[0]))
+    ? {tipo: 'outro', motivo: `cupom de outro tipo de produto (${tipoOutro[0]})`} : null;
   const cat = (CAT_TXT.find(([, re]) => re.test(t)) || [null])[0];
   const sel = SELECAO.test(t);
   const cod = c.codigo || '';
   if (sec === 'games' && /ps5|play|game|jogo|gamer/i.test(cod) && cat !== 'Games' && !it?.cupomOutro?.test(t)) return {tipo: 'selecao', motivo: 'o código sugere games: confira se este item participa'};
   if (CODIGO_OUTRO.test(cod) && !(sec === 'computadores' && cat === 'Computadores')) return {tipo: 'outro', motivo: `o código (${cod}) indica outra marca ou produto`};
   if (sec === 'games') {
+    if (outroTipo && (cat === 'Games' || cat === 'Informática')) return outroTipo;
     if (cat === 'Games') return /acess[oó]rios?|gamer|perif[eé]ric/.test(t) && !it?.cupomOutro?.test(t)
       ? {tipo: 'selecao', motivo: 'seleção de games/acessórios: confira se este item participa'}
       : {tipo: 'outro', motivo: 'cupom de outro produto de games'};
@@ -130,7 +136,7 @@ export function escopoCupom(c: Cupom, n: {secao?: string; item?: string; nome?: 
   if (cat) return {tipo: 'outro', motivo: `cupom de ${cat === 'Outros produtos' ? 'outro tipo de produto' : cat.toLowerCase()}`};
   const esp = especifico(bruto);
   if (esp) return {tipo: 'outro', motivo: `cupom de produto/marca específica ("${esp}")`};
-  if (sel) return {tipo: 'selecao', motivo: 'só itens selecionados pela loja: confira se este participa'};
+  if (sel) return outroTipo || {tipo: 'selecao', motivo: 'só itens selecionados pela loja: confira se este participa'};
   return {tipo: 'geral'};
 }
 

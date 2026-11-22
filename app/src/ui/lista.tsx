@@ -5,10 +5,10 @@ import { T, Meta, Tag, Botao, Select, Check, Foto, Barra, Recolhivel, Icone } fr
 import { C, F, RAIO } from './tema';
 import { useApp } from './estado';
 import { InfoPC, InfoG, TagCat, TagPerfil, BadgeDesc } from './detalhes';
-import { RegrasPC, RegrasG } from './regras';
+import { RegrasPC, SobreG } from './regras';
 import type { Produto } from '@/logica/tipos';
 import { FILTROS, OPCOES_NUM, POR_PAGINA, ICONE_TIPO, opcoesFiltros, filtrados, montarLista, valorNota } from '@/logica/filtros';
-import { FILTROS_G, OPCOES_G, opcoesFiltrosG, filtradosG, type NotaG } from '@/logica/ofertas';
+import { FILTROS_G, OPCOES_G, opcoesFiltrosG, filtradosG, ordemG } from '@/logica/ofertas';
 import { cuponsDaLoja, precoComCupom, precoFinal, rotuloDesconto, descontoCupom, type PrecoComCupom } from '@/logica/cupons';
 import { secaoAtual, subAtual, itemAtual, nomeSel } from '@/logica/secoes';
 import type { Pontuacao } from '@/logica/nota';
@@ -124,7 +124,7 @@ const CardPC = memo(function CardPC({ n, r, usaPreco, pcc, ...p }: { n: Produto;
   return <Cartao n={n} {...p} topo={topo} corpo={corpo}><InfoPC n={n} noCard /></Cartao>;
 });
 
-const CardG = memo(function CardG({ n, r, nc, pcc, ...p }: { n: Produto; r?: NotaG; nc: number; pcc?: PrecoComCupom; fav: boolean; aberto: boolean; sel: boolean; novo: boolean; foraFiltro: boolean; aoSelecionar: () => void; aoFav: () => void; aoExp: () => void }) {
+const CardG = memo(function CardG({ n, nc, pcc, ...p }: { n: Produto; nc: number; pcc?: PrecoComCupom; fav: boolean; aberto: boolean; sel: boolean; novo: boolean; foraFiltro: boolean; aoSelecionar: () => void; aoFav: () => void; aoExp: () => void }) {
   const marca = n.marca && n.marca !== 'Sem marca conhecida' ? n.marca : '';
   const fabricante = ['Sony', 'Microsoft', 'Nintendo', 'Valve'].includes(marca);
   const topo = `${n.sub === 'consoles' ? '🕹️' : '🎮'} ${n.original ? [marca, n.modelo].filter(Boolean).join(' · ') : (marca || 'outra marca') + (n.grupo ? ' · ' + n.modelo : '')}`;
@@ -135,14 +135,11 @@ const CardG = memo(function CardG({ n, r, nc, pcc, ...p }: { n: Produto; r?: Not
           : <Tag fundo="rgba(56,189,248,0.13)" cor="#7dd3fc">{n.grupo ? 'Genérico / sem marca' : 'Compatível (outra marca)'}</Tag>}
         {n.edicao ? <Tag>{n.edicao}</Tag> : null}
         {n.kit ? <Tag fundo="rgba(251,146,60,0.14)" cor="#fdba74">kit</Tag> : null}
-        {r && r.nota != null && r.nota >= 75 ? <Tag grad={['#f97316', '#ec4899']} cor="#fff">🔥 bom preço</Tag> : null}
         {nc ? <Tag fundo="rgba(34,211,238,0.12)" cor="#a5f3fc">🏷️ {nc} cupom(ns) da loja</Tag> : null}
         <TagVelho n={n} />
       </View>
       <Preco n={n} pc={pcc} />
       <VocePaga n={n} pc={pcc} />
-      {!r || r.nota == null || r.pct == null ? <Barra rotulo="Oferta" valor={0} texto="—" />
-        : <Barra rotulo="Oferta" valor={r.nota} texto={`${fmt1(r.nota)}/100`} extra={r.pct >= 0 ? `${fmt1(r.pct)}% abaixo do típico` : `${fmt1(-r.pct)}% acima do típico`} />}
     </>
   );
   return <Cartao n={n} {...p} topo={topo} corpo={corpo}><InfoG n={n} noCard /></Cartao>;
@@ -183,7 +180,7 @@ function FiltrosG({ colunas, base }: { colunas: number; base: Produto[] }) {
       {FILTROS_G.map(x => caixa(<Select rotulo={x.rotulo} valor={f.sel[x.id] || ''} aoMudar={v => setFiltroSelG(x.id, v)}
         opcoes={[['', x.todos], ...op[x.id].map(o => [o.v, `${o.v} (${o.n})`] as const)]} />, x.id))}
       {caixa(<Select rotulo="Preço até (R$)" valor={f.gPreco} opcoes={OPCOES_G.gPreco} aoMudar={v => setFiltrosG({gPreco: v})} />, 'gPreco')}
-      {caixa(<Select rotulo="Ordenar" valor={f.gOrdem} opcoes={OPCOES_G.gOrdem} aoMudar={v => setFiltrosG({gOrdem: v as typeof f.gOrdem})} />, 'gOrdem')}
+      {caixa(<Select rotulo="Ordenar" valor={ordemG(f)} opcoes={OPCOES_G.gOrdem} aoMudar={v => setFiltrosG({gOrdem: v as typeof f.gOrdem})} />, 'gOrdem')}
       {caixa(<Check rotulo="Só originais / de marca" valor={f.gOriginal} aoMudar={v => setFiltrosG({gOriginal: v})} style={colunas > 2 ? {paddingTop: 18} : {paddingVertical: 3}} />, 'gOriginal', true)}
       {caixa(<Check rotulo="Esconder kits (com jogo, base…)" valor={f.gSemKit} aoMudar={v => setFiltrosG({gSemKit: v})} style={colunas > 2 ? {paddingTop: 18} : {paddingVertical: 3}} />, 'gSemKit', true)}
       {caixa(<Botao tipo="contorno" titulo="Limpar filtros" onPress={limparFiltrosG} style={{marginTop: 14}} />, 'limpar', true)}
@@ -213,7 +210,7 @@ export function ColunaLista({ largura, aoSelecionar }: { largura: number; aoSele
       const l = filtrados(pcs, notas, filtros, pf);
       return {l, total: pcs, ...montarLista(pcs, l, favs, limite, (a, b) => valorNota(b, notas, filtros.fCB) - valorNota(a, notas, filtros.fCB))};
     }
-    const l = filtradosG(prodSel, ofertas.notas, filtrosG, pf);
+    const l = filtradosG(prodSel, ofertas.notas, {...filtrosG, gOrdem: ordemG(filtrosG)}, pf);
     return {l, total: prodSel, ...montarLista(prodSel, l, favs, limite)};
   }, [sb.emBreve, pc, pcs, notas, filtros, favs, limite, prodSel, ofertas, filtrosG, cupomPor]);
   const baseG = prodSel.length || sel.secao !== 'games' ? prodSel : jogos;
@@ -230,7 +227,7 @@ export function ColunaLista({ largura, aoSelecionar }: { largura: number; aoSele
       <View style={st.h2}><T peso="extra" style={{fontSize: 16}}>{titulo} <T peso="semi" style={{fontSize: 12, color: C.sub}} testID="contNotes">{cont}</T></T></View>
       {pc ? <FiltrosPC colunas={colFiltros} /> : !sb.emBreve ? <FiltrosG colunas={colFiltros} base={baseG} /> : null}
       {pc ? <Recolhivel titulo="ℹ️ Como a nota é calculada" style={st.regras}><RegrasPC pcs={pcs} notas={notas} /></Recolhivel>
-        : !sb.emBreve ? <Recolhivel titulo="ℹ️ Como a nota de oferta é calculada" style={st.regras}><RegrasG refs={ofertas.ref} /></Recolhivel> : null}
+        : !sb.emBreve ? <Recolhivel titulo="ℹ️ Sobre os preços" style={st.regras}><SobreG /></Recolhivel> : null}
       <View style={{padding: 12, flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -6}} testID="listaNotes">
         {sb.emBreve ? <T style={st.vazio}>{sb.icone} {sb.nome} — em breve. A estrutura do card já está pronta; falta escolher quais produtos buscar.</T>
           : !itens.length ? <T style={st.vazio}>{pc ? 'Nenhum computador com esses filtros. Clique em "Limpar filtros".'
@@ -238,7 +235,7 @@ export function ColunaLista({ largura, aoSelecionar }: { largura: number; aoSele
           : itens.map(n => (
             <View key={n.id} style={{width: grade === 2 && !expandidos.has(n.id) ? '50%' : '100%', paddingHorizontal: 6}}>
               {pc ? <CardPC n={n} r={notas.get(n.id)} usaPreco={filtros.fCB} pcc={cupomPor.get(n.id)} {...props(n)} />
-                : <CardG n={n} r={ofertas.notas.get(n.id)} nc={cuponsDaLoja(dados.cupons, n).length} pcc={cupomPor.get(n.id)} {...props(n)} />}
+                : <CardG n={n} nc={cuponsDaLoja(dados.cupons, n).length} pcc={cupomPor.get(n.id)} {...props(n)} />}
             </View>
           ))}
         {lista && lista.faltam > 0 ? (
