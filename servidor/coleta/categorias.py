@@ -119,13 +119,20 @@ def _console_base(n, plataforma):
     # o que vem antes do nome do console diz o que é ("Capa para PlayStation 5…")
     if _ANTES.search(n[:plataforma.search(n).start()]):
         return None
+    # o console é o assunto: o título diz "console" ou começa pelo nome dele ("Sony PlayStation 5…", "KIT Nintendo Switch…");
+    # jogo ou acessório que só cita o console no meio ("Splatoon 3 - Nintendo Switch", "Pedais … Xbox Series X") fica de fora
+    inicio = re.sub(r'^\s*(?:kit|combo|bundle|novo|lan[cç]amento|pr[eé]-?venda)\s+', '', n, flags=re.I)
+    sem_marca = re.sub(r'^\s*(?:sony|microsoft|valve)\s+', '', inicio, flags=re.I)
+    pos = [m.start() for m in (plataforma.search(inicio), plataforma.search(sem_marca)) if m]
+    if not re.search(r'\bconsole\b', n, re.I) and (not pos or min(pos) > 3):
+        return None
     return n
 
 
 _PS5_CONSOLE = re.compile(r'playstation\s*®?\s*5|\bps\s?-?5\b', re.I)
 _PS4_CONSOLE = re.compile(r'playstation\s*®?\s*4|\bps\s?-?4\b', re.I)
 _XBOX_CONSOLE = re.compile(r'xbox\s+(?:series\s+[xs]|one)', re.I)
-_SWITCH2 = re.compile(r'switch\s*(?:™\s*)?2\b|switch\s+ii\b', re.I)
+_SWITCH2 = re.compile(r'(?:nintendo\s+)?switch\s*(?:™\s*)?2\b|(?:nintendo\s+)?switch\s+ii\b', re.I)
 _SWITCH = re.compile(r'nintendo\s+switch|\bswitch\s+(?:oled|lite)\b', re.I)
 
 
@@ -254,12 +261,13 @@ def classificar_controle_switch(nome):
 
 # ---------- Outros acessórios (headset, carregador, capa, suporte, cartão, VR…) ----------
 _TIPOS_ACESSORIO = [
+    # capa/bolsa primeiro: "Bolsa para Switch, Steam Deck e PlayStation Portal" é bolsa
+    ('Capa / case', r'\bcapa\b|\bcase\b|estojo|bolsa|mochila|\bskin\b|pel[ií]cula|protetor|faceplate|\btampas?\s+(?:do\s+)?(?:console|ps\s?5|playstation)'),
     ('PlayStation Portal', r'playstation\s+portal|\bportal\s+remote'),
     ('PlayStation VR2', r'\bvr\s?2\b|realidade\s+virtual|[oó]culos\s+vr'),
     ('Leitor de disco', r'leitor\s+de\s+(?:disco|m[ií]dia)|unidade\s+de\s+disco|disc\s+drive'),
     ('Headset / fone', r'headset|\bfone\b|\bpulse\b'),
     ('Carregador / base', r'carregador|base\s+(?:de\s+)?carreg|esta[cç][aã]o\s+de\s+carga|\bdock\b|bateria'),
-    ('Capa / case', r'\bcapa\b|\bcase\b|estojo|bolsa|\bskin\b|pel[ií]cula|protetor|faceplate|tampa'),
     ('Suporte', r'suporte|\bstand\b|cooler|ventila'),
     ('Armazenamento', r'cart[aã]o\s+(?:de\s+(?:mem|expans)|micro\s?sd)|micro\s?sd|\bssd\b|\bhd\s+externo|expans[aã]o\s+de\s+armazen'),
     ('Volante', r'volante'),
@@ -352,6 +360,12 @@ ITENS = {
 }
 
 
+# preço mínimo plausível de console NOVO por modelo: abaixo disso é golpe, anúncio importado enganoso ou erro
+MIN_MODELO = {'PS5 Pro': 4000, 'PS5 Digital': 2500, 'PS5 Mídia física': 3000, 'PS4 Pro': 1800, 'Xbox Series X': 2800,
+              'Xbox Series S': 1800, 'Switch 2': 2800, 'Switch OLED': 1500, 'Switch (padrão)': 1300, 'Switch Lite': 1000,
+              'Steam Deck OLED': 2500, 'Steam Deck LCD': 1800, 'Steam Machine': 3000}
+
+
 def classificar(item, nome, preco=None):
     """Campos do item para o anúncio (ou None se não for desse item / preço fora da faixa)."""
     cfg = ITENS[item]
@@ -361,6 +375,10 @@ def classificar(item, nome, preco=None):
     if preco is not None and not (cfg['preco_min'] <= preco <= cfg['preco_max']):
         return None
     # DualSense oficial por menos de R$ 200 é quase sempre anúncio falso, peça ou erro
+    if preco is not None and item.startswith('console-'):
+        minimo = next((v for k, v in MIN_MODELO.items() if r['modelo'].startswith(k)), 0)
+        if preco < minimo:
+            return None
     if item == 'controle-ps5' and r.get('original') and preco is not None and preco < 200:
         return None
     return r
