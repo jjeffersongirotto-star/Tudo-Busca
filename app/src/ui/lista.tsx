@@ -125,11 +125,14 @@ const CardPC = memo(function CardPC({ n, r, usaPreco, pcc, ...p }: { n: Produto;
 });
 
 const CardG = memo(function CardG({ n, r, nc, pcc, ...p }: { n: Produto; r?: NotaG; nc: number; pcc?: PrecoComCupom; fav: boolean; aberto: boolean; sel: boolean; novo: boolean; foraFiltro: boolean; aoSelecionar: () => void; aoFav: () => void; aoExp: () => void }) {
-  const topo = `🎮 ${n.original ? 'Sony · ' + n.modelo : (n.marca && n.marca !== 'Sem marca conhecida' ? n.marca : 'outra marca')}`;
+  const marca = n.marca && n.marca !== 'Sem marca conhecida' ? n.marca : '';
+  const fabricante = ['Sony', 'Microsoft', 'Nintendo'].includes(marca);
+  const topo = `${n.sub === 'consoles' ? '🕹️' : '🎮'} ${n.original ? [marca, n.modelo].filter(Boolean).join(' · ') : (marca || 'outra marca') + (n.grupo ? ' · ' + n.modelo : '')}`;
   const corpo = (
     <>
       <View style={st.tags}>
-        {n.original ? <Tag fundo="rgba(34,197,94,0.14)" cor="#86efac">✔ Original Sony</Tag> : <Tag fundo="rgba(56,189,248,0.13)" cor="#7dd3fc">Compatível (outra marca)</Tag>}
+        {n.original ? <Tag fundo="rgba(34,197,94,0.14)" cor="#86efac">{fabricante ? `✔ Original ${marca}` : `✔ Marca ${marca}`}</Tag>
+          : <Tag fundo="rgba(56,189,248,0.13)" cor="#7dd3fc">{n.grupo ? 'Genérico / sem marca' : 'Compatível (outra marca)'}</Tag>}
         {n.edicao ? <Tag>{n.edicao}</Tag> : null}
         {n.kit ? <Tag fundo="rgba(251,146,60,0.14)" cor="#fdba74">kit</Tag> : null}
         {r && r.nota != null && r.nota >= 75 ? <Tag grad={['#f97316', '#ec4899']} cor="#fff">🔥 bom preço</Tag> : null}
@@ -181,8 +184,8 @@ function FiltrosG({ colunas, base }: { colunas: number; base: Produto[] }) {
         opcoes={[['', x.todos], ...op[x.id].map(o => [o.v, `${o.v} (${o.n})`] as const)]} />, x.id))}
       {caixa(<Select rotulo="Preço até (R$)" valor={f.gPreco} opcoes={OPCOES_G.gPreco} aoMudar={v => setFiltrosG({gPreco: v})} />, 'gPreco')}
       {caixa(<Select rotulo="Ordenar" valor={f.gOrdem} opcoes={OPCOES_G.gOrdem} aoMudar={v => setFiltrosG({gOrdem: v as typeof f.gOrdem})} />, 'gOrdem')}
-      {caixa(<Check rotulo="Só originais (Sony)" valor={f.gOriginal} aoMudar={v => setFiltrosG({gOriginal: v})} style={colunas > 2 ? {paddingTop: 18} : {paddingVertical: 3}} />, 'gOriginal', true)}
-      {caixa(<Check rotulo="Esconder kits (controle + jogo/base)" valor={f.gSemKit} aoMudar={v => setFiltrosG({gSemKit: v})} style={colunas > 2 ? {paddingTop: 18} : {paddingVertical: 3}} />, 'gSemKit', true)}
+      {caixa(<Check rotulo="Só originais / de marca" valor={f.gOriginal} aoMudar={v => setFiltrosG({gOriginal: v})} style={colunas > 2 ? {paddingTop: 18} : {paddingVertical: 3}} />, 'gOriginal', true)}
+      {caixa(<Check rotulo="Esconder kits (com jogo, base…)" valor={f.gSemKit} aoMudar={v => setFiltrosG({gSemKit: v})} style={colunas > 2 ? {paddingTop: 18} : {paddingVertical: 3}} />, 'gSemKit', true)}
       {caixa(<Botao tipo="contorno" titulo="Limpar filtros" onPress={limparFiltrosG} style={{marginTop: 14}} />, 'limpar', true)}
     </View>
   );

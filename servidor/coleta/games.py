@@ -1,4 +1,4 @@
-"""Coleta das seções que não são computadores (hoje: Games › Acessórios › Controles de PS5).
+"""Coleta das seções que não são computadores (Games: consoles e acessórios; itens em categorias.ITENS).
 
 Cada loja tem uma função buscar(http, termo) que devolve anúncios "crus"
 ({id, loja, vendedor, nome, url, preco, precoDe, prazo, imagem, specs}) ou None se a loja recusou/não respondeu.
@@ -231,6 +231,8 @@ def _montar(raw, item, cfg, hoje_txt):
     n = {'id': f"g-{item}-{raw['id']}", 'secao': cfg['secao'], 'sub': cfg['sub'], 'item': item, 'tipo': cfg['nome'],
          'loja': raw['loja'], 'vendedor': raw.get('vendedor') or '', 'nome': raw['nome'], 'url': raw['url'], 'imagem': raw.get('imagem') or '',
          'modelo': info['modelo'], 'marca': info['marca'], 'original': info['original'], 'kit': info['kit'], 'edicao': info['edicao']}
+    if cfg.get('grupo') == 'modelo':  # nota de oferta compara com o mesmo modelo/tipo, oficial ou não (consoles, outros acessórios)
+        n['grupo'] = info['modelo']
     aplicar_preco(n, raw['preco'], raw.get('precoDe'), raw.get('prazo'), sufixo=raw.get('sufixo', ''))
     specs = {'Anúncio (título)': raw['nome'], 'Loja': raw['loja']}
     if raw.get('vendedor'):

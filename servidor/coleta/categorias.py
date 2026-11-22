@@ -3,8 +3,9 @@
 Estrutura (a mesma usada pela página, em SECOES do cupons-dell.html):
   seção (card)          → sub-card              → item (tipo de acessório, etc.)
   computadores          → (computadores atuais)
-  games                 → consoles (em breve)
-                        → acessorios            → controle-ps5
+  games                 → consoles              → console-ps5, console-ps4, console-xbox, console-switch, console-switch2
+                        → acessorios            → controle-ps5, controle-ps4, controle-xbox, controle-switch,
+                                                  acessorio-ps, acessorio-xbox, acessorio-switch
 
 Para incluir um tipo novo de produto basta acrescentar um item em ITENS com:
   - termos: buscas feitas em cada loja;
@@ -37,7 +38,10 @@ _NAO_CONTROLE = re.compile(r'[oó]culos|realidade\s+virtual|\bvr\s?2?\b|^\s*cons
                            r'\bps\s?5\s+(?:slim|pro|digital|standard|fat)\b(?!\s*/)\s*(?:\d|com|\+|,|-|$)', re.I)
 MARCAS_CONTROLE = ['Sony', 'Nacon', 'Redragon', 'Fantech', 'Data Frog', 'IMECOO', '8BitDo', 'PowerA', 'Hori', 'GameSir', 'Turtle Beach',
                    'Victrix', 'SCUF', 'Razer', 'PDP', 'Knup', 'Multilaser', 'Thrustmaster', 'Logitech', 'BigBig Won', 'Flydigi',
-                   'Witsurge', 'Mobapad', 'Easysmx', 'Exbom', 'Feir', 'Elg', 'Dobe', 'Kontrolfreek', 'Machenike', 'Gulikit']
+                   'Witsurge', 'Mobapad', 'Easysmx', 'Exbom', 'Feir', 'Elg', 'Dobe', 'Kontrolfreek', 'Machenike', 'Gulikit',
+                   # marcas de outros acessórios (headset, armazenamento, capas)
+                   'HyperX', 'JBL', 'SteelSeries', 'Corsair', 'Astro', 'Seagate', 'Samsung', 'SanDisk', 'Kingston', 'Western Digital', 'WD_Black',
+                   'Lexar', 'Hyperkin', 'Orb', 'OIVO', 'Dobe', 'Baseus', 'Ugreen', 'Anker', 'Logitech G', 'Rig', 'Plantronics']
 _EDGE = re.compile(r'dual\s?sense\s+edge|\bedge\b.*\b(?:ps5|playstation|sony)|cfi-?zcp', re.I)
 _ACCESS = re.compile(r'\bacc?ess\b.*(?:sony|ps5|playstation)|cfi-?zac', re.I)
 _ORIGINAL = re.compile(r'\bsony\b|\boriginal\b|\boficial\b|cfi-?z|playstation\s*®', re.I)
@@ -89,13 +93,238 @@ def classificar_controle_ps5(nome):
     return {'modelo': modelo, 'marca': marca, 'original': oficial, 'kit': kit, 'edicao': edicao}
 
 
+
+# ---------- Consoles ----------
+# anúncio que NÃO é o console (jogo, capa, suporte, peça…), mesmo citando o nome dele
+_NAO_CONSOLE = re.compile(
+    r'^\s*(?:jogo|game\b|capa|case|capinha|skin|adesivo|pel[ií]cula|suporte|base|dock|cooler|ventoinha|carregador|cabo|fonte|hd\b|ssd|'
+    r'cart[aã]o|controle|joy-?con|headset|fone|bolsa|estojo|kit\s+(?:de\s+)?(?:limpeza|acess)|leitor|tampa|faceplate|cover|protetor|'
+    r'volante|teclado|mouse|m[ií]dia|filme|livro|camiseta|caneca|r[eé]plica|miniatura|chaveiro|tapete|organizador|gift|vale)', re.I)
+_PECA_CONSOLE = re.compile(r'\bpara\s+(?:o\s+|a\s+)?(?:console|ps\s?[45]|playstation|xbox|nintendo|switch)\b|\bcompat[ií]vel\s+com\b|'
+                           r'retr[oô]|\bgame\s*stick\b|\bmini\b|\bportátil\s+r\d|\bsup\s+\d|\bx\d{1,2}\b.*\bjogos\b|\d{3,}\s*jogos|'
+                           r'emulador|\btv\s*box\b|\bfat\s*boy\b|\bcapa\s+protetora\b|somente\s+(?:a\s+)?caixa|sem\s+console', re.I)
+
+
+def _kit(n):
+    return bool(re.search(r'\+|\bcom\s+(?:\d+\s+)?(?:jogos?|controles?|game)\b|\bbundle\b|\bkit\b|\bcombo\b|\bpacote\b|\bedi[cç][aã]o\s+(?:bundle|pacote)', n, re.I))
+
+
+def _console_base(n, plataforma):
+    """Texto limpo se o anúncio é de um console novo da plataforma; senão None."""
+    n = ' '.join((n or '').split())
+    if not n or RUIM.search(n) or not plataforma.search(n):
+        return None
+    if _NAO_CONSOLE.match(n) or _PECA_CONSOLE.search(n):
+        return None
+    # o que vem antes do nome do console diz o que é ("Capa para PlayStation 5…")
+    if _ANTES.search(n[:plataforma.search(n).start()]):
+        return None
+    return n
+
+
+_PS5_CONSOLE = re.compile(r'playstation\s*®?\s*5|\bps\s?-?5\b', re.I)
+_PS4_CONSOLE = re.compile(r'playstation\s*®?\s*4|\bps\s?-?4\b', re.I)
+_XBOX_CONSOLE = re.compile(r'xbox\s+(?:series\s+[xs]|one)', re.I)
+_SWITCH2 = re.compile(r'switch\s*(?:™\s*)?2\b|switch\s+ii\b', re.I)
+_SWITCH = re.compile(r'nintendo\s+switch|\bswitch\s+(?:oled|lite)\b', re.I)
+
+
+def classificar_console_ps5(nome):
+    n = _console_base(nome, _PS5_CONSOLE)
+    if not n or _XBOX_CONSOLE.search(n) or re.search(r'nintendo|switch', n, re.I):
+        return None
+    if re.search(r'\bpro\b', n, re.I):
+        modelo = 'PS5 Pro'
+    elif re.search(r'digital|sem\s+(?:leitor|drive|disco)', n, re.I):
+        modelo = 'PS5 Digital'
+    else:
+        modelo = 'PS5 Mídia física'
+    versao = 'Slim' if re.search(r'\bslim\b', n, re.I) else ''
+    return {'modelo': modelo, 'marca': 'Sony', 'original': True, 'kit': _kit(n), 'edicao': versao}
+
+
+def classificar_console_ps4(nome):
+    n = _console_base(nome, _PS4_CONSOLE)
+    if not n or _PS5_CONSOLE.search(n) or re.search(r'xbox|nintendo|switch', n, re.I):
+        return None
+    modelo = 'PS4 Pro' if re.search(r'\bpro\b', n, re.I) else 'PS4 Slim' if re.search(r'\bslim\b', n, re.I) else 'PS4'
+    return {'modelo': modelo, 'marca': 'Sony', 'original': True, 'kit': _kit(n), 'edicao': ''}
+
+
+def _armaz(n):
+    m = re.search(r'\b(\d)\s?tb\b|\b(512)\s?gb\b', n, re.I)
+    return (m.group(1) + 'TB') if m and m.group(1) else '512GB' if m else ''
+
+
+def classificar_console_xbox(nome):
+    n = _console_base(nome, _XBOX_CONSOLE)
+    if not n or re.search(r'playstation|\bps\s?[45]\b|nintendo|switch', n, re.I):
+        return None
+    a = _armaz(n)
+    if re.search(r'series\s+x', n, re.I):
+        modelo = 'Xbox Series X' + (' Digital' if re.search(r'digital', n, re.I) else '') + (' ' + a if a == '2TB' else '')
+    elif re.search(r'series\s+s', n, re.I):
+        modelo = 'Xbox Series S' + (' 1TB' if a == '1TB' else ' 512GB')
+    else:
+        modelo = 'Xbox One'
+    return {'modelo': modelo, 'marca': 'Microsoft', 'original': True, 'kit': _kit(n), 'edicao': ''}
+
+
+def classificar_console_switch(nome):
+    """Nintendo Switch 1 (padrão, OLED, Lite)."""
+    n = _console_base(nome, _SWITCH)
+    if not n or _SWITCH2.search(n) or re.search(r'playstation|\bps\s?[45]\b|xbox', n, re.I):
+        return None
+    modelo = 'Switch OLED' if re.search(r'\boled\b', n, re.I) else 'Switch Lite' if re.search(r'\blite\b', n, re.I) else 'Switch (padrão)'
+    return {'modelo': modelo, 'marca': 'Nintendo', 'original': True, 'kit': _kit(n), 'edicao': ''}
+
+
+def classificar_console_switch2(nome):
+    n = _console_base(nome, _SWITCH2)
+    if not n or re.search(r'playstation|\bps\s?[45]\b|xbox', n, re.I):
+        return None
+    return {'modelo': 'Switch 2', 'marca': 'Nintendo', 'original': True, 'kit': _kit(n), 'edicao': ''}
+
+
+# ---------- Controles de PS4, Xbox e Switch ----------
+def _controle(nome, plataforma, outros, oficial_re, marca_oficial, modelo_oficial):
+    """Controle inteiro e novo da plataforma: oficial (da fabricante do console) ou compatível."""
+    n = ' '.join((nome or '').split())
+    if not n or RUIM.search(n) or not plataforma.search(n) or not (_CONTROLE.search(n) or re.search(r'joy-?con|pro\s+controller', n, re.I)):
+        return None
+    if _ACESSORIO.match(n) or _PECA.search(n) or re.search(r'^\s*console\b|\bconsole\s+(?:xbox|nintendo|playstation)', n, re.I):
+        return None
+    pos = _CONTROLE.search(n) or re.search(r'joy-?con|pro\s+controller', n, re.I)
+    if _ANTES.search(n[:pos.start()]):
+        return None
+    if re.search(r'carregador|(?:base|esta[cç][aã]o|dock|suporte)\s+(?:[\wÀ-ú]+\s+){0,2}(?:de\s+)?(?:carga|carregamento)', n, re.I) and '+' not in n:
+        return None
+    o = outros.search(n)
+    if o and o.start() < plataforma.search(n).start():
+        return None
+    marca = _marca(n)
+    oficial = bool(oficial_re.search(n)) and marca in ('', marca_oficial) and not _GENERICO.search(n) \
+        and not re.search(r'compat[ií]vel|tipo\s|estilo\s|similar|gen[eé]rico', n, re.I)
+    if oficial:
+        marca, modelo = marca_oficial, modelo_oficial(n)
+    else:
+        marca, modelo = marca or 'Sem marca conhecida', 'Compatível (outra marca)'
+    kit = bool(re.search(r'\+\s*(?:base|carregador|jogo|cabo|capa|suporte|bateria)|\bkit\b|\bcombo\b|\bbundle\b', n, re.I))
+    return {'modelo': modelo, 'marca': marca, 'original': oficial, 'kit': kit, 'edicao': ''}
+
+
+def classificar_controle_ps4(nome):
+    return _controle(nome, re.compile(r'\bps\s?-?4\b|playstation\s*4|dual\s?shock\s*4', re.I), re.compile(r'xbox|switch|nintendo|dual\s?sense|\bps\s?5\b', re.I),
+                     re.compile(r'dual\s?shock|cuh-?zct', re.I), 'Sony', lambda n: 'DualShock 4')
+
+
+def classificar_controle_xbox(nome):
+    return _controle(nome, re.compile(r'xbox', re.I), re.compile(r'playstation|\bps\s?[345]\b|switch|nintendo|dual\s?(?:sense|shock)', re.I),
+                     re.compile(r'\bmicrosoft\b|\boriginal\b|\boficial\b|xbox\s+wireless\s+controller|controle\s+(?:sem\s+fio\s+)?xbox\s+(?:series|one|core|elite)|\belite\b', re.I),
+                     'Microsoft', lambda n: 'Xbox Elite' if re.search(r'\belite\b', n, re.I) else 'Xbox Wireless')
+
+
+def classificar_controle_switch(nome):
+    return _controle(nome, re.compile(r'switch|nintendo|joy-?con', re.I), re.compile(r'playstation|\bps\s?[345]\b|xbox|dual\s?(?:sense|shock)', re.I),
+                     re.compile(r'\bnintendo\b|joy-?con|pro\s+controller', re.I), 'Nintendo',
+                     lambda n: ('Joy-Con 2' if re.search(r'joy-?con\s*2', n, re.I) else 'Joy-Con') if re.search(r'joy-?con', n, re.I)
+                     else ('Pro Controller 2' if _SWITCH2.search(n) else 'Pro Controller'))
+
+
+# ---------- Outros acessórios (headset, carregador, capa, suporte, cartão, VR…) ----------
+_TIPOS_ACESSORIO = [
+    ('PlayStation Portal', r'playstation\s+portal|\bportal\s+remote'),
+    ('PlayStation VR2', r'\bvr\s?2\b|realidade\s+virtual|[oó]culos\s+vr'),
+    ('Leitor de disco', r'leitor\s+de\s+(?:disco|m[ií]dia)|unidade\s+de\s+disco|disc\s+drive'),
+    ('Headset / fone', r'headset|\bfone\b|\bpulse\b'),
+    ('Carregador / base', r'carregador|base\s+(?:de\s+)?carreg|esta[cç][aã]o\s+de\s+carga|\bdock\b|bateria'),
+    ('Capa / case', r'\bcapa\b|\bcase\b|estojo|bolsa|\bskin\b|pel[ií]cula|protetor|faceplate|tampa'),
+    ('Suporte', r'suporte|\bstand\b|cooler|ventila'),
+    ('Armazenamento', r'cart[aã]o\s+(?:de\s+(?:mem|expans)|micro\s?sd)|micro\s?sd|\bssd\b|\bhd\s+externo|expans[aã]o\s+de\s+armazen'),
+    ('Volante', r'volante'),
+    ('Câmera', r'c[aâ]mera'),
+    ('Cabo', r'\bcabo\b'),
+]
+_OFICIAL_ACESS = re.compile(r'\bsony\b|\bmicrosoft\b|\bnintendo\b|\boriginal\b|\boficial\b|\blicenciad|playstation\s+portal|\bpulse\b', re.I)
+# o nome da plataforma ("Nintendo Switch", "Sony PlayStation") não indica produto oficial: tira antes de procurar a marca
+_NOME_PLATAFORMA = re.compile(r'\bnintendo\s+switch|\bsony\s+playstation|\bmicrosoft\s+xbox|\b(?:para|p/|compat[ií]vel\s+com)\s+(?:o\s+|a\s+)?(?:sony|microsoft|nintendo)', re.I)
+
+
+def _acessorio(nome, plataforma, outros):
+    n = ' '.join((nome or '').split())
+    if not n or RUIM.search(n) or not plataforma.search(n):
+        return None
+    # console, controle e jogo têm cards próprios
+    if re.search(r'^\s*(?:console|jogo|game)\b', n, re.I) or re.search(r'^\s*(?:controle|joy-?con|dual\s?sense|dual\s?shock)\b', n, re.I):
+        return None
+    o = outros.search(n)
+    if o and o.start() < plataforma.search(n).start():
+        return None
+    tipo = next((t for t, r in _TIPOS_ACESSORIO if re.search(r, n, re.I)), None)
+    if not tipo:
+        return None
+    marca = _marca(_NOME_PLATAFORMA.sub(' ', n))
+    oficial = bool(_OFICIAL_ACESS.search(_NOME_PLATAFORMA.sub(' ', n))) and not re.search(r'compat[ií]vel|gen[eé]rico|tipo\s|estilo\s', n, re.I) and marca in ('', 'Sony', 'Microsoft', 'Nintendo', 'Hori')
+    if oficial and not marca:
+        marca = next((m for m in ('Sony', 'Microsoft', 'Nintendo') if re.search(m, _NOME_PLATAFORMA.sub(' ', n), re.I)), '') or 'Oficial'
+    # "original" aqui = produto oficial ou de marca conhecida (headset HyperX, cartão Samsung…); genérico sem marca fica de fora do filtro
+    return {'modelo': tipo, 'marca': marca or 'Sem marca conhecida', 'original': bool(oficial or marca), 'kit': False, 'edicao': ''}
+
+
+def classificar_acessorio_ps(nome):
+    return _acessorio(nome, re.compile(r'playstation|\bps\s?[45]\b|dual\s?sense|dual\s?shock', re.I), re.compile(r'xbox|switch|nintendo', re.I))
+
+
+def classificar_acessorio_xbox(nome):
+    return _acessorio(nome, re.compile(r'xbox', re.I), re.compile(r'playstation|\bps\s?[345]\b|switch|nintendo', re.I))
+
+
+def classificar_acessorio_switch(nome):
+    return _acessorio(nome, re.compile(r'switch|nintendo|joy-?con', re.I), re.compile(r'playstation|\bps\s?[345]\b|xbox', re.I))
+
+
 ITENS = {
+    # Consoles (só aparelhos novos e oficiais; a faixa de preço descarta jogos, capas e peças que citam o console)
+    'console-ps5': {'secao': 'games', 'sub': 'consoles', 'nome': 'PlayStation 5', 'grupo': 'modelo',
+                    'termos': ['console playstation 5', 'playstation 5 pro', 'ps5 digital'],
+                    'classificar': classificar_console_ps5, 'preco_min': 2000, 'preco_max': 12000},
+    'console-ps4': {'secao': 'games', 'sub': 'consoles', 'nome': 'PlayStation 4', 'grupo': 'modelo',
+                    'termos': ['console playstation 4'],
+                    'classificar': classificar_console_ps4, 'preco_min': 1000, 'preco_max': 6000},
+    'console-xbox': {'secao': 'games', 'sub': 'consoles', 'nome': 'Xbox', 'grupo': 'modelo',
+                     'termos': ['console xbox series x', 'console xbox series s'],
+                     'classificar': classificar_console_xbox, 'preco_min': 1300, 'preco_max': 12000},
+    'console-switch': {'secao': 'games', 'sub': 'consoles', 'nome': 'Nintendo Switch', 'grupo': 'modelo',
+                       'termos': ['console nintendo switch', 'nintendo switch oled', 'nintendo switch lite'],
+                       'classificar': classificar_console_switch, 'preco_min': 800, 'preco_max': 6000},
+    'console-switch2': {'secao': 'games', 'sub': 'consoles', 'nome': 'Nintendo Switch 2', 'grupo': 'modelo',
+                        'termos': ['nintendo switch 2'],
+                        'classificar': classificar_console_switch2, 'preco_min': 2200, 'preco_max': 9000},
+    # Acessórios
     'controle-ps5': {
         'secao': 'games', 'sub': 'acessorios', 'nome': 'Controles de PS5',
         'termos': ['controle ps5', 'controle dualsense', 'dualsense edge'],
         'classificar': classificar_controle_ps5,
         'preco_min': 60, 'preco_max': 4000,
     },
+    'controle-ps4': {'secao': 'games', 'sub': 'acessorios', 'nome': 'Controles de PS4',
+                     'termos': ['controle ps4 dualshock 4'],
+                     'classificar': classificar_controle_ps4, 'preco_min': 50, 'preco_max': 1500},
+    'controle-xbox': {'secao': 'games', 'sub': 'acessorios', 'nome': 'Controles de Xbox',
+                      'termos': ['controle xbox series', 'controle xbox elite'],
+                      'classificar': classificar_controle_xbox, 'preco_min': 60, 'preco_max': 3000},
+    'controle-switch': {'secao': 'games', 'sub': 'acessorios', 'nome': 'Controles de Switch',
+                        'termos': ['joy-con nintendo switch', 'controle pro nintendo switch'],
+                        'classificar': classificar_controle_switch, 'preco_min': 50, 'preco_max': 2000},
+    'acessorio-ps': {'secao': 'games', 'sub': 'acessorios', 'nome': 'Outros acessórios PlayStation', 'grupo': 'modelo',
+                     'termos': ['headset ps5', 'base de carregamento dualsense', 'leitor de disco ps5', 'playstation portal'],
+                     'classificar': classificar_acessorio_ps, 'preco_min': 20, 'preco_max': 6000},
+    'acessorio-xbox': {'secao': 'games', 'sub': 'acessorios', 'nome': 'Outros acessórios Xbox', 'grupo': 'modelo',
+                       'termos': ['headset xbox', 'bateria controle xbox', 'cartao de expansao xbox'],
+                       'classificar': classificar_acessorio_xbox, 'preco_min': 20, 'preco_max': 4000},
+    'acessorio-switch': {'secao': 'games', 'sub': 'acessorios', 'nome': 'Outros acessórios Switch', 'grupo': 'modelo',
+                         'termos': ['case nintendo switch', 'dock nintendo switch', 'cartao micro sd switch'],
+                         'classificar': classificar_acessorio_switch, 'preco_min': 20, 'preco_max': 3000},
 }
 
 
@@ -108,6 +337,6 @@ def classificar(item, nome, preco=None):
     if preco is not None and not (cfg['preco_min'] <= preco <= cfg['preco_max']):
         return None
     # DualSense oficial por menos de R$ 200 é quase sempre anúncio falso, peça ou erro
-    if r.get('original') and preco is not None and preco < 200:
+    if item == 'controle-ps5' and r.get('original') and preco is not None and preco < 200:
         return None
     return r

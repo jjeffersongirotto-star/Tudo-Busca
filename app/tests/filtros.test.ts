@@ -41,7 +41,9 @@ describe('games = página original', () => {
 
 describe('seleção de cards', () => {
   it('trocar para Games escolhe o 1º sub disponível e o 1º item', () =>
-    expect(mudarSelecao(SELECAO_PADRAO, {secao: 'games'})).toEqual({secao: 'games', sub: 'acessorios', item: 'controle-ps5'}));
+    expect(mudarSelecao(SELECAO_PADRAO, {secao: 'games'})).toEqual({secao: 'games', sub: 'consoles', item: 'console-ps5'}));
   it('sub em breve não lista produtos', () =>
-    expect(produtosSel({secao: 'games', sub: 'consoles', item: ''}, pcs, jogos)).toEqual([]));
+    expect(produtosSel({secao: 'computadores', sub: 'acessorios', item: ''}, pcs, jogos)).toEqual([]));
+  it('controles de PS5 continuam no sub Acessórios', () =>
+    expect(mudarSelecao({secao: 'games', sub: 'consoles', item: 'console-ps5'}, {sub: 'acessorios'})).toEqual({secao: 'games', sub: 'acessorios', item: 'controle-ps5'}));
 });
