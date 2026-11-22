@@ -365,6 +365,10 @@ MIN_MODELO = {'PS5 Pro': 4000, 'PS5 Digital': 2500, 'PS5 Mídia física': 3000, 
               'Xbox Series S': 1800, 'Switch 2': 2800, 'Switch OLED': 1500, 'Switch (padrão)': 1300, 'Switch Lite': 1000,
               'Steam Deck OLED': 2500, 'Steam Deck LCD': 1800, 'Steam Machine': 3000}
 
+# Computadores › Acessórios (peças: SSD, memória, placa-mãe…): mesmos lojas e regras, seção "pecas"
+from .pecas import ITENS as _PECAS  # noqa: E402
+ITENS.update(_PECAS)
+
 
 def classificar(item, nome, preco=None):
     """Campos do item para o anúncio (ou None se não for desse item / preço fora da faixa)."""

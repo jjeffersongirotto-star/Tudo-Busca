@@ -107,3 +107,16 @@ describe('cupom de outro tipo de produto', () => {
     expect(escopoCupom(cup('ENDGAME40', 'Pague 40% a menos', '40% de desconto em eletrônicos, válido para itens selecionados.'), ps5).tipo).toBe('selecao');
   });
 });
+
+describe('cupons de peças de computador', () => {
+  const ssd = {id: 's', loja: 'KaBuM!', secao: 'pecas', sub: 'acessorios', item: 'pc-armazenamento', precoNum: 399, nome: 'SSD Kingston NV2 1TB NVMe'} as Produto;
+  const cup = (codigo: string, descricao: string, regras = '') => ({id: codigo, codigo, loja: 'KaBuM!', descricao, regras, ativo: true}) as unknown as Cupom;
+  it('cupom de SSD vale; de notebook e de mouse não', () => {
+    expect(escopoCupom(cup('SSD10', '10% OFF em SSD Kingston'), ssd).tipo).toBe('item');
+    expect(escopoCupom(cup('NOTE15OFF', 'Cupom KaBuM!: 15% OFF em notebooks participantes'), ssd).tipo).toBe('outro');
+    expect(escopoCupom(cup('REDCOBRA', 'Mouse Redragon Cobra com 25% de desconto'), ssd).tipo).toBe('outro');
+  });
+  it('seleção de informática = teste no carrinho', () => {
+    expect(escopoCupom(cup('CASANINJA10', 'Desconto KaBuM!: 10% OFF nos produtos participantes', 'Garanta economia com 10% OFF em produtos de tecnologia participantes.'), ssd).tipo).toBe('selecao');
+  });
+});

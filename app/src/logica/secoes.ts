@@ -16,7 +16,18 @@ export const SECOES: SecaoCfg[] = [
   {id: 'computadores', nome: 'Computadores', icone: '💻', desc: 'Notebooks, desktops, Macs',
    subs: [
      {id: 'todos', nome: 'Notebooks e PCs', icone: '💻'},
-     {id: 'acessorios', nome: 'Acessórios', icone: '🖱️', emBreve: true},
+     {id: 'acessorios', nome: 'Acessórios e peças', icone: '🖱️', itens: [
+       {id: 'pc-armazenamento', nome: 'SSD e HD', icone: '💾', cupom: /\bssds?\b|\bhds?\b|armazenamento|nvme/i, cupomItem: /\bssds?\b|\bhds?\s+(?:externo|interno|sata)|\bnvme\b/i, cupomOutro: /notebook|console|celular|cart[aã]o|pen\s?drive/i},
+       {id: 'pc-memoria', nome: 'Memória RAM', icone: '🧠', cupom: /mem[oó]rias?|\bram\b|\bddr[345]\b/i, cupomItem: /mem[oó]rias?\s+(?:ram|ddr|para\s+(?:pc|notebook|desktop))|\bddr[345]\b/i, cupomOutro: /cart[aã]o|micro\s?sd|pen\s?drive|celular/i},
+       {id: 'pc-placa-mae', nome: 'Placa-mãe', icone: '🔌', cupom: /placas?[\s-]+m[aã]e|motherboard/i, cupomItem: /placas?[\s-]+m[aã]e|motherboard/i, cupomOutro: /notebook|console|celular/i},
+       {id: 'pc-placa-video', nome: 'Placa de vídeo', icone: '🎞️', cupom: /placas?\s+de\s+v[ií]deo|\bgpu\b|\brtx\b|\brx\s?\d|geforce|radeon/i, cupomItem: /placas?\s+de\s+v[ií]deo|\brtx\s?\d|\brx\s?\d{4}|geforce|radeon/i, cupomOutro: /notebook|console|celular/i},
+       {id: 'pc-processador', nome: 'Processador', icone: '⚙️', cupom: /processador(?:es)?|\bcpu\b|ryzen|intel\s+core/i, cupomItem: /processador(?:es)?|ryzen|intel\s+core/i, cupomOutro: /notebook|celular|tablet|cooler/i},
+       {id: 'pc-fonte', nome: 'Fonte', icone: '🔋', cupom: /\bfontes?\b/i, cupomItem: /\bfontes?\s+(?:atx|gamer|de\s+alimenta|\d{3})/i, cupomOutro: /notebook|carregador|celular/i},
+       {id: 'pc-monitor', nome: 'Monitor', icone: '🖥️', cupom: /monitor(?:es)?/i, cupomItem: /monitor(?:es)?/i, cupomOutro: /notebook|celular|\btvs?\b|suporte/i},
+       {id: 'pc-mouse', nome: 'Mouse', icone: '🖱️', cupom: /\bmouses?\b/i, cupomItem: /\bmouses?\b(?!\s?pad)/i, cupomOutro: /notebook|celular|teclado\s+e/i},
+       {id: 'pc-teclado', nome: 'Teclado', icone: '⌨️', cupom: /teclados?/i, cupomItem: /teclados?/i, cupomOutro: /notebook|celular|musical/i},
+       {id: 'pc-headset', nome: 'Headset', icone: '🎧', cupom: /headsets?|fones?\s+(?:de\s+ouvido\s+)?gamer/i, cupomItem: /headsets?/i, cupomOutro: /celular|console\s/i},
+     ]},
    ],
    lojasCupom: ['Dell.com', 'KaBuM!', 'Amazon', 'Magazine Luiza', 'Casas Bahia', 'Mercado Livre', 'Fast Shop', 'Lenovo', 'Samsung', 'Acer', 'Asus', 'Positivo',
      'Pichau', 'Terabyte', 'iByte', 'Carrefour', 'Ponto', 'Extra', 'Americanas', 'Avell', 'Webcontinental', 'HP', 'Multilaser', 'Vaio', 'Microsoft', 'Kalunga', 'Submarino', 'Shoptime'],
@@ -64,25 +75,28 @@ export const SELECAO_PADRAO: Selecao = {secao: 'computadores', sub: 'todos', ite
 
 export const secaoDe = (n: {secao?: string}) => n.secao || 'computadores';
 
+/** pcs = notebooks/PCs (nota por desempenho); jogos = o resto (games e peças de computador), listado por preço. */
 export function separarSecoes(produtos: Produto[]) {
-  return {pcs: produtos.filter(n => secaoDe(n) === 'computadores'), jogos: produtos.filter(n => secaoDe(n) === 'games')};
+  return {pcs: produtos.filter(n => secaoDe(n) === 'computadores'), jogos: produtos.filter(n => secaoDe(n) !== 'computadores')};
 }
 
 export const secaoAtual = (sel: Selecao) => SECOES.find(s => s.id === sel.secao) || SECOES[0];
 export const subAtual = (sel: Selecao) => { const s = secaoAtual(sel); return s.subs.find(x => x.id === sel.sub) || s.subs.find(x => !x.emBreve) || s.subs[0]; };
 export const itemAtual = (sel: Selecao) => ((subAtual(sel).itens || []).find(i => i.id === sel.item)) || null;
 
+/** Computadores › Acessórios: os produtos vêm com secao "pecas" (o resto de "computadores" são os notebooks/PCs). */
 export const naSecao = (n: Produto, sec: string, sub: string, item?: string | null) =>
-  secaoDe(n) === sec && (sec === 'computadores' ? sub === 'todos' : (n.sub === sub && (!item || n.item === item)));
+  sec === 'computadores' && sub === 'acessorios' ? secaoDe(n) === 'pecas' && (!item || n.item === item)
+    : secaoDe(n) === sec && (sec === 'computadores' ? sub === 'todos' : (n.sub === sub && (!item || n.item === item)));
 
 export function produtosSel(sel: Selecao, pcs: Produto[], jogos: Produto[]): Produto[] {
   const s = secaoAtual(sel), sb = subAtual(sel), it = itemAtual(sel);
   if (sb.emBreve) return [];
-  return (s.id === 'computadores' ? pcs : jogos).filter(n => naSecao(n, s.id, sb.id, it && it.id));
+  return (s.id === 'computadores' && sb.id === 'todos' ? pcs : jogos).filter(n => naSecao(n, s.id, sb.id, it && it.id));
 }
 
 export const contar = (sec: string, sub: string, pcs: Produto[], jogos: Produto[], item?: string) =>
-  (sec === 'computadores' ? (sub === 'acessorios' ? [] : pcs) : jogos.filter(n => naSecao(n, sec, sub, item))).length;
+  (sec === 'computadores' && sub === 'todos' ? pcs : jogos.filter(n => naSecao(n, sec, sub, item))).length;
 
 export const nomeSel = (sel: Selecao) => {
   const s = secaoAtual(sel), sb = subAtual(sel), it = itemAtual(sel);
@@ -99,9 +113,9 @@ export function mudarSelecao(atual: Selecao, nova: Partial<Selecao>): Selecao {
 }
 
 /** Categoria de busca no servidor (/api/atualizar?categoria=) do card selecionado. */
-export const categoriaBusca = (sel: Selecao) => (sel.secao === 'games' ? 'games' : 'computadores');
+export const categoriaBusca = (sel: Selecao) => (sel.secao === 'games' ? 'games' : sel.sub === 'acessorios' ? 'pecas' : 'computadores');
 export const nomeCategoriaBusca = (sel: Selecao) =>
-  sel.secao === 'games' ? (itemAtual(sel)?.nome || 'Games') : 'Computadores';
+  sel.secao === 'games' ? (itemAtual(sel)?.nome || 'Games') : sel.sub === 'acessorios' ? (itemAtual(sel)?.nome || 'Acessórios e peças') : 'Computadores';
 
 export function itemCfg(n: {secao?: string; item?: string}): ItemCfg | null {
   const s = SECOES.find(x => x.id === secaoDe(n)) || SECOES[0];

@@ -30,6 +30,7 @@ export const pesoCupom = (c: Cupom, ctx: ContextoCupons) =>
 export const PALAVRAS_SECAO: Record<string, RegExp> = {
   games: /controle|dual\s?sense|\bps\s?5\b|playstation|console|videogame|\bgames?\b|\bjogos?\b|gamer/,
   computadores: /notebook|laptop|computador|\bpcs?\b|desktop|macbook|all.in.one/,
+  pecas: /placa|mem[oó]ria|\bssd\b|\bhd\b|monitor|mouse|teclado|headset|processador|\bfonte\b|perif[eé]ric|inform[aá]tica|hardware|pe[cç]as|componentes/,
 };
 const PALAVRAS_OUTRAS = /moda|roupa|vestu[aá]rio|cal[cç]ado|t[eê]nis|beleza|cosm[eé]tic|perfum|maquiagem|supermercado|mercado\b|bebida|vinho|m[oó]ve(?:l|is)|decora|\bcasa\b|cozinha|eletrodom|pneu|automotiv|\bpet\b|brinquedo|livro|farm[aá]cia|suplement|celular|smartphone|iphone|smart\s?tv|\btvs?\b|monitor|impressora|notebook|computador|\bpcs?\b|\bgames?\b|console|ar.condicionado|geladeira|fog[aã]o|ferrament|jardim|joias|rel[oó]gio|reforma|higiene|sa[uú]de|cuidados|bikes?|looks?|salgadinho|chocolate|biscoito|tabletes?\b|trident|halls|bala\b|papelaria|colch|sof[aá]s?\b|esteira|bebê|beb[eê]s|\bleve\s+\d|cada\s+unidade/;
 const CAT_TXT: [string, RegExp][] = [
@@ -129,6 +130,12 @@ export function escopoCupom(c: Cupom, n: {secao?: string; item?: string; nome?: 
       ? {tipo: 'selecao', motivo: 'seleção de games/acessórios: confira se este item participa'}
       : {tipo: 'outro', motivo: 'cupom de outro produto de games'};
     if (cat === 'Informática' && /tecnologia|eletr[oô]nicos?|inform[aá]tica/.test(t) && !especifico(bruto.replace(/tecnologia|eletr[oô]nicos?|inform[aá]tica/gi, ''))) return {tipo: 'selecao', motivo: 'seleção de tecnologia: confira se este item participa'};
+  } else if (sec === 'pecas') {
+    // peças/acessórios de computador: cupom de outro tipo de peça não vale; seleção de informática = teste no carrinho
+    if (outroTipo) return outroTipo;
+    if (cat === 'Computadores') return {tipo: 'outro', motivo: 'cupom de notebook/PC'};
+    if ((cat === 'Informática' || cat === 'Games') && /tecnologia|eletr[oô]nicos?|inform[aá]tica|perif[eé]ric|hardware|componentes|gamer|acess[oó]rios/.test(t))
+      return {tipo: 'selecao', motivo: 'seleção de informática: confira se este item participa'};
   } else if (sec === 'computadores') {
     if (cat === 'Computadores') return sel ? {tipo: 'selecao', motivo: 'seleção de computadores: confira se este participa'} : {tipo: 'item'};
     if (cat === 'Informática' && /tecnologia|eletr[oô]nicos?|inform[aá]tica/.test(t)) return {tipo: 'selecao', motivo: 'seleção de tecnologia: confira se este item participa'};

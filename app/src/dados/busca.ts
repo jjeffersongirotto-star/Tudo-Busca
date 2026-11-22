@@ -41,5 +41,6 @@ export function resumoBusca(cat: Categoria, nomeCat: string, s: Status, textoDat
   return `✔ ${nomeCat}: ${s.recente ? 'preços já estavam atualizados (busca de poucos minutos atrás)' : 'preços atualizados agora'} — ${textoData}.`
     + (cat === 'computadores' && r.produtos ? ` ${r.produtos} computadores, ${r.precosAtualizados} preços conferidos` + (r.novos ? `, ${r.novos} novos` : '') + (r.removidos ? `, ${r.removidos} saíram de linha` : '') + '.' : '')
     + (cat === 'games' && r.porSecao && r.porSecao.games ? ` ${r.porSecao.games} ofertas de games` + (r.novosGames ? `, ${r.novosGames} novas` : '') + '.' : '')
+    + (cat === 'pecas' && r.porSecao && r.porSecao.pecas ? ` ${r.porSecao.pecas} ofertas de peças e acessórios` + (r.novosGames ? `, ${r.novosGames} novas` : '') + '.' : '')
     + (qtdNovos ? ` ${qtdNovos} item(ns) marcado(s) com "novo".` : '');
 }

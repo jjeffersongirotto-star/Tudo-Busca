@@ -73,7 +73,7 @@ def _cupons(cupons, hoje):
 
 
 # Categorias que a página pode pedir (o card selecionado). "todas" = como antes (tudo de uma vez).
-CATEGORIAS = ('computadores', 'games', 'todas')
+CATEGORIAS = ('computadores', 'games', 'pecas', 'todas')   # pecas = Computadores › Acessórios (SSD, memória, placa-mãe…)
 # lojas cujos cupons interessam a cada categoria (iguais a lojasCupom de SECOES no cupons-dell.html)
 LOJAS_CUPOM = {
     'computadores': ['Dell.com', 'KaBuM!', 'Amazon', 'Magazine Luiza', 'Casas Bahia', 'Mercado Livre', 'Fast Shop', 'Lenovo', 'Samsung', 'Acer', 'Asus',
@@ -82,6 +82,9 @@ LOJAS_CUPOM = {
     'games': ['KaBuM!', 'Amazon', 'AliExpress', 'Shopee', 'Temu', 'Magazine Luiza', 'Mercado Livre', 'Casas Bahia', 'Fast Shop', 'Americanas', 'Carrefour',
               'Extra', 'Ponto', 'Pichau', 'Terabyte', 'Webcontinental', 'iByte', 'Submarino', 'Shoptime'],
 }
+LOJAS_CUPOM['pecas'] = LOJAS_CUPOM['computadores']
+# seções "outras" (fora os computadores) que cada categoria coleta
+SECOES_OUTRAS = {'games': ('games',), 'pecas': ('pecas',), 'todas': ('games', 'pecas'), 'computadores': ()}
 
 
 def _secoes_ts(dados):
@@ -99,17 +102,21 @@ async def executar(dados, status=None, banco=None, categoria='todas'):
     categoria: 'computadores', 'games' ou 'todas' — só a categoria pedida é coletada; as outras ficam como estavam."""
     status = status if status is not None else {}
     categoria = categoria if categoria in CATEGORIAS else 'todas'
-    fazer_pc, fazer_games = categoria in ('todas', 'computadores'), categoria in ('todas', 'games')
+    secoes_outras = SECOES_OUTRAS[categoria]
+    fazer_pc, fazer_games = categoria in ('todas', 'computadores'), bool(secoes_outras)
+    rotulo = {'games': 'Games', 'pecas': 'Peças'}.get(categoria, 'Games/peças')
     lojas_cupom = None if categoria == 'todas' else set(LOJAS_CUPOM[categoria])
     inicio = time.time()
     todos_ant = dados.get('produtos') or dados.get('notebooks') or []
     # computadores (seção original, sem o campo "secao") e as outras seções (games…) seguem caminhos separados
     ant = {n['id']: n for n in todos_ant if n.get('secao', 'computadores') == 'computadores'}
-    ant_outros = [n for n in todos_ant if n.get('secao', 'computadores') != 'computadores']
+    ant_outros_todos = [n for n in todos_ant if n.get('secao', 'computadores') != 'computadores']
+    ant_outros = [n for n in ant_outros_todos if n.get('secao') in secoes_outras]
+    fora = [n for n in ant_outros_todos if n.get('secao') not in secoes_outras]   # seções não pedidas: ficam como estavam
     data_ant = (dados.get('ultimaAtualizacaoTexto') or '').split(' às')[0]
     status['fontes'] = {nome: {'estado': 'aguardando'} for nome, _, _ in FONTES} if fazer_pc else {}
     if fazer_games:
-        status['fontes'].update({f'Games: {nome}': {'estado': 'aguardando'} for nome, _, _ in games.LOJAS})
+        status['fontes'].update({f'{rotulo}: {nome}': {'estado': 'aguardando'} for nome, _, _ in games.LOJAS})
     http = Http()
 
     async def rodar(nome, mod, filtro):
@@ -140,7 +147,7 @@ async def executar(dados, status=None, banco=None, categoria='todas'):
 
     async def rodar_games():
         try:
-            return await games.coletar(http, ant_outros, status, agora().strftime('%d/%m/%Y'), data_ant)
+            return await games.coletar(http, ant_outros, status, agora().strftime('%d/%m/%Y'), data_ant, secoes_outras, rotulo)
         except Exception:
             log.exception('games')
             return None, {}
@@ -153,8 +160,9 @@ async def executar(dados, status=None, banco=None, categoria='todas'):
             *(rodar(n, m, f) for n, m, f in (FONTES if fazer_pc else [])), rodar_cupons(), rodar_games() if fazer_games else nada())
     finally:
         await http.fechar()
-    if outros is None:  # games não coletados agora (outra categoria) ou a coleta quebrou: fica tudo como estava
+    if outros is None:  # games/peças não coletados agora (outra categoria) ou a coleta quebrou: fica tudo como estava
         outros = ant_outros
+    outros = outros + fora
 
     if (not fazer_pc or all(r is None for r in resultados)) and cupons_novos is None and not any(v.get('estado') == 'ok' for v in resumo_games.values()):
         raise RuntimeError('nenhuma loja respondeu; os dados anteriores foram mantidos')
@@ -231,7 +239,7 @@ async def executar(dados, status=None, banco=None, categoria='todas'):
             if menor:
                 n['menorPrecoVisto'] = menor
                 n['menorPrecoData'] = quando
-    novos_outros = [n['id'] for n in outros if n['id'] not in {a['id'] for a in ant_outros}]
+    novos_outros = [n['id'] for n in outros if n['id'] not in {a['id'] for a in ant_outros_todos}]
     out = dict(dados)
     out.pop('notebooks', None)
     out['produtos'] = produtos + outros
@@ -242,7 +250,7 @@ async def executar(dados, status=None, banco=None, categoria='todas'):
     out['ultimaAtualizacao'] = hoje.isoformat(timespec='seconds')
     out['ultimaAtualizacaoTexto'] = texto_data(hoje)
     ts = _secoes_ts(dados)
-    for s in (('computadores', 'games') if categoria == 'todas' else (categoria,)):
+    for s in (('computadores', 'games', 'pecas') if categoria == 'todas' else (categoria,)):
         ts[s] = out['ultimaAtualizacao']
     out['atualizacaoPorSecao'] = ts
     por_tipo = {}
