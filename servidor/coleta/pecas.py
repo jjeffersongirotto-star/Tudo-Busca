@@ -105,7 +105,7 @@ def classificar_memoria(nome):
 
 
 # ---------------------------------------------------------------- placa-mãe
-_CHIPSET = re.compile(r'\b([ABHXZQ]\d{3}[EM]?)\b', re.I)
+_CHIPSET = re.compile(r'\b([ABHXZQ]\d{3})(M|E)?(?=[a-z]*\b)', re.I)
 
 
 def classificar_placa_mae(nome):
@@ -117,7 +117,7 @@ def classificar_placa_mae(nome):
     ch = _CHIPSET.search(n)
     sock = re.search(r'\b(AM[345])\b|LGA\s?-?(\d{4})', n, re.I)
     sk = (sock.group(1).upper() if sock.group(1) else 'LGA' + sock.group(2)) if sock else ''
-    modelo = (ch.group(1).upper() if ch else 'Outro chipset') + (f' ({sk})' if sk else '')
+    modelo = ((ch.group(1) + (ch.group(2) or '')).upper() if ch else 'Outro chipset') + (f' ({sk})' if sk else '')
     return _res(modelo, n)
 
 
@@ -205,7 +205,7 @@ def classificar_teclado(nome):
     if re.search(r'keycaps?|switch(?:es)?\s+(?:para|avulso)|capa\s+para|pel[ií]cula|musical|piano|arranjador|sintetizador|controlador\s+midi|'
                  r'tablet|ipad|celular|notebook\s+com|apoio\s+de\s+pulso|descanso', n, re.I):
         return None
-    mec = re.search(r'mec[aâ]nico|mechanical', n, re.I)
+    mec = re.search(r'mec[aâ]nico|mechanical|switch(?:es)?\s+(?:outemu\s+|gateron\s+|kailh\s+)?(?:brown|blue|red|black|yellow|silver)', n, re.I)
     combo = re.search(r'mouse', n, re.I)
     return _res('Teclado + mouse' if combo else 'Teclado mecânico' if mec else 'Teclado', n)
 
