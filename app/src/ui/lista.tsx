@@ -1,5 +1,5 @@
 /** Coluna do meio: título, filtros, regras e os cards (favoritos primeiro, de 50 em 50). */
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { Pressable, View, StyleSheet, useWindowDimensions } from 'react-native';
 import { T, Meta, Tag, Botao, Select, Check, Foto, Barra, Recolhivel, Icone } from './base';
 import { C, F, RAIO } from './tema';
@@ -66,15 +66,28 @@ const Preco = ({ n, pc }: { n: Produto; pc?: PrecoComCupom }) => {
         {n.precoDe ? <T style={{color: C.fraco, fontSize: 12, textDecorationLine: 'line-through'}}>{n.precoDe}</T> : null}
       </View>
       <T style={{color: C.fraco, fontSize: 18, alignSelf: 'center'}}>→</T>
-      <View style={[st.precoCol, st.precoCupom, comCupom.ok ? null : st.precoCupomTalvez]}>
-        <T style={[st.precoRot, {color: comCupom.ok ? '#86efac' : '#7dd3fc'}]}>{comCupom.ok ? 'Com cupom' : 'Com cupom (se valer)'}</T>
-        <T peso="extra" style={{fontSize: 17.9, color: comCupom.ok ? '#4ade80' : '#7dd3fc'}}>~{reais(comCupom.v)}</T>
-        {comCupom.bonus ? <T peso="negrito" style={{color: comCupom.ok ? '#86efac' : '#7dd3fc', fontSize: 13}}>🏷️ {comCupom.bonus}</T> : null}
-        <T peso="extra" style={st.codigoMini}>{comCupom.cod}</T>
-      </View>
+      <CaixaCupom {...comCupom} />
     </View>
   );
 };
+/** Quadro "Com cupom": tocar copia o código do cupom. */
+function CaixaCupom({ v, cod, ok, bonus }: { v: number; cod?: string; ok: boolean; bonus: string }) {
+  const {copiar} = useApp();
+  const [copiado, setCopiado] = useState<'' | 'ok' | 'erro'>('');
+  const cor = ok ? '#86efac' : '#7dd3fc';
+  const tocar = async () => { setCopiado(await copiar(cod) ? 'ok' : 'erro'); setTimeout(() => setCopiado(''), 1800); };
+  return (
+    <Pressable onPress={tocar} accessibilityRole="button" accessibilityLabel={`Copiar o cupom ${cod || ''}`} testID="caixaCupom"
+      style={({pressed}) => [st.precoCol, st.precoCupom, ok ? null : st.precoCupomTalvez, pressed && {opacity: 0.75}]}>
+      <T style={[st.precoRot, {color: cor}]}>{ok ? 'Com cupom' : 'Com cupom (se valer)'}</T>
+      <T peso="extra" style={{fontSize: 17.9, color: ok ? '#4ade80' : '#7dd3fc'}}>~{reais(v)}</T>
+      {bonus ? <T peso="negrito" style={{color: cor, fontSize: 13}}>🏷️ {bonus}</T> : null}
+      <T peso="extra" style={st.codigoMini}>{cod}</T>
+      <T peso="negrito" style={{color: copiado === 'erro' ? '#fdba74' : cor, fontSize: 11.5}}>
+        {copiado === 'ok' ? '✔ cupom copiado!' : copiado === 'erro' ? 'não consegui copiar' : '📋 toque para copiar'}</T>
+    </Pressable>
+  );
+}
 const TagVelho = ({ n }: { n: Produto }) => n.precoAntigo ? <Tag fundo="rgba(251,146,60,0.14)" cor="#fdba74">⚠ preço de coleta anterior</Tag> : null;
 
 /** Preço final com o melhor cupom que vale para o item (categoria, modelo e compra mínima conferidos). */
