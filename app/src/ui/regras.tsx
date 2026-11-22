@@ -50,7 +50,7 @@ export function RegrasPC({ pcs, notas }: { pcs: Produto[]; notas: Map<string, Po
 export function SobreG() {
   return (
     <View style={{gap: 6}}>
-      <P>Consoles, controles e acessórios são iguais em qualquer loja: a lista vem do <B>menor preço</B> para o maior (dá para ordenar por &quot;Menor preço com cupom&quot;). Kits (com jogo, base, controle extra…) aparecem marcados; para esconder, marque &quot;Esconder kits&quot;. O desconto &quot;De → Por&quot; da loja aparece no selo, mas em marketplaces o &quot;De&quot; costuma ser inflado.</P>
+      <P>Consoles, controles e acessórios são iguais em qualquer loja: a lista vem do <B>menor preço já com o cupom</B> para o maior. Conta o cupom que com certeza vale para o item (quadro verde); o de &quot;itens selecionados&quot; (quadro azul, &quot;se valer&quot;) só o carrinho confirma, então ali vale o preço da loja. Para ver sem cupom, escolha &quot;Menor preço (sem cupom)&quot;. Kits (com jogo, base, controle extra…) aparecem marcados; para esconder, marque &quot;Esconder kits&quot;. O desconto &quot;De → Por&quot; da loja aparece no selo, mas em marketplaces o &quot;De&quot; costuma ser inflado.</P>
       <Est><T peso="extra" style={{fontSize: 12.8, color: '#fef3c7'}}>Original?</T> Em marketplaces (AliExpress, Shopee, Temu, Mercado Livre) &quot;original&quot; é o que o vendedor diz no anúncio; confira a loja/vendedor antes de comprar. Preço do AliExpress: o valor com desconto mostrado na busca (pode depender de cupom ou de ser novo usuário) e, se vier da China, pode haver imposto.</Est>
     </View>
   );
