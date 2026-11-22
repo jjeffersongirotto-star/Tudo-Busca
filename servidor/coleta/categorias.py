@@ -3,7 +3,7 @@
 Estrutura (a mesma usada pela página, em SECOES do cupons-dell.html):
   seção (card)          → sub-card              → item (tipo de acessório, etc.)
   computadores          → (computadores atuais)
-  games                 → consoles              → console-ps5, console-ps4, console-xbox, console-switch, console-switch2
+  games                 → consoles              → console-ps5, console-ps4, console-xbox, console-switch, console-switch2, console-steam
                         → acessorios            → controle-ps5, controle-ps4, controle-xbox, controle-switch,
                                                   acessorio-ps, acessorio-xbox, acessorio-switch
 
@@ -190,6 +190,23 @@ def classificar_console_switch2(nome):
     return {'modelo': 'Switch 2', 'marca': 'Nintendo', 'original': True, 'kit': _kit(n), 'edicao': ''}
 
 
+_STEAM = re.compile(r'steam\s*deck|steam\s*machine', re.I)
+
+
+def classificar_console_steam(nome):
+    """Valve: Steam Deck (portátil, LCD e OLED) e Steam Machine (o "cubinho" de mesa)."""
+    n = _console_base(nome, _STEAM)
+    if not n or re.search(r'\bdock(?:ing)?\b|\bcase\b|\bcapa\b|pel[ií]cula|\bgrip\b|carregador|\bskin\b|suporte|cart[aã]o|gift|controller|controle', n, re.I):
+        return None
+    m = re.search(r'\b(64|256|512)\s?gb\b|\b(1|2)\s?tb\b', n, re.I)
+    arm = (' ' + m.group(1) + 'GB') if m and m.group(1) else (' ' + m.group(2) + 'TB') if m else ''
+    if re.search(r'steam\s*machine', n, re.I):
+        modelo = 'Steam Machine' + arm
+    else:
+        modelo = ('Steam Deck OLED' if re.search(r'\boled\b', n, re.I) else 'Steam Deck LCD') + arm
+    return {'modelo': modelo, 'marca': 'Valve', 'original': True, 'kit': _kit(n), 'edicao': ''}
+
+
 # ---------- Controles de PS4, Xbox e Switch ----------
 def _controle(nome, plataforma, outros, oficial_re, marca_oficial, modelo_oficial):
     """Controle inteiro e novo da plataforma: oficial (da fabricante do console) ou compatível."""
@@ -304,6 +321,9 @@ ITENS = {
     'console-switch2': {'secao': 'games', 'sub': 'consoles', 'nome': 'Nintendo Switch 2', 'grupo': 'modelo',
                         'termos': ['nintendo switch 2'],
                         'classificar': classificar_console_switch2, 'preco_min': 2200, 'preco_max': 9000},
+    'console-steam': {'secao': 'games', 'sub': 'consoles', 'nome': 'Steam Deck / Steam Machine', 'grupo': 'modelo',
+                      'termos': ['steam deck oled', 'steam deck', 'steam machine valve'],
+                      'classificar': classificar_console_steam, 'preco_min': 1800, 'preco_max': 20000},
     # Acessórios
     'controle-ps5': {
         'secao': 'games', 'sub': 'acessorios', 'nome': 'Controles de PS5',

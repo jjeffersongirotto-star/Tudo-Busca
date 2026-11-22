@@ -35,6 +35,8 @@ export const SECOES: SecaoCfg[] = [
         cupomItem: /switch\s*2/i, cupomOutro: /playstation|\bps\s?[45]\b|xbox|joy-?con|\bjogos?\b|\bcase\b/i},
        {id: 'console-switch', nome: 'Switch (OLED, Lite)', icone: '🟥', cupom: /console|switch|nintendo/i,
         cupomItem: /console\s+nintendo\s+switch(?!\s*2)|switch\s+(?:oled|lite)/i, cupomOutro: /playstation|\bps\s?[45]\b|xbox|switch\s*2|joy-?con|\bjogos?\b|\bcase\b/i},
+       {id: 'console-steam', nome: 'Steam Deck / Machine', icone: '🖥️', cupom: /steam|valve|port[aá]til/i,
+        cupomItem: /steam\s*(?:deck|machine)/i, cupomOutro: /playstation|\bps\s?[45]\b|xbox|switch|nintendo|gift|cart[aã]o|\bjogos?\b/i},
      ]},
      {id: 'acessorios', nome: 'Acessórios', icone: '🎧', itens: [
        {id: 'controle-ps5', nome: 'Controles de PS5', icone: '🎮', cupom: /controle|dual\s?sense|\bps\s?5\b|playstation/i,
