@@ -3,7 +3,7 @@ import type { Produto } from './tipos';
 import { r1 } from './formato';
 
 export const OFERTA = {fator: 2.5, minimoAnuncios: 3};   // 20% abaixo do típico = 100; no típico = 50; 20% acima = 0
-export const grupoG = (n: Produto) => `${n.item}|${n.original ? n.modelo : 'Compatível (outra marca)'}`;
+export const grupoG = (n: Produto) => `${n.item}|${n.grupo || (n.original ? n.modelo : 'Compatível (outra marca)')}`;
 
 export interface RefG { mediana: number; min: number; qtd: number }
 export interface NotaG { nota: number | null; pct?: number; ref?: RefG; motivo?: string }
@@ -35,7 +35,8 @@ export const FILTROS_G: {id: FiltroGId; rotulo: string; fn: (n: Produto) => stri
   {id: 'gLoja', rotulo: 'Loja', fn: n => n.loja || '', todos: 'Todas'},
 ];
 export const OPCOES_G = {
-  gPreco: [['', 'Qualquer'], ['150', 'até R$ 150'], ['250', 'até R$ 250'], ['350', 'até R$ 350'], ['400', 'até R$ 400'], ['450', 'até R$ 450'], ['500', 'até R$ 500'], ['700', 'até R$ 700'], ['1000', 'até R$ 1.000'], ['1500', 'até R$ 1.500']],
+  gPreco: [['', 'Qualquer'], ['150', 'até R$ 150'], ['250', 'até R$ 250'], ['350', 'até R$ 350'], ['400', 'até R$ 400'], ['450', 'até R$ 450'], ['500', 'até R$ 500'], ['700', 'até R$ 700'], ['1000', 'até R$ 1.000'], ['1500', 'até R$ 1.500'], ['2000', 'até R$ 2.000'], ['2500', 'até R$ 2.500'], ['3000', 'até R$ 3.000'],
+    ['3500', 'até R$ 3.500'], ['4000', 'até R$ 4.000'], ['5000', 'até R$ 5.000']],
   gOrdem: [['oferta', 'Melhor oferta (padrão)'], ['cupom', 'Menor preço com cupom'], ['asc', 'Menor preço'], ['desc', 'Maior desconto'], ['pdesc', 'Maior preço']],
 } as const;
 

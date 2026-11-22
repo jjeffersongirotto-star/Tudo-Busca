@@ -23,11 +23,33 @@ export const SECOES: SecaoCfg[] = [
    pesosCupom: {'Computadores': 4, 'Informática': 3, 'Loja toda': 2, 'Geral': 2, 'Produtos selecionados': 1}},
   {id: 'games', nome: 'Games', icone: '🎮', desc: 'Consoles e acessórios',
    subs: [
-     {id: 'consoles', nome: 'Consoles', icone: '🕹️', emBreve: true},
+     {id: 'consoles', nome: 'Consoles', icone: '🕹️', itens: [
+       {id: 'console-ps5', nome: 'PlayStation 5', icone: '🎮', cupom: /console|\bps\s?5\b|playstation/i,
+        cupomItem: /console\s+(?:sony\s+)?(?:ps\s?5|playstation\s*5)|playstation\s*5\s+(?:slim|pro|digital)|\bps\s?5\s+(?:slim|pro|digital)/i,
+        cupomOutro: /xbox|switch|nintendo|controle|dual\s?sense|headset|\bjogos?\b|\bgta\b/i},
+       {id: 'console-ps4', nome: 'PlayStation 4', icone: '🎮', cupom: /console|\bps\s?4\b|playstation/i,
+        cupomItem: /console\s+(?:sony\s+)?(?:ps\s?4|playstation\s*4)/i, cupomOutro: /xbox|switch|nintendo|\bps\s?5\b|controle|\bjogos?\b/i},
+       {id: 'console-xbox', nome: 'Xbox', icone: '🟩', cupom: /console|xbox/i,
+        cupomItem: /console\s+(?:microsoft\s+)?xbox|xbox\s+series\s+[xs]/i, cupomOutro: /playstation|\bps\s?[45]\b|switch|nintendo|controle|\bjogos?\b|game\s*pass/i},
+       {id: 'console-switch2', nome: 'Switch 2', icone: '🟥', cupom: /console|switch|nintendo/i,
+        cupomItem: /switch\s*2/i, cupomOutro: /playstation|\bps\s?[45]\b|xbox|joy-?con|\bjogos?\b|\bcase\b/i},
+       {id: 'console-switch', nome: 'Switch (OLED, Lite)', icone: '🟥', cupom: /console|switch|nintendo/i,
+        cupomItem: /console\s+nintendo\s+switch(?!\s*2)|switch\s+(?:oled|lite)/i, cupomOutro: /playstation|\bps\s?[45]\b|xbox|switch\s*2|joy-?con|\bjogos?\b|\bcase\b/i},
+     ]},
      {id: 'acessorios', nome: 'Acessórios', icone: '🎧', itens: [
        {id: 'controle-ps5', nome: 'Controles de PS5', icone: '🎮', cupom: /controle|dual\s?sense|\bps\s?5\b|playstation/i,
         cupomItem: /dual\s?sense|controles?\s+(?:sem\s+fio\s+)?(?:(?:do|de|para)\s+)?(?:ps\s?5|playstation)|controles?\s+(?:sony|ps)/i,
         cupomOutro: /xbox|switch|nintendo|\bps\s?5\s+(?:pro|slim|digital)|console|\bgta\b|\bjogos?\s+(?:de\s+)?(?:ps|xbox|switch)/i},
+       {id: 'controle-ps4', nome: 'Controles de PS4', icone: '🎮', cupom: /controle|dual\s?shock|\bps\s?4\b|playstation/i,
+        cupomItem: /dual\s?shock|controles?\s+(?:(?:do|de|para)\s+)?(?:ps\s?4|playstation\s*4)/i, cupomOutro: /xbox|switch|nintendo|dual\s?sense|\bps\s?5\b|console/i},
+       {id: 'controle-xbox', nome: 'Controles de Xbox', icone: '🎮', cupom: /controle|xbox/i,
+        cupomItem: /controles?\s+(?:sem\s+fio\s+)?(?:(?:do|de|para)\s+)?xbox/i, cupomOutro: /playstation|\bps\s?[45]\b|switch|nintendo|console|game\s*pass/i},
+       {id: 'controle-switch', nome: 'Controles de Switch', icone: '🎮', cupom: /controle|joy-?con|switch|nintendo/i,
+        cupomItem: /joy-?con|pro\s+controller|controles?\s+(?:(?:do|de|para)\s+)?(?:nintendo\s+)?switch/i, cupomOutro: /playstation|\bps\s?[45]\b|xbox|console/i},
+       {id: 'acessorio-ps', nome: 'Outros PlayStation', icone: '🎧', cupom: /headset|fone|carregador|portal|playstation|\bps\s?[45]\b/i,
+        cupomOutro: /xbox|switch|nintendo|console\s/i},
+       {id: 'acessorio-xbox', nome: 'Outros Xbox', icone: '🎧', cupom: /headset|fone|bateria|xbox/i, cupomOutro: /playstation|\bps\s?[45]\b|switch|nintendo|console\s/i},
+       {id: 'acessorio-switch', nome: 'Outros Switch', icone: '🎧', cupom: /case|capa|dock|micro\s?sd|switch|nintendo/i, cupomOutro: /playstation|\bps\s?[45]\b|xbox|console\s/i},
      ]},
    ],
    lojasCupom: ['KaBuM!', 'Amazon', 'AliExpress', 'Shopee', 'Temu', 'Magazine Luiza', 'Mercado Livre', 'Casas Bahia', 'Fast Shop', 'Americanas', 'Carrefour',
@@ -77,7 +99,7 @@ export function mudarSelecao(atual: Selecao, nova: Partial<Selecao>): Selecao {
 /** Categoria de busca no servidor (/api/atualizar?categoria=) do card selecionado. */
 export const categoriaBusca = (sel: Selecao) => (sel.secao === 'games' ? 'games' : 'computadores');
 export const nomeCategoriaBusca = (sel: Selecao) =>
-  sel.secao === 'games' ? (sel.item === 'controle-ps5' ? 'Controles de PS5' : 'Games') : 'Computadores';
+  sel.secao === 'games' ? (itemAtual(sel)?.nome || 'Games') : 'Computadores';
 
 export function itemCfg(n: {secao?: string; item?: string}): ItemCfg | null {
   const s = SECOES.find(x => x.id === secaoDe(n)) || SECOES[0];

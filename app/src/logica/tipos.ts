@@ -49,6 +49,8 @@ export interface Produto {
   original?: boolean;
   kit?: boolean;
   edicao?: string;
+  /** grupo da nota de oferta (consoles e outros acessórios: o modelo/tipo, oficial ou não) */
+  grupo?: string;
   menorPrecoVisto?: number;
   menorPrecoData?: string;
 }
