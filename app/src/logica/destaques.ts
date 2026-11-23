@@ -11,6 +11,8 @@ export const DESTAQUE = {
   /** anúncios do mesmo grupo para ter um preço típico confiável */
   grupoMin: 4,
   quantos: 12,
+  /** na grade (⤢ Ampliar) */
+  quantosGrade: 40,
 };
 
 // grupos amplos demais ("Mouse sem fio", "Headset com fio", "Capa / case"…) não dizem se o preço é bom: ficam de fora
