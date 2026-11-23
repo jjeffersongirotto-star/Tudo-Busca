@@ -79,7 +79,7 @@ export function Topo() {
         <BotaoInstalar estreito={estreito} />
         <View style={{alignItems: 'center', gap: 2}}>
           <BotaoAtualizar />
-          <T peso="semi" style={{fontSize: 10.5, color: C.sub}} testID="versaoApp">v{VERSAO_APP}</T>
+          <T peso="semi" style={{fontSize: 10.5, color: C.sub, minWidth: 56, textAlign: 'center'}} numberOfLines={1} testID="versaoApp">v{VERSAO_APP}</T>
         </View>
       </View>
     </View>
