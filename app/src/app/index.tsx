@@ -2,6 +2,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { ScrollView, View, StyleSheet, useWindowDimensions, type LayoutChangeEvent } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Destaques } from '@/ui/destaques';
 import { Topo, AvisoTopo, AvisoOta, DicaVersao, Secoes, Rodape } from '@/ui/topo';
 import { ColunaCupons } from '@/ui/colunaCupons';
 import { ColunaLista } from '@/ui/lista';
@@ -58,6 +59,7 @@ export default function Inicio() {
       <AvisoOta margem={margem} />
       <DicaVersao margem={margem} />
       <Secoes margem={margem} />
+      <Destaques margem={margem} aoSelecionar={aoSelecionar} />
       {larga ? colunas : null}
       {!larga ? <View style={{marginHorizontal: margem, marginTop: 12}}><Coluna testID="colCupons" style={cuponsAbertos ? undefined : {minHeight: 0}}><ColunaCupons larga={false} aberta={cuponsAbertos} /></Coluna></View> : null}
       {!larga ? <View style={{marginHorizontal: margem, marginTop: 12}} onLayout={e => setLarguraMeio(e.nativeEvent.layout.width)}><Coluna testID="colLista"><ColunaLista largura={larguraMeio} aoSelecionar={aoSelecionar} /></Coluna></View> : null}

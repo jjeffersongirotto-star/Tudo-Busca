@@ -98,7 +98,7 @@ def classificar_controle_ps5(nome):
 # anúncio que NÃO é o console (jogo, capa, suporte, peça…), mesmo citando o nome dele
 _NAO_CONSOLE = re.compile(
     r'^\s*(?:jogo|game\b|capa|case|capinha|skin|adesivo|pel[ií]cula|suporte|base|dock|cooler|ventoinha|carregador|cabo|fonte|hd\b|ssd|'
-    r'cart[aã]o|controle|joy-?con|headset|fone|bolsa|estojo|kit\s+(?:de\s+)?(?:limpeza|acess)|leitor|tampa|faceplate|cover|protetor|'
+    r'cart[aã]o|controle|joy[\s-]?con|headset|fone|bolsa|estojo|kit\s+(?:de\s+)?(?:limpeza|acess)|leitor|tampa|faceplate|cover|protetor|'
     r'volante|teclado|mouse|m[ií]dia|filme|livro|camiseta|caneca|r[eé]plica|miniatura|chaveiro|tapete|organizador|gift|vale)', re.I)
 _PECA_CONSOLE = re.compile(r'\bpara\s+(?:o\s+|a\s+)?(?:console|ps\s?[45]|playstation|xbox|nintendo|switch)\b|\bcompat[ií]vel\s+com\b|'
                            r'retr[oô]|\bgame\s*stick\b|\bmini\b|\bportátil\s+r\d|\bsup\s+\d|\bx\d{1,2}\b.*\bjogos\b|\d{3,}\s*jogos|'
@@ -218,11 +218,11 @@ def classificar_console_steam(nome):
 def _controle(nome, plataforma, outros, oficial_re, marca_oficial, modelo_oficial):
     """Controle inteiro e novo da plataforma: oficial (da fabricante do console) ou compatível."""
     n = ' '.join((nome or '').split())
-    if not n or RUIM.search(n) or not plataforma.search(n) or not (_CONTROLE.search(n) or re.search(r'joy-?con|pro\s+controller', n, re.I)):
+    if not n or RUIM.search(n) or not plataforma.search(n) or not (_CONTROLE.search(n) or re.search(r'joy[\s-]?con|pro\s+controller', n, re.I)):
         return None
     if _ACESSORIO.match(n) or _PECA.search(n) or re.search(r'^\s*console\b|\bconsole\s+(?:xbox|nintendo|playstation)', n, re.I):
         return None
-    pos = _CONTROLE.search(n) or re.search(r'joy-?con|pro\s+controller', n, re.I)
+    pos = _CONTROLE.search(n) or re.search(r'joy[\s-]?con|pro\s+controller', n, re.I)
     if _ANTES.search(n[:pos.start()]):
         return None
     if re.search(r'carregador|(?:base|esta[cç][aã]o|dock|suporte)\s+(?:[\wÀ-ú]+\s+){0,2}(?:de\s+)?(?:carga|carregamento)', n, re.I) and '+' not in n:
@@ -230,9 +230,13 @@ def _controle(nome, plataforma, outros, oficial_re, marca_oficial, modelo_oficia
     o = outros.search(n)
     if o and o.start() < plataforma.search(n).start():
         return None
-    marca = _marca(n)
-    oficial = bool(oficial_re.search(n)) and marca in ('', marca_oficial) and not _GENERICO.search(n) \
-        and not re.search(r'compat[ií]vel|tipo\s|estilo\s|similar|gen[eé]rico', n, re.I)
+    from .pecas import marca as marca_pecas
+    # "para Nintendo Switch", "Compatible with…" não fazem o controle ser da Nintendo: tira o nome da plataforma antes
+    sem_plat = re.sub(r'\b(?:para|p/|for|with|compat[ií]vel\s+com|compatible\s+with)\s+(?:o\s+|a\s+)?(?:nintendo|microsoft|sony|xbox|playstation|ps\s?[45])\b'
+                      r'|\bnintendo\s+switch\b', ' ', n, flags=re.I)
+    marca = _marca(n) or marca_pecas(n)
+    oficial = bool(oficial_re.search(sem_plat)) and marca in ('', marca_oficial) and not _GENERICO.search(n) \
+        and not re.search(r'compat[ií]vel|compatible|tipo\s|estilo\s|similar|gen[eé]rico|\bvinik\b|\boex\b|\bknup\b', n, re.I)
     if oficial:
         marca, modelo = marca_oficial, modelo_oficial(n)
     else:
@@ -253,9 +257,9 @@ def classificar_controle_xbox(nome):
 
 
 def classificar_controle_switch(nome):
-    return _controle(nome, re.compile(r'switch|nintendo|joy-?con', re.I), re.compile(r'playstation|\bps\s?[345]\b|xbox|dual\s?(?:sense|shock)', re.I),
-                     re.compile(r'\bnintendo\b|joy-?con|pro\s+controller', re.I), 'Nintendo',
-                     lambda n: ('Joy-Con 2' if re.search(r'joy-?con\s*2', n, re.I) else 'Joy-Con') if re.search(r'joy-?con', n, re.I)
+    return _controle(nome, re.compile(r'switch|nintendo|joy[\s-]?con', re.I), re.compile(r'playstation|\bps\s?[345]\b|xbox|dual\s?(?:sense|shock)', re.I),
+                     re.compile(r'\bnintendo\b|joy[\s-]?con|pro\s+controller', re.I), 'Nintendo',
+                     lambda n: ('Joy-Con 2' if re.search(r'joy[\s-]?con\s*2', n, re.I) or _SWITCH2.search(n) else 'Joy-Con') if re.search(r'joy[\s-]?con', n, re.I)
                      else ('Pro Controller 2' if _SWITCH2.search(n) else 'Pro Controller'))
 
 
@@ -284,7 +288,7 @@ def _acessorio(nome, plataforma, outros):
     if not n or RUIM.search(n) or not plataforma.search(n):
         return None
     # console, controle e jogo têm cards próprios
-    if re.search(r'^\s*(?:console|jogo|game)\b', n, re.I) or re.search(r'^\s*(?:controle|joy-?con|dual\s?sense|dual\s?shock)\b', n, re.I):
+    if re.search(r'^\s*(?:console|jogo|game)\b', n, re.I) or re.search(r'^\s*(?:controle|joy[\s-]?con|dual\s?sense|dual\s?shock)\b', n, re.I):
         return None
     o = outros.search(n)
     if o and o.start() < plataforma.search(n).start():
@@ -309,7 +313,7 @@ def classificar_acessorio_xbox(nome):
 
 
 def classificar_acessorio_switch(nome):
-    return _acessorio(nome, re.compile(r'switch|nintendo|joy-?con', re.I), re.compile(r'playstation|\bps\s?[345]\b|xbox', re.I))
+    return _acessorio(nome, re.compile(r'switch|nintendo|joy[\s-]?con', re.I), re.compile(r'playstation|\bps\s?[345]\b|xbox', re.I))
 
 
 ITENS = {

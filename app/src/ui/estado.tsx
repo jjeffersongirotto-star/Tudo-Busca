@@ -8,6 +8,7 @@ import type { Dados, Produto } from '@/logica/tipos';
 import { separarSecoes, produtosSel as produtosSelL, mudarSelecao, secaoAtual, itemAtual, nomeSel, categoriaBusca, nomeCategoriaBusca, SELECAO_PADRAO, type Selecao } from '@/logica/secoes';
 import { calcularNotas } from '@/logica/nota';
 import { calcularOfertas } from '@/logica/ofertas';
+import { calcularDestaques } from '@/logica/destaques';
 import { contextoCupons } from '@/logica/cupons';
 import { FILTROS_PADRAO, POR_PAGINA, type EstadoFiltros } from '@/logica/filtros';
 import { FILTROS_G_PADRAO, type EstadoFiltrosG } from '@/logica/ofertas';
@@ -65,6 +66,9 @@ function useEstadoApp() {
   const {pcs, jogos} = useMemo(() => separarSecoes(dados.produtos), [dados]);
   const {notas, melhorCb} = useMemo(() => calcularNotas(pcs), [pcs]);
   const ofertas = useMemo(() => calcularOfertas(jogos), [jogos]);
+  const destaques = useMemo(() => calcularDestaques(dados.produtos), [dados]);
+  // destaques: de tudo ao abrir; depois que a pessoa escolhe uma seção, só dela
+  const [escolheu, setEscolheu] = useState(false);
   const prodSel = useMemo(() => produtosSelL(sel, pcs, jogos), [sel, pcs, jogos]);
   const ctxCupons = useMemo(() => contextoCupons(secaoAtual(sel), nomeSel(sel), prodSel, itemAtual(sel)?.cupom), [sel, prodSel]);
   const produtoSelecionado = useMemo(() => dados.produtos.find(n => n.id === selecionadoId) || null, [dados, selecionadoId]);
@@ -77,6 +81,7 @@ function useEstadoApp() {
       return s;
     });
     setLimite(POR_PAGINA); setLimiteCupons(50); setFiltrosCupomE(f => ({...f, loja: '', cat: ''}));
+    setEscolheu(true);
   }, []);
 
   const alternarFav = useCallback((id: string) => setFavs(f => { const n = new Set(f); if (n.has(id)) n.delete(id); else n.add(id); guardarFavoritos(n); return n; }), []);
@@ -148,7 +153,7 @@ function useEstadoApp() {
     dados, carregado, novos, favs, sel, selecionadoId, setSelecionadoId, produtoSelecionado, expandidos, limite, setLimite, limiteCupons, setLimiteCupons,
     filtros, setFiltros, setFiltroSel, limparFiltros, filtrosG, setFiltrosG, setFiltroSelG, limparFiltrosG, filtrosCupom, setFiltrosCupom,
     cuponsAbertos, setCuponsAbertos, aviso, setAviso, dica, fecharDica, atualizando, atualizar, copiar,
-    pcs, jogos, notas, melhorCb, ofertas, prodSel, ctxCupons, escolher, alternarFav, alternarExp,
+    pcs, jogos, notas, melhorCb, ofertas, destaques, escolheu, prodSel, ctxCupons, escolher, alternarFav, alternarExp,
   };
 }
 

@@ -107,8 +107,8 @@ export const nomeSel = (sel: Selecao) => {
 export function mudarSelecao(atual: Selecao, nova: Partial<Selecao>): Selecao {
   const sel: Selecao = {...atual, ...nova};
   const s = secaoAtual(sel);
-  if (nova.secao) { const sb = s.subs.find(x => !x.emBreve) || s.subs[0]; sel.sub = sb.id; sel.item = (sb.itens || [])[0] ? sb.itens![0].id : ''; }
-  else if (nova.sub) { const sb = subAtual(sel); sel.item = (sb.itens || [])[0] ? sb.itens![0].id : ''; }
+  if (nova.secao && nova.sub === undefined) { const sb = s.subs.find(x => !x.emBreve) || s.subs[0]; sel.sub = sb.id; sel.item = (sb.itens || [])[0] ? sb.itens![0].id : ''; }
+  else if (nova.sub && nova.item === undefined) { const sb = subAtual(sel); sel.item = (sb.itens || [])[0] ? sb.itens![0].id : ''; }
   return sel;
 }
 
