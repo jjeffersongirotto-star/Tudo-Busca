@@ -257,6 +257,9 @@ def classificar_controle_xbox(nome):
 
 
 def classificar_controle_switch(nome):
+    # controle de Wii, Wii U, GameCube… (outros consoles da Nintendo) não é de Switch
+    if re.search(r'\bwii\b|wii\s?u|game\s?cube|\bn64\b|\b3ds\b', nome or '', re.I) and not re.search(r'switch', nome or '', re.I):
+        return None
     return _controle(nome, re.compile(r'switch|nintendo|joy[\s-]?con', re.I), re.compile(r'playstation|\bps\s?[345]\b|xbox|dual\s?(?:sense|shock)', re.I),
                      re.compile(r'\bnintendo\b|joy[\s-]?con|pro\s+controller', re.I), 'Nintendo',
                      lambda n: ('Joy-Con 2' if re.search(r'joy[\s-]?con\s*2', n, re.I) or _SWITCH2.search(n) else 'Joy-Con') if re.search(r'joy[\s-]?con', n, re.I)
