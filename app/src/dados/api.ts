@@ -45,6 +45,24 @@ export interface Status {
 }
 
 export const buscarDados = (limiteMs = 90000) => api<Dados>('/api/dados', {}, limiteMs);
+
+/** Última coleta automática (GitHub Actions, a cada 3 h), lida direto do repositório: não depende do servidor
+ *  (que dorme quando ninguém usa e pode ficar fora do ar). O servidor só é chamado no ⟳ (busca nas lojas na hora). */
+export const DADOS_RAW = 'https://raw.githubusercontent.com/jjeffersongirotto-star/Tudo-Busca/dados-coleta/dados.json';
+export async function buscarDadosGithub(limiteMs = 60000): Promise<Dados> {
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), limiteMs);
+  try {
+    const r = await fetch(DADOS_RAW + '?t=' + Math.floor(Date.now() / 300000), {cache: 'no-store', signal: ctl.signal});
+    if (!r.ok) throw new ErroApi('GitHub HTTP ' + r.status);
+    const d = await r.json() as Dados;
+    if (!d || !Array.isArray(d.produtos)) throw new ErroApi('dados do GitHub sem produtos');
+    return d;
+  } catch (e) {
+    if ((e as Error)?.name === 'AbortError') throw new ErroApi('tempo esgotado');
+    throw e;
+  } finally { clearTimeout(t); }
+}
 export const pedirAtualizacao = (c: Categoria) => api<Status>('/api/atualizar?categoria=' + c, {method: 'POST'}, 90000);
 export const lerStatus = (c: Categoria) => api<Status>('/api/status?categoria=' + c);
 export const lerVersao = () => api<RespostaVersao>('/api/versao', {}, 30000);

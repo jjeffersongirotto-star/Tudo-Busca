@@ -14,7 +14,7 @@ import { FILTROS_PADRAO, POR_PAGINA, type EstadoFiltros } from '@/logica/filtros
 import { FILTROS_G_PADRAO, type EstadoFiltrosG } from '@/logica/ofertas';
 import { decidirVersao, type ResultadoVersao, type RespostaVersao } from '@/logica/versao';
 import { carregarLocal, aplicarDados, DADOS_VAZIOS } from '@/dados/repositorio';
-import { buscarDados, lerVersao, lerNativoDireto } from '@/dados/api';
+import { buscarDados, buscarDadosGithub, lerVersao, lerNativoDireto } from '@/dados/api';
 import { buscarCategoria, resumoBusca } from '@/dados/busca';
 import { lerFavoritos, guardarFavoritos, lerSelecao, guardarSelecao, lerTexto, gravarTexto, CHAVES } from '@/dados/armazenamento';
 import { VERSAO_WEB } from '@/versaoApp';
@@ -46,7 +46,7 @@ function useEstadoApp() {
   const dadosRef = useRef(dados);
   useEffect(() => { dadosRef.current = dados; }, [dados]);
 
-  // carga: cópia do aparelho na hora; depois a última coleta do servidor (sem iniciar coleta nova)
+  // carga: cópia do aparelho na hora; depois a última coleta automática (GitHub, sem acordar o servidor); o servidor só se o GitHub falhar
   useEffect(() => {
     let vivo = true;
     (async () => {
@@ -54,10 +54,10 @@ function useEstadoApp() {
       if (!vivo) return;
       setDados(local.dados); setNovos(local.novos); setFavs(f); setSel(s); setCarregado(local.temDados);
       try {
-        const r = await aplicarDados(local.dados, await buscarDados());
+        const r = await aplicarDados(local.dados, await buscarDadosGithub().catch(() => buscarDados()));
         if (vivo && r) { setDados(r.dados); setNovos(r.novos); setAviso({tipo: 'ok', texto: `✔ Carregados os preços da última coleta (${r.dados.ultimaAtualizacaoTexto || ''}).`}); }
       } catch {
-        if (vivo && !local.temDados) setAviso({tipo: 'erro', texto: 'Não consegui falar com o servidor agora. Ele pode estar acordando: toque em ⟳ em 1 minuto.'});
+        if (vivo && !local.temDados) setAviso({tipo: 'erro', texto: 'Não consegui baixar as ofertas agora. Confira a internet e toque em ⟳.'});
       } finally { if (vivo) setCarregado(true); }
     })();
     return () => { vivo = false; };
@@ -140,7 +140,15 @@ function useEstadoApp() {
       });
       const atual = dadosRef.current;
       if (!r.ok && r.motivo === 'erro') { setAviso({tipo: 'erro', texto: `⚠ ${r.mensagem}. Continuam os dados de ${atual.ultimaAtualizacaoTexto || '?'}.`}); return; }
-      if (!r.ok) { setAviso({tipo: 'erro', texto: `Não consegui falar com o servidor agora (${r.mensagem}). Ele pode estar acordando: tente de novo em 1 minuto. Dados de: ${atual.ultimaAtualizacaoTexto || 'não informado'}.`}); return; }
+      if (!r.ok) {
+        // servidor fora do ar (dormindo demais, suspenso…): carrega a coleta automática mais recente (GitHub, a cada 3 h)
+        const g = await buscarDadosGithub().then(d => aplicarDados(atual, d)).catch(() => null);
+        if (g) { setDados(g.dados); setNovos(g.novos); }
+        const quando = (g ? g.dados : atual).ultimaAtualizacaoTexto || 'não informado';
+        setAviso({tipo: 'erro', texto: `O servidor de busca nas lojas não respondeu (${r.mensagem}). ${g ? 'Carreguei' : 'Continuam'} os preços da coleta automática mais recente: ${quando}.`,
+          detalhe: 'A coleta automática roda sozinha a cada 3 horas e não depende do servidor.'});
+        return;
+      }
       const ap = await aplicarDados(atual, r.dados);
       const final = ap ? ap.dados : atual;
       if (ap) { setDados(ap.dados); setNovos(ap.novos); }
