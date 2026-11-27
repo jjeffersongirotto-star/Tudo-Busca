@@ -1,6 +1,7 @@
 /** Games: nota de oferta = preço comparado com o preço típico (mediana) do mesmo modelo. */
 import type { Produto } from './tipos';
 import { r1 } from './formato';
+import { notaTV, cbBrutoTV } from './tv';
 
 export const OFERTA = {fator: 2.5, minimoAnuncios: 3};   // 20% abaixo do típico = 100; no típico = 50; 20% acima = 0
 export const grupoG = (n: Produto) => `${n.item}|${n.grupo || (n.original ? n.modelo : 'Compatível (outra marca)')}`;
@@ -36,15 +37,20 @@ export const FILTROS_G: {id: FiltroGId; rotulo: string; fn: (n: Produto) => stri
 ];
 export const OPCOES_G = {
   gPreco: [['', 'Qualquer'], ['150', 'até R$ 150'], ['250', 'até R$ 250'], ['350', 'até R$ 350'], ['400', 'até R$ 400'], ['450', 'até R$ 450'], ['500', 'até R$ 500'], ['700', 'até R$ 700'], ['1000', 'até R$ 1.000'], ['1500', 'até R$ 1.500'], ['2000', 'até R$ 2.000'], ['2500', 'até R$ 2.500'], ['3000', 'até R$ 3.000'],
-    ['3500', 'até R$ 3.500'], ['4000', 'até R$ 4.000'], ['5000', 'até R$ 5.000']],
+    ['3500', 'até R$ 3.500'], ['4000', 'até R$ 4.000'], ['5000', 'até R$ 5.000'], ['7000', 'até R$ 7.000'], ['10000', 'até R$ 10.000']],
   // games: sem nota de oferta (o aparelho é igual em toda loja; só o preço muda) → padrão = menor preço
   gOrdem: [['cupom', 'Menor preço com cupom (padrão)'], ['asc', 'Menor preço (sem cupom)'], ['desc', 'Maior desconto'], ['pdesc', 'Maior preço']],
+  // TVs têm nota para games (logica/tv.ts): padrão = custo-benefício, como nos computadores
+  gOrdemTV: [['cb', 'Melhor custo-benefício (padrão)'], ['nota', 'Melhor nota para games'], ['cupom', 'Menor preço com cupom'], ['asc', 'Menor preço (sem cupom)'], ['pdesc', 'Maior preço']],
 } as const;
 
-export interface EstadoFiltrosG { sel: Partial<Record<FiltroGId, string>>; gPreco: string; gOrdem: 'oferta' | 'cupom' | 'asc' | 'desc' | 'pdesc'; gOriginal: boolean; gSemKit: boolean }
-export const FILTROS_G_PADRAO: EstadoFiltrosG = {sel: {}, gPreco: '', gOrdem: 'cupom', gOriginal: true, gSemKit: false};
+export type OrdemG = 'oferta' | 'cupom' | 'asc' | 'desc' | 'pdesc' | 'nota' | 'cb';
+export interface EstadoFiltrosG { sel: Partial<Record<FiltroGId, string>>; gPreco: string; gOrdem: OrdemG; gOrdemTV: OrdemG; gOriginal: boolean; gSemKit: boolean }
+export const FILTROS_G_PADRAO: EstadoFiltrosG = {sel: {}, gPreco: '', gOrdem: 'cupom', gOrdemTV: 'cb', gOriginal: true, gSemKit: false};
 /** ordem válida (quem tinha "Melhor oferta" guardado passa para "Menor preço") */
-export const ordemG = (e: EstadoFiltrosG): EstadoFiltrosG['gOrdem'] => (OPCOES_G.gOrdem.some(([v]) => v === e.gOrdem) ? e.gOrdem : 'cupom');
+export const ordemG = (e: EstadoFiltrosG, tv = false): OrdemG => tv
+  ? (OPCOES_G.gOrdemTV.some(([v]) => v === e.gOrdemTV) ? e.gOrdemTV : 'cb')
+  : (OPCOES_G.gOrdem.some(([v]) => v === e.gOrdem) ? e.gOrdem : 'cupom');
 
 export function opcoesFiltrosG(base: Produto[]): Record<FiltroGId, {v: string; n: number}[]> {
   const out = {} as Record<FiltroGId, {v: string; n: number}[]>;
@@ -62,12 +68,15 @@ export function filtradosG(produtos: Produto[], notas: Map<string, NotaG>, e: Es
   if (e.gOriginal) l = l.filter(n => n.original);
   if (e.gSemKit) l = l.filter(n => !n.kit);
   const nota = (n: Produto) => notas.get(n.id)?.nota ?? -1;
+  const pc = (n: Produto) => (precoCupom ? precoCupom(n) : n.precoNum ?? 1e12);
   const cmp = {
     oferta: (a: Produto, b: Produto) => nota(b) - nota(a) || (a.precoNum ?? 1e12) - (b.precoNum ?? 1e12),
     cupom: (a: Produto, b: Produto) => (precoCupom ? precoCupom(a) - precoCupom(b) : 0) || (a.precoNum ?? 1e12) - (b.precoNum ?? 1e12),
     asc: (a: Produto, b: Produto) => (a.precoNum ?? 1e12) - (b.precoNum ?? 1e12),
     desc: (a: Produto, b: Produto) => (b.descontoPct ?? -1) - (a.descontoPct ?? -1) || (a.precoNum ?? 1e12) - (b.precoNum ?? 1e12),
     pdesc: (a: Produto, b: Produto) => (b.precoNum ?? -1) - (a.precoNum ?? -1),
+    nota: (a: Produto, b: Produto) => notaTV(b).total - notaTV(a).total || pc(a) - pc(b),
+    cb: (a: Produto, b: Produto) => cbBrutoTV(b, pc(b)) - cbBrutoTV(a, pc(a)) || pc(a) - pc(b),
   }[e.gOrdem || 'cupom'];
   return [...l].sort(cmp);
 }

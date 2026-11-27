@@ -49,6 +49,12 @@ export interface Produto {
   original?: boolean;
   kit?: boolean;
   edicao?: string;
+  // TVs (Games › TVs)
+  tvRes?: string;
+  tvPainel?: string;
+  tvHz?: number | null;
+  tvGame?: string[];
+  tvSistema?: string;
   /** grupo da nota de oferta (consoles e outros acessórios: o modelo/tipo, oficial ou não) */
   grupo?: string;
   menorPrecoVisto?: number;

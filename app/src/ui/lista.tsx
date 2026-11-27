@@ -5,7 +5,8 @@ import { T, Meta, Tag, Botao, Select, Check, Foto, Barra, Recolhivel, Icone } fr
 import { C, F, RAIO } from './tema';
 import { useApp } from './estado';
 import { InfoPC, InfoG, TagCat, TagPerfil, BadgeDesc } from './detalhes';
-import { RegrasPC, SobreG } from './regras';
+import { RegrasPC, SobreG, RegrasTV } from './regras';
+import { ehTV, notaTV, cbBrutoTV } from '@/logica/tv';
 import type { Produto } from '@/logica/tipos';
 import { FILTROS, OPCOES_NUM, POR_PAGINA, ICONE_TIPO, opcoesFiltros, filtrados, montarLista, valorNota } from '@/logica/filtros';
 import { FILTROS_G, OPCOES_G, opcoesFiltrosG, filtradosG, ordemG } from '@/logica/ofertas';
@@ -137,22 +138,27 @@ const CardPC = memo(function CardPC({ n, r, usaPreco, pcc, ...p }: { n: Produto;
   return <Cartao n={n} {...p} topo={topo} corpo={corpo}><InfoPC n={n} noCard /></Cartao>;
 });
 
-const CardG = memo(function CardG({ n, nc, pcc, ...p }: { n: Produto; nc: number; pcc?: PrecoComCupom; fav: boolean; aberto: boolean; sel: boolean; novo: boolean; foraFiltro: boolean; aoSelecionar: () => void; aoFav: () => void; aoExp: () => void }) {
+const CardG = memo(function CardG({ n, nc, pcc, tv, ...p }: { n: Produto; nc: number; pcc?: PrecoComCupom; tv?: {nota: number; cb: number | null}; fav: boolean; aberto: boolean; sel: boolean; novo: boolean; foraFiltro: boolean; aoSelecionar: () => void; aoFav: () => void; aoExp: () => void }) {
   const marca = n.marca && n.marca !== 'Sem marca conhecida' ? n.marca : '';
   const fabricante = ['Sony', 'Microsoft', 'Nintendo', 'Valve'].includes(marca);
-  const topo = `${n.secao === 'pecas' ? (itemCfg(n)?.icone || '🖥️') : n.sub === 'consoles' ? '🕹️' : '🎮'} ${n.original ? [marca, n.modelo].filter(Boolean).join(' · ') : (marca || 'outra marca') + (n.grupo ? ' · ' + n.modelo : '')}`;
+  const topo = `${n.secao === 'pecas' ? (itemCfg(n)?.icone || '🖥️') : n.sub === 'tvs' ? '📺' : n.sub === 'consoles' ? '🕹️' : '🎮'} ${n.original ? [marca, n.modelo].filter(Boolean).join(' · ') : (marca || 'outra marca') + (n.grupo ? ' · ' + n.modelo : '')}`;
   const corpo = (
     <>
       <View style={st.tags}>
         {n.original ? <Tag fundo="rgba(34,197,94,0.14)" cor="#86efac">{fabricante ? `✔ Original ${marca}` : `✔ Marca ${marca}`}</Tag>
           : <Tag fundo="rgba(56,189,248,0.13)" cor="#7dd3fc">{n.grupo ? 'Genérico / sem marca' : 'Compatível (outra marca)'}</Tag>}
         {n.edicao ? <Tag>{n.edicao}</Tag> : null}
+        {tv && n.tvHz ? <Tag>⚡ {n.tvHz} Hz</Tag> : null}
+        {tv && n.tvGame?.length ? <Tag fundo="rgba(139,92,246,0.14)" cor="#ddd6fe">🎮 {n.tvGame.join(' · ')}</Tag> : null}
+        {tv && n.tvSistema ? <Tag>{n.tvSistema}</Tag> : null}
         {n.kit ? <Tag fundo="rgba(251,146,60,0.14)" cor="#fdba74">kit</Tag> : null}
         {nc ? <Tag fundo="rgba(34,211,238,0.12)" cor="#a5f3fc">🏷️ {nc} cupom(ns) da loja</Tag> : null}
         <TagVelho n={n} />
       </View>
       <Preco n={n} pc={pcc} />
       <VocePaga n={n} pc={pcc} />
+      {tv ? <Barra rotulo="Nota para games" valor={tv.nota} texto={`${tv.nota}/100`} /> : null}
+      {tv ? (tv.cb == null ? <Barra rotulo="Custo-benefício" valor={0} texto="sem preço" /> : <Barra rotulo="Custo-benefício" valor={tv.cb} texto={`${fmt1(tv.cb)}/100`} />) : null}
     </>
   );
   return <Cartao n={n} {...p} topo={topo} corpo={corpo}><InfoG n={n} noCard /></Cartao>;
@@ -183,7 +189,7 @@ function FiltrosPC({ colunas }: { colunas: number }) {
   );
 }
 
-function FiltrosG({ colunas, base }: { colunas: number; base: Produto[] }) {
+function FiltrosG({ colunas, base, tv }: { colunas: number; base: Produto[]; tv: boolean }) {
   const {filtrosG: f, setFiltrosG, setFiltroSelG, limparFiltrosG} = useApp();
   const op = useMemo(() => opcoesFiltrosG(base), [base]);
   const w = `${100 / colunas}%` as const;
@@ -193,7 +199,8 @@ function FiltrosG({ colunas, base }: { colunas: number; base: Produto[] }) {
       {FILTROS_G.map(x => caixa(<Select rotulo={x.rotulo} valor={f.sel[x.id] || ''} aoMudar={v => setFiltroSelG(x.id, v)}
         opcoes={[['', x.todos], ...op[x.id].map(o => [o.v, `${o.v} (${o.n})`] as const)]} />, x.id))}
       {caixa(<Select rotulo="Preço até (R$)" valor={f.gPreco} opcoes={OPCOES_G.gPreco} aoMudar={v => setFiltrosG({gPreco: v})} />, 'gPreco')}
-      {caixa(<Select rotulo="Ordenar" valor={ordemG(f)} opcoes={OPCOES_G.gOrdem} aoMudar={v => setFiltrosG({gOrdem: v as typeof f.gOrdem})} />, 'gOrdem')}
+      {tv ? caixa(<Select rotulo="Ordenar" valor={ordemG(f, true)} opcoes={OPCOES_G.gOrdemTV} aoMudar={v => setFiltrosG({gOrdemTV: v as typeof f.gOrdemTV})} />, 'gOrdemTV')
+        : caixa(<Select rotulo="Ordenar" valor={ordemG(f)} opcoes={OPCOES_G.gOrdem} aoMudar={v => setFiltrosG({gOrdem: v as typeof f.gOrdem})} />, 'gOrdem')}
       {caixa(<Check rotulo="Só originais / de marca" valor={f.gOriginal} aoMudar={v => setFiltrosG({gOriginal: v})} style={colunas > 2 ? {paddingTop: 18} : {paddingVertical: 3}} />, 'gOriginal', true)}
       {caixa(<Check rotulo="Esconder kits (com jogo, base…)" valor={f.gSemKit} aoMudar={v => setFiltrosG({gSemKit: v})} style={colunas > 2 ? {paddingTop: 18} : {paddingVertical: 3}} />, 'gSemKit', true)}
       {caixa(<Botao tipo="contorno" titulo="Limpar filtros" onPress={limparFiltrosG} style={{marginTop: 14}} />, 'limpar', true)}
@@ -206,6 +213,7 @@ export function ColunaLista({ largura, aoSelecionar }: { largura: number; aoSele
   const {sel, pcs, jogos, notas, ofertas, prodSel, favs, expandidos, selecionadoId, novos, limite, setLimite, filtros, filtrosG, dados, alternarFav, alternarExp} = app;
   const {width} = useWindowDimensions();
   const s = secaoAtual(sel), sb = subAtual(sel), it = itemAtual(sel);
+  const ehSubTV = s.id === 'games' && sb.id === 'tvs';
   const pc = s.id === 'computadores' && sb.id === 'todos';
   const colFiltros = width <= 500 ? 2 : Math.max(2, Math.min(6, Math.floor(largura / 165)));
   const grade = width > 700 ? 2 : 1;
@@ -223,10 +231,20 @@ export function ColunaLista({ largura, aoSelecionar }: { largura: number; aoSele
       const l = filtrados(pcs, notas, filtros, pf);
       return {l, total: pcs, ...montarLista(pcs, l, favs, limite, (a, b) => valorNota(b, notas, filtros.fCB) - valorNota(a, notas, filtros.fCB))};
     }
-    const l = filtradosG(prodSel, ofertas.notas, {...filtrosG, gOrdem: ordemG(filtrosG)}, pf);
+    const l = filtradosG(prodSel, ofertas.notas, {...filtrosG, gOrdem: ordemG(filtrosG, ehSubTV)}, pf);
     return {l, total: prodSel, ...montarLista(prodSel, l, favs, limite)};
-  }, [sb.emBreve, pc, pcs, notas, filtros, favs, limite, prodSel, ofertas, filtrosG, cupomPor]);
+  }, [sb.emBreve, pc, pcs, notas, filtros, favs, limite, prodSel, ofertas, filtrosG, cupomPor, ehSubTV]);
   const baseG = prodSel.length || sel.secao !== 'games' ? prodSel : jogos.filter(n => n.secao === 'games');
+  // TVs: nota para games e custo-benefício (0–100, a melhor TV da lista = 100)
+  const notaTVPor = useMemo(() => {
+    const m = new Map<string, {nota: number; cb: number | null}>();
+    if (!ehSubTV) return m;
+    const pf = (n: Produto) => precoFinal(cupomPor.get(n.id), n);
+    const cbs = prodSel.filter(ehTV).map(n => [n, n.precoNum ? cbBrutoTV(n, pf(n)) : null] as const);
+    const max = Math.max(1e-9, ...cbs.map(([, c]) => c || 0));
+    for (const [n, c] of cbs) m.set(n.id, {nota: notaTV(n).total, cb: c == null ? null : Math.round(c / max * 1000) / 10});
+    return m;
+  }, [ehSubTV, prodSel, cupomPor]);
 
   const titulo = `${it ? it.icone : sb.emBreve ? sb.icone : s.icone} ${nomeSel(sel)}`;
   const cont = !lista ? '' : `${lista.l.length} de ${lista.total.length}` + (lista.favoritos.length ? ` · ★ ${lista.favoritos.length}` + (pc && lista.foraFiltro ? ` (${lista.foraFiltro} fora dos filtros)` : '') : '');
@@ -238,8 +256,9 @@ export function ColunaLista({ largura, aoSelecionar }: { largura: number; aoSele
   return (
     <View>
       <View style={st.h2}><T peso="extra" style={{fontSize: 16}}>{titulo} <T peso="semi" style={{fontSize: 12, color: C.sub}} testID="contNotes">{cont}</T></T></View>
-      {pc ? <FiltrosPC colunas={colFiltros} /> : !sb.emBreve ? <FiltrosG colunas={colFiltros} base={baseG} /> : null}
+      {pc ? <FiltrosPC colunas={colFiltros} /> : !sb.emBreve ? <FiltrosG colunas={colFiltros} base={baseG} tv={ehSubTV} /> : null}
       {pc ? <Recolhivel titulo="ℹ️ Como a nota é calculada" style={st.regras}><RegrasPC pcs={pcs} notas={notas} /></Recolhivel>
+        : ehSubTV ? <Recolhivel titulo="ℹ️ Como a nota das TVs é calculada" style={st.regras}><RegrasTV /></Recolhivel>
         : !sb.emBreve ? <Recolhivel titulo="ℹ️ Sobre os preços" style={st.regras}><SobreG /></Recolhivel> : null}
       <View style={{padding: 12, flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -6}} testID="listaNotes">
         {sb.emBreve ? <T style={st.vazio}>{sb.icone} {sb.nome} — em breve. A estrutura do card já está pronta; falta escolher quais produtos buscar.</T>
@@ -248,7 +267,7 @@ export function ColunaLista({ largura, aoSelecionar }: { largura: number; aoSele
           : itens.map(n => (
             <View key={n.id} style={{width: grade === 2 && !expandidos.has(n.id) ? '50%' : '100%', paddingHorizontal: 6}}>
               {pc ? <CardPC n={n} r={notas.get(n.id)} usaPreco={filtros.fCB} pcc={cupomPor.get(n.id)} {...props(n)} />
-                : <CardG n={n} nc={cuponsDaLoja(dados.cupons, n).length} pcc={cupomPor.get(n.id)} {...props(n)} />}
+                : <CardG n={n} nc={cuponsDaLoja(dados.cupons, n).length} pcc={cupomPor.get(n.id)} tv={notaTVPor.get(n.id)} {...props(n)} />}
             </View>
           ))}
         {lista && lista.faltam > 0 ? (

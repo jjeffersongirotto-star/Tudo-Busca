@@ -56,3 +56,21 @@ export function SobreG() {
   );
 }
 export { C };
+
+/** Games › TVs: como a nota para games é calculada. */
+export function RegrasTV() {
+  return (
+    <View style={{gap: 6}}>
+      <P><B>Nota para games (0 a 100)</B> — soma do que o anúncio informa sobre a TV:</P>
+      <Tabela cab={['O que conta', 'Pontos']} linhas={[
+        ['Tipo de tela: OLED 40 · Mini LED 33 · QNED 28 · QLED 25 · NanoCell 20 · LED 12', 'até 40'],
+        ['Taxa de atualização: 144 Hz ou mais 25 · 120 Hz 22 · 100 Hz 12 · 60 Hz / não informada 5', 'até 25'],
+        ['Resolução: 8K 15 · 4K 13 · Full HD 5 · HD 0', 'até 15'],
+        ['Recursos para console: HDMI 2.1, VRR, ALLM, FreeSync, G-Sync (4 cada) · modo jogo 2', 'até 10'],
+        ['Tamanho: 75" ou mais 10 · 65" 9 · 55" 7 · 50" 5 · 43" 3', 'até 10'],
+      ]} />
+      <P><B>Custo-benefício (0 a 100)</B> — nota dividida pelo preço (já com o cupom que vale); a TV com a melhor relação da lista fica com 100. É a ordem padrão da lista.</P>
+      <Est><T peso="extra" style={{fontSize: 12.8, color: '#fef3c7'}}>Estimado pelo título.</T> Muitos anúncios não dizem a taxa de atualização nem os recursos para console: aí a TV fica com a pontuação mínima nesses itens, mesmo que tenha. Confira a ficha técnica antes de comprar (no PS5 e no Xbox Series, 120 Hz e HDMI 2.1 fazem diferença).</Est>
+    </View>
+  );
+}

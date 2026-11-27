@@ -32,7 +32,7 @@ export const SECOES: SecaoCfg[] = [
    lojasCupom: ['Dell.com', 'KaBuM!', 'Amazon', 'Magazine Luiza', 'Casas Bahia', 'Mercado Livre', 'Fast Shop', 'Lenovo', 'Samsung', 'Acer', 'Asus', 'Positivo',
      'Pichau', 'Terabyte', 'iByte', 'Carrefour', 'Ponto', 'Extra', 'Americanas', 'Avell', 'Webcontinental', 'HP', 'Multilaser', 'Vaio', 'Microsoft', 'Kalunga', 'Submarino', 'Shoptime'],
    pesosCupom: {'Computadores': 4, 'Informática': 3, 'Loja toda': 2, 'Geral': 2, 'Produtos selecionados': 1}},
-  {id: 'games', nome: 'Games', icone: '🎮', desc: 'Consoles e acessórios',
+  {id: 'games', nome: 'Games', icone: '🎮', desc: 'Consoles, TVs e acessórios',
    subs: [
      {id: 'consoles', nome: 'Consoles', icone: '🕹️', itens: [
        {id: 'console-ps5', nome: 'PlayStation 5', icone: '🎮', cupom: /console|\bps\s?5\b|playstation/i,
@@ -48,6 +48,11 @@ export const SECOES: SecaoCfg[] = [
         cupomItem: /console\s+nintendo\s+switch(?!\s*2)|switch\s+(?:oled|lite)/i, cupomOutro: /playstation|\bps\s?[45]\b|xbox|switch\s*2|joy-?con|\bjogos?\b|\bcase\b/i},
        {id: 'console-steam', nome: 'Steam Deck / Machine', icone: '🖥️', cupom: /steam|valve|port[aá]til/i,
         cupomItem: /steam\s*(?:deck|machine)/i, cupomOutro: /playstation|\bps\s?[45]\b|xbox|switch|nintendo|gift|cart[aã]o|\bjogos?\b/i},
+     ]},
+     {id: 'tvs', nome: 'TVs', icone: '📺', itens: [
+       {id: 'tv', nome: 'TVs', icone: '📺', cupom: /smart\s?tvs?|\btvs?\b|televis/i,
+        cupomItem: /smart\s?tvs?|\btvs?\s+(?:\d|4k|8k|led|qled|oled|smart|samsung|lg|tcl|philco|sony)|televis(?:or|[aã]o)/i,
+        cupomOutro: /suporte|controle\s+remoto|tv\s?box|soundbar|console|celular|notebook/i},
      ]},
      {id: 'acessorios', nome: 'Acessórios', icone: '🎧', itens: [
        {id: 'controle-ps5', nome: 'Controles de PS5', icone: '🎮', cupom: /controle|dual\s?sense|\bps\s?5\b|playstation/i,
