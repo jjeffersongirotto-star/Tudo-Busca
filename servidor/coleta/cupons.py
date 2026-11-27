@@ -88,8 +88,7 @@ def _outra_loja(loja, titulo):
 
 SITES = {
     'Méliuz': 'https://www.meliuz.com.br/desconto/cupom-{s}',
-    # em teste (27/11/2026): sites de promoções com páginas de cupom por loja; o leitor é o mesmo (JSON embutido / atributos do HTML)
-    'Pelando': 'https://www.pelando.com.br/cupons-de-descontos/{s}',
+    # Promobit: testado em 27/11/2026, +653 cupons com o mesmo leitor (JSON embutido). Pelando foi testado e não trouxe nenhum.
     'Promobit': 'https://www.promobit.com.br/cupons/loja/{s}/',
 }
 _CODIGO = re.compile(r'^[A-Z0-9][A-Z0-9_\-]{3,24}$')
