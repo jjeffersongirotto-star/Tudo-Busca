@@ -71,7 +71,8 @@ export const SECOES: SecaoCfg[] = [
      ]},
    ],
    lojasCupom: ['KaBuM!', 'Amazon', 'AliExpress', 'Shopee', 'Temu', 'Magazine Luiza', 'Mercado Livre', 'Casas Bahia', 'Fast Shop', 'Americanas', 'Carrefour',
-     'Extra', 'Ponto', 'Pichau', 'Terabyte', 'Webcontinental', 'iByte', 'Submarino', 'Shoptime'],
+     'Extra', 'Ponto', 'Pichau', 'Terabyte', 'Webcontinental', 'iByte', 'Submarino', 'Shoptime',
+     'LG', 'TCL', 'Philco', 'Sony', 'Hisense', 'Britânia', 'Havan', 'Gazin', 'Colombo', 'Zema'],
    pesosCupom: {'Games': 4, 'Loja toda': 2, 'Geral': 2, 'Produtos selecionados': 1}},
 ];
 

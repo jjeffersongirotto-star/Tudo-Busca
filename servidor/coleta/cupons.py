@@ -28,6 +28,9 @@ LOJAS = {
     'HP': 'hp', 'Shopee': 'shopee', 'AliExpress': 'aliexpress', 'Multilaser': 'multilaser', 'Vaio': 'vaio', 'Microsoft': 'microsoft',
     'Motorola': 'motorola', 'Submarino': 'submarino', 'Shoptime': 'shoptime', 'Kalunga': 'kalunga', 'Leroy Merlin': 'leroy-merlin',
     'Temu': 'temu',
+    # marcas e lojas de TV/eletro (Games › TVs)
+    'LG': 'lg', 'TCL': 'tcl', 'Philco': 'philco', 'Sony': 'sony', 'Hisense': 'hisense', 'Britânia': 'britania', 'Havan': 'havan',
+    'Gazin': 'gazin', 'Colombo': 'colombo', 'Zema': 'zema',
 }
 # como cada loja aparece escrita nos títulos dos cupons (para não atribuir cupom de uma loja à outra)
 APELIDOS = {'KaBuM!': ['kabum'], 'Amazon': ['amazon'], 'Dell.com': ['dell', 'alienware'], 'Magazine Luiza': ['magalu', 'magazine luiza'],
@@ -35,7 +38,9 @@ APELIDOS = {'KaBuM!': ['kabum'], 'Amazon': ['amazon'], 'Dell.com': ['dell', 'ali
             'Lenovo': ['lenovo'], 'Samsung': ['samsung', 'galaxy'], 'Acer': ['acer', 'predator', 'nitro'], 'Asus': ['asus', 'rog', 'zenbook'],
             'Pichau': ['pichau'], 'Carrefour': ['carrefour'], 'Ponto': ['ponto'], 'Extra': ['extra'], 'Americanas': ['americanas'],
             'Avell': ['avell'], 'Webcontinental': ['webcontinental'], 'HP': ['hp'], 'Shopee': ['shopee'], 'AliExpress': ['aliexpress'],
-            'Multilaser': ['multilaser'], 'Vaio': ['vaio'], 'Motorola': ['motorola', 'moto g'], 'Leroy Merlin': ['leroy'], 'Temu': ['temu']}
+            'Multilaser': ['multilaser'], 'Vaio': ['vaio'], 'Motorola': ['motorola', 'moto g'], 'Leroy Merlin': ['leroy'], 'Temu': ['temu'],
+            'LG': ['lg'], 'TCL': ['tcl'], 'Philco': ['philco'], 'Sony': ['sony'], 'Hisense': ['hisense'], 'Britânia': ['britania', 'britânia'],
+            'Havan': ['havan'], 'Gazin': ['gazin'], 'Colombo': ['colombo'], 'Zema': ['zema']}
 
 
 # Categorias do cupom (a página mostra os cupons conforme o card escolhido: Computadores, Games…).
@@ -83,6 +88,9 @@ def _outra_loja(loja, titulo):
 
 SITES = {
     'Méliuz': 'https://www.meliuz.com.br/desconto/cupom-{s}',
+    # em teste (27/11/2026): sites de promoções com páginas de cupom por loja; o leitor é o mesmo (JSON embutido / atributos do HTML)
+    'Pelando': 'https://www.pelando.com.br/cupons-de-descontos/{s}',
+    'Promobit': 'https://www.promobit.com.br/cupons/loja/{s}/',
 }
 _CODIGO = re.compile(r'^[A-Z0-9][A-Z0-9_\-]{3,24}$')
 _NAO = re.compile(r'^(NULL|NONE|TRUE|FALSE|UNDEFINED|CUPOM|CODIGO|COPIAR|ATIVAR|OFERTA|DESCONTO|PROMO|VER|HTTPS?|WWW|NAN|\d+)$')

@@ -80,7 +80,8 @@ LOJAS_CUPOM = {
                      'Positivo', 'Pichau', 'Terabyte', 'iByte', 'Carrefour', 'Ponto', 'Extra', 'Americanas', 'Avell', 'Webcontinental', 'HP', 'Multilaser',
                      'Vaio', 'Microsoft', 'Kalunga', 'Submarino', 'Shoptime'],
     'games': ['KaBuM!', 'Amazon', 'AliExpress', 'Shopee', 'Temu', 'Magazine Luiza', 'Mercado Livre', 'Casas Bahia', 'Fast Shop', 'Americanas', 'Carrefour',
-              'Extra', 'Ponto', 'Pichau', 'Terabyte', 'Webcontinental', 'iByte', 'Submarino', 'Shoptime'],
+              'Extra', 'Ponto', 'Pichau', 'Terabyte', 'Webcontinental', 'iByte', 'Submarino', 'Shoptime',
+              'LG', 'TCL', 'Philco', 'Sony', 'Hisense', 'Britânia', 'Havan', 'Gazin', 'Colombo', 'Zema'],
 }
 LOJAS_CUPOM['pecas'] = LOJAS_CUPOM['computadores']
 # seções "outras" (fora os computadores) que cada categoria coleta
