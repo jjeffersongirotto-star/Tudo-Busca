@@ -223,12 +223,11 @@ export function Secoes({ margem }: { margem: number }) {
           </Chip>
         ))}
       </View>
-      {itens.length ? (
+      {itens.length > 1 ? (
         <View style={st.chips}>
           <T peso="negrito" style={st.rot}>{sb.nome}:</T>
           <Chip item ativo={!it} onPress={() => escolher({item: ''})}>Todos os {sb.nome.toLowerCase()}{n(contar(s.id, sb.id, pcs, jogos))}</Chip>
           {itens.map(i => <Chip item key={i.id} ativo={!!it && it.id === i.id} onPress={() => escolher({item: i.id})}>{i.icone} {i.nome}{n(contar(s.id, sb.id, pcs, jogos, i.id))}</Chip>)}
-          <T style={{fontSize: 12.3, color: C.sub}}>mais tipos de acessório em breve</T>
         </View>
       ) : null}
     </View>

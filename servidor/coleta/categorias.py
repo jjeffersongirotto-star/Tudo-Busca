@@ -374,7 +374,9 @@ MIN_MODELO = {'PS5 Pro': 4000, 'PS5 Digital': 2500, 'PS5 Mídia física': 3000, 
 
 # Computadores › Acessórios (peças: SSD, memória, placa-mãe…): mesmos lojas e regras, seção "pecas"
 from .pecas import ITENS as _PECAS  # noqa: E402
+from .tvs import ITENS as _TVS  # noqa: E402
 ITENS.update(_PECAS)
+ITENS.update(_TVS)   # Games › TVs
 
 
 def classificar(item, nome, preco=None):

@@ -233,11 +233,19 @@ def _montar(raw, item, cfg, hoje_txt):
          'modelo': info['modelo'], 'marca': info['marca'], 'original': info['original'], 'kit': info['kit'], 'edicao': info['edicao']}
     if cfg.get('grupo') == 'modelo':  # nota de oferta compara com o mesmo modelo/tipo, oficial ou não (consoles, outros acessórios)
         n['grupo'] = info['modelo']
+    n.update(info.get('campos') or {})   # campos próprios do item (TVs: polegadas, resolução, painel, Hz…)
     aplicar_preco(n, raw['preco'], raw.get('precoDe'), raw.get('prazo'), sufixo=raw.get('sufixo', ''))
     specs = {'Anúncio (título)': raw['nome'], 'Loja': raw['loja']}
     if raw.get('vendedor'):
         specs['Vendedor'] = raw['vendedor']
     specs['Modelo identificado'] = info['modelo'] + (' · ' + info['edicao'] if info['edicao'] else '')
+    c = info.get('campos') or {}
+    if 'tvPainel' in c:   # TVs: o que o título diz (o que não aparecer no título fica "não informado")
+        specs['Tela'] = f"{c['telaPol']}\" · {c.get('tvRes') or 'resolução não informada'} · {c['tvPainel']}"
+        specs['Taxa de atualização'] = f"{c['tvHz']} Hz" if c.get('tvHz') else 'não informada no anúncio'
+        specs['Recursos para games'] = ', '.join(c.get('tvGame') or []) or 'não informados no anúncio'
+        if c.get('tvSistema'):
+            specs['Sistema'] = c['tvSistema']
     specs['Marca'] = info['marca']
     if info['kit']:
         specs['Kit'] = 'Anúncio com outro item junto (jogo, base, cabo…)'
