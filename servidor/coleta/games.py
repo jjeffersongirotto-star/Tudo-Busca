@@ -187,13 +187,18 @@ async def mercadolivre(http, termo):
 
 
 # ---------------------------------------------------------------- lojas VTEX que vendem games (API pública de catálogo)
-VTEX = {'iByte': 'www.ibyte.com.br', 'Webcontinental': 'www.webcontinental.com.br', 'Lojas MM': 'www.lojasmm.com'}
+VTEX = {'iByte': 'www.ibyte.com.br', 'Webcontinental': 'www.webcontinental.com.br', 'Lojas MM': 'www.lojasmm.com',
+        # lojas de eletro/TV com o mesmo catálogo público (VTEX); a que não responder só fica de fora
+        'Carrefour': 'www.carrefour.com.br', 'Havan': 'www.havan.com.br', 'Zema': 'www.zema.com', 'Eletrozema': 'www.eletrozema.com.br',
+        'Gazin': 'www.gazin.com.br', 'Colombo': 'www.colombo.com.br', 'WAZ': 'www.waz.com.br', 'Philco': 'www.philco.com.br'}
 
 
 async def vtex(http, termo):
     out, algum = [], False
-    for loja, host in VTEX.items():
-        lista = await http.get(f'https://{host}/api/catalog_system/pub/products/search?ft={quote(termo)}&_from=0&_to=49', json=True, tentativas=1)
+    # todas as lojas ao mesmo tempo (uma por vez estourava o tempo limite com muitas lojas)
+    respostas = await asyncio.gather(*(http.get(f'https://{host}/api/catalog_system/pub/products/search?ft={quote(termo)}&_from=0&_to=49',
+                                                json=True, tentativas=1) for host in VTEX.values()), return_exceptions=True)
+    for (loja, host), lista in zip(VTEX.items(), respostas):
         if not isinstance(lista, list):
             continue
         algum = True
@@ -219,7 +224,7 @@ LOJAS = [  # (nome mostrado no andamento, função, prefixo do id do anúncio)
     ('Shopee', shopee, 'shopee-'),
     ('Temu', temu, 'temu-'),
     ('Mercado Livre', mercadolivre, 'ml-'),
-    ('iByte/Webcontinental/MM', vtex, 'vtex-'),
+    ('Lojas VTEX (iByte, Webcontinental, Carrefour, Havan…)', vtex, 'vtex-'),
 ]
 
 
