@@ -35,6 +35,9 @@ def classificar_tv(nome):
         return None
     if re.search(r'suporte\s+(?:de\s+parede\s+)?para|controle\s+remoto|conversor|tv\s?box', n, re.I):
         return None
+    # móveis (estante, painel, rack, home…) citam "para TV até 65 polegadas"
+    if re.search(r'\b(?:estante|pain[eé]is?|rack|m[oó]vel|home\s+(?:para|suspens|theater)|aparador|buffet|bancada|mesa\s+para|cumaru|opala|freij[oó])\b|^\s*home\b', n, re.I):
+        return None
     pol = re.search(r'(\d{2,3})(?:[.,]\d)?\s*(?:"|”|\'\'|pol\b|pol\.|polegadas|inch|\bpolegada)', n, re.I) or re.search(r'\b(?:tv|smart\s?tv)\s+(?:\w+\s+){0,3}?(\d{2})\b(?!\s?(?:hz|gb|w\b))', n, re.I)
     if not pol or not 19 <= int(pol.group(1)) <= 120:
         return None
@@ -43,7 +46,7 @@ def classificar_tv(nome):
         'Full HD' if re.search(r'full\s?hd|\bfhd\b|1080', n, re.I) else 'HD' if re.search(r'\bhd\b|720', n, re.I) else ''
     painel = 'OLED' if re.search(r'\boled\b|qd-?oled', n, re.I) else 'Mini LED' if re.search(r'mini\s?-?led|neo\s?qled|qd-?mini', n, re.I) else \
         'QNED' if re.search(r'\bqned\b', n, re.I) else 'QLED' if re.search(r'\bqled\b|quantum\s+dot|crystal\s+uhd', n, re.I) else \
-        'NanoCell' if re.search(r'nano\s?cell', n, re.I) else 'LED'
+        'NanoCell' if re.search(r'nano\s?cell|\bnano\b(?!\s?(?:sim|chip))', n, re.I) else 'LED'
     # "Crystal UHD" da Samsung é LED comum (não é QLED): corrige
     if painel == 'QLED' and re.search(r'crystal\s+uhd', n, re.I) and not re.search(r'\bqled\b', n, re.I):
         painel = 'LED'
