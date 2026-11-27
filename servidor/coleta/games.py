@@ -188,9 +188,9 @@ async def mercadolivre(http, termo):
 
 # ---------------------------------------------------------------- lojas VTEX que vendem games (API pública de catálogo)
 VTEX = {'iByte': 'www.ibyte.com.br', 'Webcontinental': 'www.webcontinental.com.br', 'Lojas MM': 'www.lojasmm.com',
-        # lojas de eletro/TV com o mesmo catálogo público (VTEX); a que não responder só fica de fora
-        'Carrefour': 'www.carrefour.com.br', 'Havan': 'www.havan.com.br', 'Zema': 'www.zema.com', 'Eletrozema': 'www.eletrozema.com.br',
-        'Gazin': 'www.gazin.com.br', 'Colombo': 'www.colombo.com.br', 'WAZ': 'www.waz.com.br', 'Philco': 'www.philco.com.br'}
+        # lojas com o mesmo catálogo público (VTEX). Testadas em 27/11/2026 a partir do GitHub Actions e retiradas:
+        # Carrefour e Gazin (HTTP 403, bloqueiam), Havan e Colombo (404, sem esse catálogo), Zema e Eletrozema (não respondem: travavam a coleta)
+        'WAZ': 'www.waz.com.br', 'Philco': 'www.philco.com.br'}
 
 
 async def vtex(http, termo):
@@ -224,7 +224,7 @@ LOJAS = [  # (nome mostrado no andamento, função, prefixo do id do anúncio)
     ('Shopee', shopee, 'shopee-'),
     ('Temu', temu, 'temu-'),
     ('Mercado Livre', mercadolivre, 'ml-'),
-    ('Lojas VTEX (iByte, Webcontinental, Carrefour, Havan…)', vtex, 'vtex-'),
+    ('Lojas VTEX (iByte, Webcontinental, MM, WAZ, Philco)', vtex, 'vtex-'),
 ]
 
 
