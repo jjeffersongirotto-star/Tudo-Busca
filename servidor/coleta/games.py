@@ -23,6 +23,8 @@ from .util import aplicar_preco, imagem_ok, next_data, num
 log = logging.getLogger('coleta')
 LIMITE_LOJA = 120        # segundos por loja
 MAX_POR_LOJA = 60        # anúncios por loja E POR ITEM (os mais baratos dos originais + os mais baratos dos compatíveis)
+MAX_ZOOM = 120           # Zoom/Buscapé mostra ofertas de várias lojas (Magalu, Casas Bahia, Amazon…): limite maior
+# itens com limite próprio (ITENS[item]['max_loja']): TVs = 120 em todas as lojas
 
 
 def _slug(t):
@@ -59,27 +61,34 @@ async def kabum(http, termo):
 
 
 # ---------------------------------------------------------------- Zoom / Buscapé (mostram Amazon, Magalu, Fast Shop…)
+ZOOM_PAGINAS = 3   # o comparador junta ofertas de várias lojas: lê até 3 páginas de cada busca
+
+
 async def zoom(http, termo):
     vistos, algum = {}, False
     for site in zoom_mod.SITES:
-        html = await http.get(f'https://{site}/search?q={quote(termo)}')
-        nd = next_data(html) if html else None
-        if not nd:
-            continue
-        algum = True
-        for h in zoom_mod._hits(nd):
-            best = h.get('bestOffer') if isinstance(h.get('bestOffer'), dict) else {}
-            oid = str(best.get('id') or re.sub(r'\D', '', str(h.get('objectId') or h.get('objectID') or '')))
-            if not oid:
-                continue
-            loja_v = best.get('merchantName') or ''
-            url = h.get('url') or h.get('link') or ''
-            if url.startswith('/'):
-                url = 'https://' + site + url
-            vistos.setdefault(oid, {'id': 'zb-' + oid, 'loja': f'Zoom/Buscapé ({loja_v})' if loja_v else 'Zoom/Buscapé', 'vendedor': loja_v,
-                                    'nome': (h.get('name') or h.get('title') or '').strip(), 'url': url or f'https://www.zoom.com.br/lead?oid={oid}',
-                                    'preco': zoom_mod._preco(h), 'imagem': imagem_ok(h.get('image') or h.get('thumbnail')),
-                                    'specs': {'Comparadores': 'Zoom e Buscapé (mesma oferta nos dois sites)'}})
+        for pagina in range(1, ZOOM_PAGINAS + 1):
+            html = await http.get(f'https://{site}/search?q={quote(termo)}' + (f'&page={pagina}' if pagina > 1 else ''))
+            nd = next_data(html) if html else None
+            if not nd:
+                break
+            algum = True
+            antes = len(vistos)
+            for h in zoom_mod._hits(nd):
+                best = h.get('bestOffer') if isinstance(h.get('bestOffer'), dict) else {}
+                oid = str(best.get('id') or re.sub(r'\D', '', str(h.get('objectId') or h.get('objectID') or '')))
+                if not oid:
+                    continue
+                loja_v = best.get('merchantName') or ''
+                url = h.get('url') or h.get('link') or ''
+                if url.startswith('/'):
+                    url = 'https://' + site + url
+                vistos.setdefault(oid, {'id': 'zb-' + oid, 'loja': f'Zoom/Buscapé ({loja_v})' if loja_v else 'Zoom/Buscapé', 'vendedor': loja_v,
+                                        'nome': (h.get('name') or h.get('title') or '').strip(), 'url': url or f'https://www.zoom.com.br/lead?oid={oid}',
+                                        'preco': zoom_mod._preco(h), 'imagem': imagem_ok(h.get('image') or h.get('thumbnail')),
+                                        'specs': {'Comparadores': 'Zoom e Buscapé (mesma oferta nos dois sites)'}})
+            if len(vistos) == antes:   # página sem oferta nova (fim da busca, ou o site ignorou a página): para
+                break
     return list(vistos.values()) if algum else None
 
 
@@ -260,14 +269,14 @@ def _montar(raw, item, cfg, hoje_txt):
     return n
 
 
-def _cortar(lista):
+def _cortar(lista, maximo=MAX_POR_LOJA):
     """Limita por loja: guarda os mais baratos de cada modelo (para não lotar a página com anúncios genéricos)."""
-    if len(lista) <= MAX_POR_LOJA:
+    if len(lista) <= maximo:
         return lista
     orig = sorted([n for n in lista if n['original']], key=lambda n: n['precoNum'])
     comp = sorted([n for n in lista if not n['original']], key=lambda n: n['precoNum'])
-    k = max(MAX_POR_LOJA - len(orig), MAX_POR_LOJA // 3)
-    return (orig[:MAX_POR_LOJA - min(k, len(comp))] + comp[:k])[:MAX_POR_LOJA]
+    k = max(maximo - len(orig), maximo // 3)
+    return (orig[:maximo - min(k, len(comp))] + comp[:k])[:maximo]
 
 
 async def coletar(http, anteriores, status, hoje_txt, data_ant, secoes=('games', 'pecas'), rotulo='Games'):
@@ -304,7 +313,8 @@ async def coletar(http, anteriores, status, hoje_txt, data_ant, secoes=('games',
             por_item = {}
             for n in achados.values():
                 por_item.setdefault(n['item'], []).append(n)
-            lista = [n for l in por_item.values() for n in _cortar(l)]
+            lista = [n for it, l in por_item.items()
+                     for n in _cortar(l, max(ITENS[it].get('max_loja', MAX_POR_LOJA), MAX_ZOOM if fn is zoom else 0))]
         msg = (f'{len(lista)} anúncios' if lista else 'respondeu, mas sem anúncios do item') if respondeu else 'loja recusou a busca (proteção anti-robô) ou não respondeu'
         st[f'{rotulo}: {nome}'] = {'estado': 'ok' if respondeu else 'falhou', 'msg': msg, 'itens': len(lista or []), 'segundos': round(time.time() - t0)}
         log.info('games %-24s %s (%s) em %ds', nome, 'ok' if respondeu else 'falhou', msg, time.time() - t0)
