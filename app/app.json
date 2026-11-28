@@ -36,7 +36,7 @@
     ],
     "runtimeVersion": "1",
     "updates": {
-      "url": "https://tudo-busca.onrender.com/api/ota/manifest",
+      "url": "https://raw.githubusercontent.com/jjeffersongirotto-star/Tudo-Busca/app-ota/manifest.json",
       "enabled": true,
       "checkAutomatically": "ON_LOAD",
       "fallbackToCacheTimeout": 0

@@ -42,7 +42,7 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "export:web": "node scripts/semente.mjs && node scripts/carimbar.mjs && expo export -p web && node scripts/publicar-web.mjs",
-    "postinstall": "node scripts/semente.mjs",
+    "postinstall": "node scripts/semente.mjs && node scripts/ajustar-expo-updates.mjs",
     "lint": "expo lint"
   },
   "private": true
