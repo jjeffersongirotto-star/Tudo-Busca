@@ -32,36 +32,48 @@ def _slug(t):
 
 
 # ---------------------------------------------------------------- KaBuM!
+KABUM_PAGINAS = 3   # páginas de 100 produtos por busca (para quando a página não traz produto novo)
+
+
 async def kabum(http, termo):
-    html = await http.get(f'https://www.kabum.com.br/busca/{_slug(termo)}', tentativas=2)
-    nd = next_data(html) if html else None
-    if not nd:
-        return None
-    out = []
-    for p in kabum_mod._produtos(nd):
-        if p.get('available') is False:
-            continue
-        por, prazo, de = kabum_mod._precos(p)
-        if not por:
-            continue
-        code = str(p['code'])
-        sel = p.get('seller') if isinstance(p.get('seller'), dict) else {}
-        img = ''
-        for k in ('image', 'thumbnail', 'imageUrl', 'images', 'photos'):
-            v = p.get(k)
-            v = v[0] if isinstance(v, list) and v else v
-            v = (v.get('url') or v.get('src') or v.get('g') or v.get('m')) if isinstance(v, dict) else v
-            if imagem_ok(v):
-                img = imagem_ok(v)
-                break
-        out.append({'id': 'kabum-' + code, 'loja': 'KaBuM!', 'vendedor': p.get('sellerName') or sel.get('name') or '',
-                    'nome': (p.get('name') or '').strip(), 'url': f'https://www.kabum.com.br/produto/{code}',
-                    'preco': por, 'precoDe': de, 'prazo': prazo, 'sufixo': ' à vista', 'imagem': img})
-    return out
+    out, vistos, algum = [], set(), False
+    for pagina in range(1, KABUM_PAGINAS + 1):
+        html = await http.get(f'https://www.kabum.com.br/busca/{_slug(termo)}?page_number={pagina}&page_size=100&facet_filters=&sort=most_searched',
+                              tentativas=2)
+        nd = next_data(html) if html else None
+        if not nd:
+            break
+        algum = True
+        antes = len(vistos)
+        for p in kabum_mod._produtos(nd):
+            code = str(p.get('code') or '')
+            if not code or code in vistos:
+                continue
+            vistos.add(code)
+            if p.get('available') is False:
+                continue
+            por, prazo, de = kabum_mod._precos(p)
+            if not por:
+                continue
+            sel = p.get('seller') if isinstance(p.get('seller'), dict) else {}
+            img = ''
+            for k in ('image', 'thumbnail', 'imageUrl', 'images', 'photos'):
+                v = p.get(k)
+                v = v[0] if isinstance(v, list) and v else v
+                v = (v.get('url') or v.get('src') or v.get('g') or v.get('m')) if isinstance(v, dict) else v
+                if imagem_ok(v):
+                    img = imagem_ok(v)
+                    break
+            out.append({'id': 'kabum-' + code, 'loja': 'KaBuM!', 'vendedor': p.get('sellerName') or sel.get('name') or '',
+                        'nome': (p.get('name') or '').strip(), 'url': f'https://www.kabum.com.br/produto/{code}',
+                        'preco': por, 'precoDe': de, 'prazo': prazo, 'sufixo': ' à vista', 'imagem': img})
+        if len(vistos) == antes or len(vistos) - antes < 100:   # página sem produto novo ou incompleta: acabou a busca
+            break
+    return out if algum else None
 
 
 # ---------------------------------------------------------------- Zoom / Buscapé (mostram Amazon, Magalu, Fast Shop…)
-ZOOM_PAGINAS = 3   # o comparador junta ofertas de várias lojas: lê até 3 páginas de cada busca
+ZOOM_PAGINAS = 8   # o comparador junta ofertas de várias lojas: lê até 8 páginas de cada busca
 
 
 async def zoom(http, termo):
@@ -205,9 +217,11 @@ VTEX = {'iByte': 'www.ibyte.com.br', 'Webcontinental': 'www.webcontinental.com.b
 async def vtex(http, termo):
     out, algum = [], False
     # todas as lojas ao mesmo tempo (uma por vez estourava o tempo limite com muitas lojas)
-    respostas = await asyncio.gather(*(http.get(f'https://{host}/api/catalog_system/pub/products/search?ft={quote(termo)}&_from=0&_to=49',
-                                                json=True, tentativas=1) for host in VTEX.values()), return_exceptions=True)
-    for (loja, host), lista in zip(VTEX.items(), respostas):
+    # até 150 resultados por loja (3 blocos de 50, todos ao mesmo tempo)
+    pedidos = [(loja, host, ini) for loja, host in VTEX.items() for ini in (0, 50, 100)]
+    respostas = await asyncio.gather(*(http.get(f'https://{host}/api/catalog_system/pub/products/search?ft={quote(termo)}&_from={ini}&_to={ini + 49}',
+                                                json=True, tentativas=1) for _, host, ini in pedidos), return_exceptions=True)
+    for (loja, host, _), lista in zip(pedidos, respostas):
         if not isinstance(lista, list):
             continue
         algum = True
