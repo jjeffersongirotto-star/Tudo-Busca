@@ -66,5 +66,5 @@ def classificar_tv(nome):
 ITENS = {
     'tv': {'secao': 'games', 'sub': 'tvs', 'nome': 'TVs', 'grupo': 'modelo',
            'termos': ['smart tv 4k 55', 'smart tv 50 polegadas', 'smart tv 65 polegadas', 'smart tv 43', 'tv oled', 'tv qled', 'smart tv 120hz'],
-           'classificar': classificar_tv, 'preco_min': 600, 'preco_max': 80000},
+           'classificar': classificar_tv, 'preco_min': 600, 'preco_max': 80000, 'max_loja': 120},
 }
