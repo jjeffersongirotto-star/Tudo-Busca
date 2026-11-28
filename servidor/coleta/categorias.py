@@ -105,8 +105,15 @@ _PECA_CONSOLE = re.compile(r'\bpara\s+(?:o\s+|a\s+)?(?:console|ps\s?[45]|playsta
                            r'emulador|\btv\s*box\b|\bfat\s*boy\b|\bcapa\s+protetora\b|somente\s+(?:a\s+)?caixa|sem\s+console', re.I)
 
 
+# console que vem com jogo, mesmo sem dizer "kit"/"bundle" ("PlayStation 5 … Fc 24 Ea Sports", "Switch OLED Edição Super Mario")
+_JOGO_JUNTO = re.compile(r'\bfc\s?2\d\b|\bea\s+sports\b|astro\s*bot|gran\s+turismo|mario\s+(?:kart|bros|wonder|party)|spider-?man|god\s+of\s+war|'
+                         r'call\s+of\s+duty|\bfortnite\b|returnal|ratchet|horizon|forza|\bhalo\b|zelda|pok[eé]mon|minecraft|sports\s+resort|'
+                         r'assinatura|game\s*pass|\bnso\b|switch\s+online|astro\'?s\s+playroom\s+(?!pr[eé]-?instalado)', re.I)
+
+
 def _kit(n):
-    return bool(re.search(r'\+|\bcom\s+(?:\d+\s+)?(?:jogos?|controles?|game)\b|\bbundle\b|\bkit\b|\bcombo\b|\bpacote\b|\bedi[cç][aã]o\s+(?:bundle|pacote)', n, re.I))
+    return bool(re.search(r'\+|\bcom\s+(?:\d+\s+)?(?:jogos?|controles?|game)\b|\bbundle\b|\bkit\b|\bcombo\b|\bpacote\b|\bedi[cç][aã]o\s+(?:bundle|pacote)', n, re.I)
+                or _JOGO_JUNTO.search(n))
 
 
 def _console_base(n, plataforma):
