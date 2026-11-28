@@ -8,7 +8,7 @@ import type { Dados, Produto } from '@/logica/tipos';
 import { separarSecoes, produtosSel as produtosSelL, mudarSelecao, secaoAtual, itemAtual, nomeSel, categoriaBusca, nomeCategoriaBusca, SELECAO_PADRAO, type Selecao } from '@/logica/secoes';
 import { calcularNotas } from '@/logica/nota';
 import { calcularOfertas } from '@/logica/ofertas';
-import { calcularDestaques } from '@/logica/destaques';
+import { calcularDestaques, type Destaque } from '@/logica/destaques';
 import { contextoCupons, precoComCupom, precoFinal } from '@/logica/cupons';
 import { FILTROS_PADRAO, POR_PAGINA, type EstadoFiltros } from '@/logica/filtros';
 import { FILTROS_G_PADRAO, type EstadoFiltrosG } from '@/logica/ofertas';
@@ -77,8 +77,14 @@ function useEstadoApp() {
   const {pcs, jogos} = useMemo(() => separarSecoes(dados.produtos), [dados]);
   const {notas, melhorCb} = useMemo(() => calcularNotas(pcs), [pcs]);
   const ofertas = useMemo(() => calcularOfertas(jogos), [jogos]);
-  // destaques pelo preço que se paga (com o cupom que com certeza vale)
-  const destaques = useMemo(() => calcularDestaques(dados.produtos, n => precoFinal(precoComCupom(dados.cupons, n), n)), [dados]);
+  // destaques pelo preço que se paga (com o cupom que com certeza vale). Calculados DEPOIS de mostrar as ofertas:
+  // avaliar os cupons de centenas de produtos leva alguns segundos no celular e não pode segurar a abertura.
+  const [destaques, setDestaques] = useState<Destaque[]>([]);
+  useEffect(() => {
+    if (!dados.produtos.length) return;
+    const t = setTimeout(() => setDestaques(calcularDestaques(dados.produtos, n => precoFinal(precoComCupom(dados.cupons, n), n))), 400);
+    return () => clearTimeout(t);
+  }, [dados]);
   // destaques: de tudo ao abrir; depois que a pessoa escolhe uma seção, só dela
   const [escolheu, setEscolheu] = useState(false);
   const prodSel = useMemo(() => produtosSelL(sel, pcs, jogos), [sel, pcs, jogos]);
