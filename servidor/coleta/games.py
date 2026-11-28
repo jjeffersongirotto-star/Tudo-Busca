@@ -305,23 +305,33 @@ async def coletar(http, anteriores, status, hoje_txt, data_ant, secoes=('games',
         st[f'{rotulo}: {nome}'] = {'estado': 'buscando'}
         t0 = time.time()
         achados, respondeu = {}, False
-        try:
-            for item, cfg in itens.items():
-                for termo in cfg['termos']:
-                    r = await asyncio.wait_for(fn(http, termo), LIMITE_LOJA)
-                    if r is None:
-                        if fn in (shopee, temu, mercadolivre):
-                            break  # recusou a primeira busca: não insiste (evita bloqueio maior)
-                        continue
-                    respondeu = True
-                    for raw in r:
-                        n = _montar(raw, item, cfg, hoje_txt)
-                        if n and (n['id'] not in achados or n['precoNum'] < achados[n['id']]['precoNum']):
-                            achados[n['id']] = n
-        except asyncio.TimeoutError:
-            log.warning('games %s: demorou demais', nome)
-        except Exception:
-            log.exception('games %s', nome)
+
+        async def busca(item, cfg, termo):
+            """Uma busca, com o próprio tempo limite: uma busca lenta não derruba as outras da loja."""
+            try:
+                return item, cfg, await asyncio.wait_for(fn(http, termo), LIMITE_LOJA)
+            except asyncio.TimeoutError:
+                log.warning('games %s: "%s" demorou demais', nome, termo)
+            except Exception:
+                log.exception('games %s: "%s"', nome, termo)
+            return item, cfg, None
+
+        tarefas = [(item, cfg, termo) for item, cfg in itens.items() for termo in cfg['termos']]
+        if fn in (shopee, temu, mercadolivre) and tarefas:
+            # costumam recusar: tenta a primeira busca e só continua se ela passar (evita bloqueio maior)
+            primeira = await busca(*tarefas[0])
+            resultados = [primeira] + (list(await asyncio.gather(*(busca(*t) for t in tarefas[1:]))) if primeira[2] is not None else [])
+        else:
+            # várias buscas ao mesmo tempo; o cliente HTTP limita a 3 pedidos simultâneos por site (não sobrecarrega a loja)
+            resultados = await asyncio.gather(*(busca(*t) for t in tarefas))
+        for item, cfg, r in resultados:
+            if r is None:
+                continue
+            respondeu = True
+            for raw in r:
+                n = _montar(raw, item, cfg, hoje_txt)
+                if n and (n['id'] not in achados or n['precoNum'] < achados[n['id']]['precoNum']):
+                    achados[n['id']] = n
         lista = None
         if respondeu:  # o limite vale para cada item (senão os acessórios baratos tiram os consoles da lista)
             por_item = {}
