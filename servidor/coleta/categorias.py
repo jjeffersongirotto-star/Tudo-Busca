@@ -273,9 +273,10 @@ _TIPOS_ACESSORIO = [
     ('PlayStation Portal', r'playstation\s+portal|\bportal\s+remote'),
     ('PlayStation VR2', r'\bvr\s?2\b|realidade\s+virtual|[oó]culos\s+vr'),
     ('Leitor de disco', r'leitor\s+de\s+(?:disco|m[ií]dia)|unidade\s+de\s+disco|disc\s+drive'),
+    # suporte antes de headset: "Suporte para fone/headset" é suporte
+    ('Suporte', r'suporte|\bstand\b|cooler|ventila'),
     ('Headset / fone', r'headset|\bfone\b|\bpulse\b'),
     ('Carregador / base', r'carregador|base\s+(?:de\s+)?carreg|esta[cç][aã]o\s+de\s+carga|\bdock\b|bateria'),
-    ('Suporte', r'suporte|\bstand\b|cooler|ventila'),
     ('Armazenamento', r'cart[aã]o\s+(?:de\s+(?:mem|expans)|micro\s?sd)|micro\s?sd|\bssd\b|\bhd\s+externo|expans[aã]o\s+de\s+armazen'),
     ('Volante', r'volante'),
     ('Câmera', r'c[aâ]mera'),
