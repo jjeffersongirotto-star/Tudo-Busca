@@ -141,12 +141,12 @@ function useEstadoApp() {
       const atual = dadosRef.current;
       if (!r.ok && r.motivo === 'erro') { setAviso({tipo: 'erro', texto: `⚠ ${r.mensagem}. Continuam os dados de ${atual.ultimaAtualizacaoTexto || '?'}.`}); return; }
       if (!r.ok) {
-        // servidor fora do ar (dormindo demais, suspenso…): carrega a coleta automática mais recente (GitHub, a cada 3 h)
+        // servidor fora do ar (dormindo demais, suspenso…): carrega a coleta automática mais recente (GitHub, a cada 30 min)
         const g = await buscarDadosGithub().then(d => aplicarDados(atual, d)).catch(() => null);
         if (g) { setDados(g.dados); setNovos(g.novos); }
         const quando = (g ? g.dados : atual).ultimaAtualizacaoTexto || 'não informado';
         setAviso({tipo: 'erro', texto: `O servidor de busca nas lojas não respondeu (${r.mensagem}). ${g ? 'Carreguei' : 'Continuam'} os preços da coleta automática mais recente: ${quando}.`,
-          detalhe: 'A coleta automática roda sozinha a cada 3 horas e não depende do servidor.'});
+          detalhe: 'A coleta automática roda sozinha a cada 30 minutos e não depende do servidor.'});
         return;
       }
       const ap = await aplicarDados(atual, r.dados);

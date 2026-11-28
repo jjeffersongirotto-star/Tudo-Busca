@@ -1,12 +1,14 @@
-name: Coleta agendada (a cada 3 horas)
+name: Coleta agendada (a cada 30 minutos)
 
 # Coleta completa no GitHub (aqui KaBuM! e Amazon respondem; no Render elas recusam) e publica o resultado no ramo
 # "dados-coleta" (só a versão mais recente, sem histórico, para o repositório não crescer). O servidor puxa esses
-# arquivos pelo raw.githubusercontent.com ao ligar e antes de cada ⟳: assim KaBuM!/Amazon ficam com no máximo ~3 h
+# arquivos pelo raw.githubusercontent.com ao ligar e antes de cada ⟳, e o app lê direto de lá: assim os preços ficam com ~30 min
 # de atraso e o banco de dados não se perde quando o Render reinicia. Gratuito (repositório público).
 on:
   schedule:
-    - cron: '17 */3 * * *'   # a cada 3 h (minuto 17 para fugir do horário cheio do GitHub)
+    # a cada 30 min (minutos 7 e 37 para fugir do horário cheio do GitHub). Repositório público: minutos do Actions são grátis.
+    # O GitHub pode atrasar execuções agendadas em horários de muito uso; a coleta leva poucos minutos.
+    - cron: '7,37 * * * *'
   workflow_dispatch:
 permissions:
   contents: write

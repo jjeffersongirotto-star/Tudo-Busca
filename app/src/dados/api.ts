@@ -46,7 +46,7 @@ export interface Status {
 
 export const buscarDados = (limiteMs = 90000) => api<Dados>('/api/dados', {}, limiteMs);
 
-/** Última coleta automática (GitHub Actions, a cada 3 h), lida direto do repositório: não depende do servidor
+/** Última coleta automática (GitHub Actions, a cada 30 min), lida direto do repositório: não depende do servidor
  *  (que dorme quando ninguém usa e pode ficar fora do ar). O servidor só é chamado no ⟳ (busca nas lojas na hora). */
 export const DADOS_RAW = 'https://raw.githubusercontent.com/jjeffersongirotto-star/Tudo-Busca/dados-coleta/dados.json';
 export async function buscarDadosGithub(limiteMs = 60000): Promise<Dados> {
