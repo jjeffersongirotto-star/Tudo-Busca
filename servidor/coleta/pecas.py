@@ -72,7 +72,7 @@ def classificar_armazenamento(nome):
     n = _limpo(nome)
     if not n or not _no_inicio(n, r'\bssd\b|\bhd\b|hard\s+disk|disco\s+r[ií]gido|m\.?2\s+nvme|\bnvme\b', 40):
         return None
-    if re.search(r'gaveta|case\s+(?:para|de)|adaptador|dissipador|cabo|leitor|dock|suporte|caddy|cart[aã]o|pen\s?drive|notebook\s+com|'
+    if re.search(r'gaveta|\bcase\b|enclosure|adaptador|dissipador|cabo|leitor|dock|suporte|caddy|cart[aã]o|pen\s?drive|notebook\s+com|'
                  r'computador|\bpc\s+gamer|desktop|all\s+in\s+one|\bmem[oó]ria\s+ram\b', n, re.I):
         return None
     cap = _gb(n, 30000)
