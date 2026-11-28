@@ -52,7 +52,9 @@ function useEstadoApp() {
     (async () => {
       setAviso({tipo: 'info', texto: '⏳ Carregando as ofertas…'});
       // cada parte se protege: um erro na cópia guardada não pode impedir de baixar as ofertas (a tela ficava vazia)
-      const local = await carregarLocal().catch(() => ({dados: DADOS_VAZIOS, novos: new Set<string>(), temDados: false}));
+      const vazio = {dados: DADOS_VAZIOS, novos: new Set<string>(), temDados: false};
+      // tempo limite também no conjunto (cópia guardada + vistos): se travar, segue e baixa do GitHub
+      const local = await Promise.race([carregarLocal().catch(() => vazio), new Promise<typeof vazio>(r => setTimeout(() => r(vazio), 9000))]);
       const [f, s] = await Promise.all([lerFavoritos().catch(() => new Set<string>()), lerSelecao().catch(() => SELECAO_PADRAO)]);
       if (!vivo) return;
       setDados(local.dados); setNovos(local.novos); setFavs(f); setSel(s); setCarregado(local.temDados);
