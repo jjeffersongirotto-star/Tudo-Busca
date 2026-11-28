@@ -50,14 +50,23 @@ function useEstadoApp() {
   useEffect(() => {
     let vivo = true;
     (async () => {
-      const [local, f, s] = await Promise.all([carregarLocal(), lerFavoritos(), lerSelecao()]);
+      setAviso({tipo: 'info', texto: '⏳ Carregando as ofertas…'});
+      // cada parte se protege: um erro na cópia guardada não pode impedir de baixar as ofertas (a tela ficava vazia)
+      const local = await carregarLocal().catch(() => ({dados: DADOS_VAZIOS, novos: new Set<string>(), temDados: false}));
+      const [f, s] = await Promise.all([lerFavoritos().catch(() => new Set<string>()), lerSelecao().catch(() => SELECAO_PADRAO)]);
       if (!vivo) return;
       setDados(local.dados); setNovos(local.novos); setFavs(f); setSel(s); setCarregado(local.temDados);
       try {
-        const r = await aplicarDados(local.dados, await buscarDadosGithub().catch(() => buscarDados()));
-        if (vivo && r) { setDados(r.dados); setNovos(r.novos); setAviso({tipo: 'ok', texto: `✔ Carregados os preços da última coleta (${r.dados.ultimaAtualizacaoTexto || ''}).`}); }
+        const novo = await buscarDadosGithub().catch(() => buscarDados(20000));
+        const r = await aplicarDados(local.dados, novo);
+        if (!vivo) return;
+        if (r) { setDados(r.dados); setNovos(r.novos); }
+        const final = r ? r.dados : local.dados;
+        setAviso({tipo: 'ok', texto: `✔ Carregados os preços da última coleta (${final.ultimaAtualizacaoTexto || novo.ultimaAtualizacaoTexto || ''}).`});
       } catch {
-        if (vivo && !local.temDados) setAviso({tipo: 'erro', texto: 'Não consegui baixar as ofertas agora. Confira a internet e toque em ⟳.'});
+        if (vivo) setAviso(local.temDados
+          ? {tipo: 'erro', texto: `Não consegui baixar as ofertas novas agora. Mostrando as de ${local.dados.ultimaAtualizacaoTexto || 'antes'}; toque em ⟳ para tentar de novo.`}
+          : {tipo: 'erro', texto: 'Não consegui baixar as ofertas agora. Confira a internet e toque em ⟳.'});
       } finally { if (vivo) setCarregado(true); }
     })();
     return () => { vivo = false; };
