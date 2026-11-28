@@ -36,6 +36,7 @@ export function Destaques({ margem, aoSelecionar }: { margem: number; aoSelecion
           <View style={st.selo}><T peso="extra" style={{color: '#fff', fontSize: g ? 14.5 : 13}}>-{pct}%</T></View>
         </View>
         <T style={{fontSize: 11.5, color: C.sub}} numberOfLines={1}>{n.loja}{n.modelo ? ` · ${n.modelo}` : ''}</T>
+        {n.kit ? <T peso="negrito" style={{fontSize: 11.3, color: '#fdba74'}}>🎁 kit: vem com jogo ou item extra</T> : null}
         <T peso="negrito" style={{fontSize: g ? 13.4 : 12.8, lineHeight: g ? 17.5 : 16.5}} numberOfLines={g ? 3 : 2}>{n.nome}</T>
         <T peso="extra" style={{fontSize: g ? 17.5 : 16}}>{reais(n.precoNum)}</T>
         {pc?.a.estimado != null ? <T style={{fontSize: 11.8, color: '#4ade80'}}>~{reais(pc.a.estimado)} com {pc.c.codigo}</T> : null}

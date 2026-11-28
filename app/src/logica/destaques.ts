@@ -33,8 +33,9 @@ export function grupoDestaque(n: Produto): string | null {
 export interface Destaque { n: Produto; pct: number; tipico: number; qtd: number }
 
 /** Ofertas que estão bem abaixo do típico do seu grupo (sem kits e sem preço de coleta anterior). */
-export function calcularDestaques(produtos: Produto[]): Destaque[] {
+export function calcularDestaques(produtos: Produto[], precoPago: (n: Produto) => number = n => n.precoNum ?? 1e12): Destaque[] {
   const grupos = new Map<string, number[]>();
+  // preço típico: só anúncios do produto sozinho (kit com jogo/controle e preço de coleta anterior não entram)
   const valido = (n: Produto) => !!n.precoNum && !n.kit && !n.precoAntigo;
   for (const n of produtos) {
     const g = valido(n) ? grupoDestaque(n) : null;
@@ -48,11 +49,14 @@ export function calcularDestaques(produtos: Produto[]): Destaque[] {
   }
   const out: Destaque[] = [];
   const vistos = new Set<string>();
-  for (const n of produtos) {
-    const g = valido(n) ? grupoDestaque(n) : null;
+  // candidatos: também os kits (console com jogo mais barato que o console sozinho é oferta ainda melhor);
+  // o desconto é pelo que se paga (preço com o cupom que vale); do mais barato para o mais caro, para ficar o melhor de cada produto
+  const candidatos = produtos.filter(n => n.precoNum && !n.precoAntigo).sort((a, b) => precoPago(a) - precoPago(b));
+  for (const n of candidatos) {
+    const g = grupoDestaque(n);
     const m = g ? mediana.get(g) : undefined;
     if (!g || !m) continue;
-    const pct = (m - n.precoNum!) / m * 100;
+    const pct = (m - precoPago(n)) / m * 100;
     // o mesmo produto em várias lojas/comparadores: fica o mais barato
     const chave = `${g}|${n.nome.toLowerCase().replace(/\W+/g, '').slice(0, 40)}`;
     if (pct >= DESTAQUE.minimo && pct <= DESTAQUE.maximo && !vistos.has(chave)) {

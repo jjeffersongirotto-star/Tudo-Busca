@@ -9,7 +9,7 @@ import { separarSecoes, produtosSel as produtosSelL, mudarSelecao, secaoAtual, i
 import { calcularNotas } from '@/logica/nota';
 import { calcularOfertas } from '@/logica/ofertas';
 import { calcularDestaques } from '@/logica/destaques';
-import { contextoCupons } from '@/logica/cupons';
+import { contextoCupons, precoComCupom, precoFinal } from '@/logica/cupons';
 import { FILTROS_PADRAO, POR_PAGINA, type EstadoFiltros } from '@/logica/filtros';
 import { FILTROS_G_PADRAO, type EstadoFiltrosG } from '@/logica/ofertas';
 import { decidirVersao, type ResultadoVersao, type RespostaVersao } from '@/logica/versao';
@@ -66,7 +66,8 @@ function useEstadoApp() {
   const {pcs, jogos} = useMemo(() => separarSecoes(dados.produtos), [dados]);
   const {notas, melhorCb} = useMemo(() => calcularNotas(pcs), [pcs]);
   const ofertas = useMemo(() => calcularOfertas(jogos), [jogos]);
-  const destaques = useMemo(() => calcularDestaques(dados.produtos), [dados]);
+  // destaques pelo preço que se paga (com o cupom que com certeza vale)
+  const destaques = useMemo(() => calcularDestaques(dados.produtos, n => precoFinal(precoComCupom(dados.cupons, n), n)), [dados]);
   // destaques: de tudo ao abrir; depois que a pessoa escolhe uma seção, só dela
   const [escolheu, setEscolheu] = useState(false);
   const prodSel = useMemo(() => produtosSelL(sel, pcs, jogos), [sel, pcs, jogos]);
