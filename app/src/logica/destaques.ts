@@ -51,12 +51,22 @@ export function calcularDestaques(produtos: Produto[], precoPago: (n: Produto) =
   const vistos = new Set<string>();
   // candidatos: também os kits (console com jogo mais barato que o console sozinho é oferta ainda melhor);
   // o desconto é pelo que se paga (preço com o cupom que vale); do mais barato para o mais caro, para ficar o melhor de cada produto
-  const candidatos = produtos.filter(n => n.precoNum && !n.precoAntigo).sort((a, b) => precoPago(a) - precoPago(b));
-  for (const n of candidatos) {
+  // o preço com cupom é caro de calcular (cada cupom da loja é avaliado): uma vez por produto, e só para quem já está
+  // perto do preço típico ou abaixo dele pelo preço da loja. Antes era recalculado dentro
+  // da ordenação (~100 mil vezes) e o app ficava parado em "Carregando as ofertas…" no celular.
+  const pago = new Map<string, number>();
+  const candidatos: {n: Produto; g: string; m: number}[] = [];
+  for (const n of produtos) {
+    if (!n.precoNum || n.precoAntigo) continue;
     const g = grupoDestaque(n);
     const m = g ? mediana.get(g) : undefined;
-    if (!g || !m) continue;
-    const pct = (m - precoPago(n)) / m * 100;
+    if (!g || !m || n.precoNum > m * 1.25) continue;   // até 25% acima do típico: um cupom grande ainda pode trazer para baixo
+    pago.set(n.id, precoPago(n));
+    candidatos.push({n, g, m});
+  }
+  candidatos.sort((a, b) => pago.get(a.n.id)! - pago.get(b.n.id)!);
+  for (const {n, g, m} of candidatos) {
+    const pct = (m - pago.get(n.id)!) / m * 100;
     // o mesmo produto em várias lojas/comparadores: fica o mais barato
     const chave = `${g}|${n.nome.toLowerCase().replace(/\W+/g, '').slice(0, 40)}`;
     if (pct >= DESTAQUE.minimo && pct <= DESTAQUE.maximo && !vistos.has(chave)) {
